@@ -53,13 +53,14 @@ const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
 const btnReset = document.getElementById("btn-reset");
 
-document.addEventListener("DOMContentLoaded", init);
+const sortToggle = document.getElementById("sortByMistakes");
 
-function init() {
-  wortListe = Storage.load();   // <— WICHTIG
-  renderList();                 // <— DOM initial aufbauen
-  updateWordCount(wortListe);   // <— Statistik aktualisieren
-}
+sortToggle.addEventListener("change", () => {
+  sortByMistakes = sortToggle.checked;
+  renderList();
+});
+
+sortByMistakes = sortToggle.checked;
 
 // ------------------------------
 // Event-Handler
