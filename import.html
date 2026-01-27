@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/import.js" defer></script>
+  <script type="module" src="./js/timer.js"></script>
+</head>
+<body>
+
+  <div class="layout">
+
+<div id="main-menu"></div>
+
+    <!-- Hauptinhalt -->
+    <div class="content">
+
+      <h1>Import</h1>
+
+      <div class="import-container">
+        <input type="file" id="file-input" accept=".txt">
+        <div id="status" class="status-message"></div>
+      </div>
+
+    </div>
+
+</div>
+<!-- Menü automatisch laden  -->
+<script type="module">
+import { loadMenu } from "./js/menu.js";
+loadMenu();
+</script>
+
+</body>
+</html>

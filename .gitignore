@@ -1,0 +1,20 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor backups
+*.log
+*.tmp
+*.bak
+*.swp
+
+# GitHub Desktop / VSCode
+.vscode/
+.idea/
+
+# OS metadata
+ehthumbs.db
+Desktop.ini
+
+# Service Worker cache (falls lokal getestet)
+cache/

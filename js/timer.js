@@ -1,0 +1,158 @@
+// ------------------------------------------------------
+// Globaler Session-Timer für WriteRight
+// Läuft nur auf der Trainerseite (index.html)
+// Pausiert automatisch auf allen anderen Seiten
+// Wird NICHT dauerhaft gespeichert – startet neu beim App-Neustart
+// ------------------------------------------------------
+
+// Werte aus sessionStorage laden oder 0 setzen
+let sessionSeconds = Number(sessionStorage.getItem("sessionSeconds")) || 0;
+let sessionCorrect = Number(sessionStorage.getItem("sessionCorrect")) || 0;
+let sessionWrong = Number(sessionStorage.getItem("sessionWrong")) || 0;
+let sessionTotal = Number(sessionStorage.getItem("sessionTotal")) || 0;
+
+let timerInterval = null;
+
+//debug kann wieder weg
+const info = document.getElementById('session-info');
+
+function debugLog(tag) {
+  if (!info) return;
+  console.log(tag, {
+    inlineStyle: info.getAttribute('style'),
+    computedWidth: getComputedStyle(info).width,
+    rect: info.getBoundingClientRect()
+  });
+}
+
+document.addEventListener('visibilitychange', () => {
+  debugLog('visibilitychange before');
+  // Erzwinge Reflow / Neuberechnung
+  if (info) void info.offsetWidth;
+  window.dispatchEvent(new Event('resize'));
+  debugLog('visibilitychange after');
+});
+
+window.addEventListener('focus', () => debugLog('focus'));
+
+
+// ------------------------------------------------------
+// Timer starten (nur wenn nicht bereits aktiv)
+// ------------------------------------------------------
+export function startTimer() {
+  if (timerInterval !== null) return;
+
+  timerInterval = setInterval(() => {
+    sessionSeconds++;
+    sessionStorage.setItem("sessionSeconds", sessionSeconds);
+    updateTimerUI();
+  }, 1000);
+}
+
+// ------------------------------------------------------
+// Timer pausieren
+// ------------------------------------------------------
+export function pauseTimer() {
+  if (timerInterval !== null) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+// ------------------------------------------------------
+// Timer komplett zurücksetzen
+// ------------------------------------------------------
+export function resetTimer() {
+  sessionSeconds = 0;
+  sessionCorrect = 0;
+  sessionWrong = 0;
+  sessionTotal = 0;
+
+  sessionStorage.setItem("sessionSeconds", 0);
+  sessionStorage.setItem("sessionCorrect", 0);
+  sessionStorage.setItem("sessionWrong", 0);
+  sessionStorage.setItem("sessionTotal", 0);
+
+  updateTimerUI();
+  updateSessionStatsUI();
+}
+
+// ------------------------------------------------------
+// Zugriffsfunktionen für andere Module
+// ------------------------------------------------------
+export function addCorrect() {
+  sessionCorrect++;
+  //sessionTotal++;
+
+  sessionStorage.setItem("sessionCorrect", sessionCorrect);
+  sessionStorage.setItem("sessionTotal", sessionTotal);
+
+  updateSessionStatsUI();
+}
+
+export function addWrong() {
+  sessionWrong++;
+  //sessionTotal++;
+
+  sessionStorage.setItem("sessionWrong", sessionWrong);
+  sessionStorage.setItem("sessionTotal", sessionTotal);
+
+  updateSessionStatsUI();
+}
+
+export function addTotal() {
+  sessionTotal++;
+
+  sessionStorage.setItem("sessionTotal", sessionTotal);
+
+  updateSessionStatsUI();
+}
+
+// ------------------------------------------------------
+// UI aktualisieren (Zeit)
+// ------------------------------------------------------
+function updateTimerUI() {
+  const el = document.getElementById("session-timer");
+  if (!el) return;
+
+  const minutes = Math.floor(sessionSeconds / 60);
+  const seconds = sessionSeconds % 60;
+
+  const mm = String(minutes).padStart(2, "0");
+  const ss = String(seconds).padStart(2, "0");
+
+  el.textContent = `Zeit: ${mm}:${ss}`;
+
+  const btn = document.getElementById("btn-reset");
+  if (btn) btn.style.display = "inline-block";
+}
+
+// ------------------------------------------------------
+// UI aktualisieren (Richtig/Falsch/Gesamt)
+// ------------------------------------------------------
+function updateSessionStatsUI() {
+  const c = document.getElementById("session-correct");
+  const w = document.getElementById("session-wrong");
+  const t = document.getElementById("session-total");
+
+  if (c) c.textContent = `Richtig: ${sessionCorrect}`;
+  if (w) w.textContent = `Falsch: ${sessionWrong}`;
+  if (t) t.textContent = `Gesamt: ${sessionTotal}`;
+}
+
+// ------------------------------------------------------
+// Beim Laden direkt UI aktualisieren
+// ------------------------------------------------------
+updateTimerUI();
+updateSessionStatsUI();
+
+// ------------------------------------------------------
+// Automatische Steuerung je nach Seite
+// ------------------------------------------------------
+const currentPage = window.location.pathname.split("/").pop();
+
+if (currentPage === "index.html" || currentPage === "") {
+  startTimer();
+} else {
+  pauseTimer();
+}

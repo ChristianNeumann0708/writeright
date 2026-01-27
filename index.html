@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" >
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1e88e5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <title>Worttrainer</title>
+    <link rel="stylesheet" href="css/styles.css" >
+    <script type="module" src="js/indexedBackup.js" defer></script>
+    <script type="module" src="js/app.js" defer></script>
+    <script type="module" src="js/timer.js" defer></script>
+  </head>
+  <body>
+    <div class="layout">
+      <div id="main-menu"></div>
+
+      <!-- Hauptinhalt -->
+      <div class="content">
+        <h1>Worttrainer</h1>
+
+        <div class="trainer-layout">
+          <!-- Wortliste -->
+          <div class="trainer-wordlist">
+            <h4>
+              Wortliste
+              <span id="wordCount" class="word-count"></span>
+            </h4>
+
+
+            <!-- ⭐ HIER kommt der Schalter hin -->
+            <div class="sort-toggle">
+              <label class="switch">
+                <input type="checkbox" id="sortByMistakes" >
+                <span class="slider"></span>
+              </label>
+              <span>Fehlerhäufigkeit</span>
+            </div>
+
+            <ul id="word-list"></ul>
+          </div>
+
+          <!-- Trainer-Inhalt -->
+          <div class="trainer-main">
+            <input
+              type="text"
+              id="input-new"
+              placeholder="Wort eingeben (Enter)"
+            >
+
+            <div class="word-display" id="word-display">
+              <span>Bitte ein Wort auswählen oder eingeben.</span>
+            </div>
+
+            <input
+              type="text"
+              id="input-falsch"
+              placeholder="Falsch geschrieben (Enter)"
+            >
+
+            <div class="trainer-buttons">
+              <button id="btn-correct" type="button" class="btn correct">
+                Richtig
+              </button>
+              <button id="btn-wrong" type="button" class="btn wrong">
+                Falsch
+              </button>
+              <button id="btn-delete" type="button" class="btn delete">
+                Löschen
+              </button>
+            </div>
+
+            <div class="navigation">
+              <button id="btn-prev" type="button" class="btn nav">
+                ← Zurück
+              </button>
+              <button id="btn-next" type="button" class="btn nav">
+                Weiter →
+              </button>
+            </div>
+
+            <!-- <div class="stats" id="stats">Richtig: 0 | Falsch: 0</div> -->
+             <div class="stats" id="stats">
+              Richtig: <span id="stats-correct">0</span> |
+              Falsch: <span id="stats-wrong">0</span> |
+              Fehlerbilanz: <span id="stats-diff">0</span>
+            </div>
+
+            <div class="wrong-variants" id="wrong-variants"></div>
+          </div>
+
+          <!-- Session-Info unten rechts -->
+          <div id="session-info">
+            <div id="session-timer">Zeit: 0s</div>
+            <div id="session-stats">
+              <div id="session-correct">Richtig: 0</div>
+              <div id="session-wrong">Falsch: 0</div>
+              <div id="session-total">Gesamt: 0</div>
+            </div>
+            <button id="btn-reset" type="button" class="btn reset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menü automatisch laden  -->
+    <script type="module">
+      import { loadMenu } from "./js/menu.js";
+      loadMenu();
+    </script>
+    <div id="updateToast" class="update-toast">App wurde aktualisiert</div>
+  </body>
+</html>
