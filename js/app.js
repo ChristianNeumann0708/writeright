@@ -53,6 +53,14 @@ const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
 const btnReset = document.getElementById("btn-reset");
 
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  wortListe = Storage.load();   // <— WICHTIG
+  renderList();                 // <— DOM initial aufbauen
+  updateWordCount(wortListe);   // <— Statistik aktualisieren
+}
+
 // ------------------------------
 // Event-Handler
 // ------------------------------
