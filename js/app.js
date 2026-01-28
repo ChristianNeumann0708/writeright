@@ -132,6 +132,8 @@ function handleFalsch() {
   autoSaveToIndexedDB();
 
   renderStats();
+  btnCorrect.disabled = true;
+  btnWrong.disabled = true;
 }
 
 // ------------------------------
@@ -143,6 +145,8 @@ function selectWord(wort) {
   renderCurrent();
   renderList();
   updateWordCount(wortListe);
+  btnCorrect.disabled = false;
+  btnWrong.disabled = false;
 }
 
 // ------------------------------
@@ -222,6 +226,9 @@ function deleteCurrent() {
 // Navigation
 // ------------------------------
 function prevWord() {
+  btnCorrect.disabled = false;
+  btnWrong.disabled = false;
+
   if (!lastWord) return; // kein Zurück möglich
 
   currentWord = lastWord;
@@ -237,6 +244,9 @@ function prevWord() {
 }
 
 function nextWord() {
+  btnCorrect.disabled = false;
+  btnWrong.disabled = false;
+
   if (wortListe.length === 0) return;
 
   // letztes Wort merken für Zurück

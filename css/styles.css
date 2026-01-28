@@ -607,3 +607,8 @@ button.btn.reset {
 .update-toast.show {
   opacity: 1;
 }
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
