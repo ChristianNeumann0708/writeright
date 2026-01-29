@@ -22,7 +22,7 @@ const PRECACHE_URLS = [
   `${BASE_PATH}/icons/icon-192.png`,
   `${BASE_PATH}/icons/icon-512.png`,
   // Optional: Favicon, falls vorhanden
-  `${BASE_PATH}/favicon.ico`
+  //`${BASE_PATH}/favicon.ico`
 ];
 
 // INSTALL: neuen Cache anlegen und Dateien precachen
