@@ -1,5 +1,3 @@
-console.log("WRITE-RIGHT BUILD X1");
-
 import { Storage } from './storage.js';
 import { Wort } from './wort.js';
 import { addCorrect, addWrong, addTotal } from "./timer.js";
