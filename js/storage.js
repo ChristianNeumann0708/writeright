@@ -14,8 +14,19 @@ export const Storage = {
 
   loadSettings() {
     const json = localStorage.getItem(SETTINGS_KEY);
-    if (!json) return {};
-    try { return JSON.parse(json); } catch { return {}; }
+
+    // ⭐ Default-Werte
+    const defaults = {
+      useFehlerbilanz: false
+    };
+
+    if (!json) return defaults;
+
+    try {
+      return { ...defaults, ...JSON.parse(json) };
+    } catch {
+      return defaults;
+    }
   },
 
   saveSettings(obj) {
