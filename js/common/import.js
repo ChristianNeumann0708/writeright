@@ -1,5 +1,5 @@
 import { Storage } from './storage.js';
-import { Wort } from './wort.js';
+import { Wort } from '../worttrainer/wort.js';
 
 const fileInput = document.getElementById('file-input');
 const statusEl = document.getElementById('status');

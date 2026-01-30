@@ -7,9 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" >
     <title>Worttrainer</title>
     <link rel="stylesheet" href="css/styles.css" >
-    <script type="module" src="js/indexedBackup.js" defer></script>
-    <script type="module" src="js/app.js" defer></script>
-    <script type="module" src="js/timer.js" defer></script>
+    <!-- COMMON -->
+    <script type="module" src="js/common/storage.js" defer></script>
+    <script type="module" src="js/common/settings.js" defer></script>
+    <script type="module" src="js/common/import.js" defer></script>
+    <script type="module" src="js/common/indexedBackup.js" defer></script>
+    <script type="module" src="js/common/menu.js" defer></script>
+
+    <!-- WORTTRAINER -->
+    <script type="module" src="js/worttrainer/worttrainer-storage.js" defer></script>
+    <script type="module" src="js/worttrainer/worttrainer-logic.js" defer></script>
+    <script type="module" src="js/worttrainer/worttrainer-ui.js" defer></script>
+    <script type="module" src="js/worttrainer/app.js" defer></script>
+    <script type="module" src="js/worttrainer/timer.js" defer></script>
   </head>
   <body>
     <div class="layout">
@@ -105,7 +115,7 @@
 
     <!-- Menü automatisch laden  -->
     <script type="module">
-      import { loadMenu } from "./js/menu.js";
+      import { loadMenu } from "./js/common/menu.js";
       loadMenu();
     </script>
     <div id="updateToast" class="update-toast">App wurde aktualisiert</div>

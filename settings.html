@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" >
     <title>Einstellungen – WriteRight</title>
     <link rel="stylesheet" href="css/styles.css" >
-    <script type="module" src="./js/timer.js"></script>
+    <script type="module" src="./js/worttrainer/timer.js"></script>
 </head>
 
 <body>
@@ -94,11 +94,11 @@
     </div>
 </div>
 
-<script src="./js/indexedBackup.js"></script>
+<script src="./js/common/indexedBackup.js"></script>
 
 <script type="module">
-  import { loadMenu } from "./js/menu.js";
-  import "./js/settings.js";   // nur laden, NICHT loadSettings importieren
+  import { loadMenu } from "./js/common/menu.js";
+  import "./js/common/settings.js";   // nur laden, NICHT loadSettings importieren
   loadMenu();
 </script>
 
