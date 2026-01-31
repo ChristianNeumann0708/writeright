@@ -151,7 +151,7 @@ updateSessionStatsUI();
 // ------------------------------------------------------
 const currentPage = window.location.pathname.split("/").pop();
 
-if (currentPage === "index.html" || currentPage === "") {
+if (currentPage === "worttrainer.html" || currentPage === "") {
   startTimer();
 } else {
   pauseTimer();

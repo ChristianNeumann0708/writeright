@@ -1,226 +1,63 @@
-import { Storage } from "./storage.js";
+// settings.js
+// KORRIGIERTE VERSION – kompatibel mit StorageCore
 
-const WORDS_KEY = "words";
+import { StorageCore as Storage } from "./storage.js";
 
-// ------------------------------------------------------
-// Einstellungen laden
-// ------------------------------------------------------
-function loadSettings() {
-  const settings = Storage.loadSettings();
+// ---------------------------------------------
+// SETTINGS – Laden & Speichern
+// ---------------------------------------------
 
-  // Sortier-Einstellung (Trainer-Seite)
+export function loadSettings() {
+  const settings = Storage.getItem("settings");
+  return settings || {
+    sortByMistakes: false,
+    autoDeleteEnabled: false,
+    autoDeleteThreshold: 5
+  };
+}
+
+export function saveSettings(newSettings) {
+  Storage.setItem("settings", newSettings);
+}
+
+// ---------------------------------------------
+// UI-Initialisierung (nur wenn Elemente existieren)
+// ---------------------------------------------
+
+document.addEventListener("DOMContentLoaded", () => {
+  const settings = loadSettings();
+
+  // Checkboxen nur setzen, wenn sie existieren
   const sortToggle = document.getElementById("sortByMistakes");
   if (sortToggle) {
-    sortToggle.checked = settings.sortByMistakes ?? false;
-  }
-
-  // Fehlerbilanz-Umschalter (NEU)
-  const fehlerbilanzToggle = document.getElementById("useFehlerbilanz");
-  if (fehlerbilanzToggle) {
-    fehlerbilanzToggle.checked = settings.useFehlerbilanz ?? false;
-  }
-
-  // AutoDelete
-  const autoDeleteEnabledEl = document.getElementById("autoDeleteEnabled");
-  const autoDeleteThresholdEl = document.getElementById("autoDeleteThreshold");
-
-  if (autoDeleteEnabledEl) {
-    autoDeleteEnabledEl.checked = settings.autoDeleteEnabled ?? false;
-    autoDeleteEnabledEl.addEventListener("change", () => {
-      const s = Storage.loadSettings();
-      Storage.saveSettings({
-        ...s,
-        autoDeleteEnabled: autoDeleteEnabledEl.checked
+    sortToggle.checked = settings.sortByMistakes;
+    sortToggle.addEventListener("change", () => {
+      saveSettings({
+        ...settings,
+        sortByMistakes: sortToggle.checked
       });
     });
   }
 
-  if (autoDeleteThresholdEl) {
-    autoDeleteThresholdEl.value = settings.autoDeleteThreshold ?? 10;
-    autoDeleteThresholdEl.addEventListener("input", () => {
-      const s = Storage.loadSettings();
-      Storage.saveSettings({
-        ...s,
-        autoDeleteThreshold: parseInt(autoDeleteThresholdEl.value) || 10
+  const autoDeleteToggle = document.getElementById("autoDeleteEnabled");
+  if (autoDeleteToggle) {
+    autoDeleteToggle.checked = settings.autoDeleteEnabled;
+    autoDeleteToggle.addEventListener("change", () => {
+      saveSettings({
+        ...settings,
+        autoDeleteEnabled: autoDeleteToggle.checked
       });
     });
   }
 
-  const tabletModeEnabledEl = document.getElementById("tabletModeEnabled");
-
-  if (tabletModeEnabledEl) {
-    tabletModeEnabledEl.checked = settings.tabletModeEnabled ?? false;
-
-    tabletModeEnabledEl.addEventListener("change", () => {
-      const s = Storage.loadSettings();
-      Storage.saveSettings({
-        ...s,
-        tabletModeEnabled: tabletModeEnabledEl.checked
+  const autoDeleteThreshold = document.getElementById("autoDeleteThreshold");
+  if (autoDeleteThreshold) {
+    autoDeleteThreshold.value = settings.autoDeleteThreshold;
+    autoDeleteThreshold.addEventListener("input", () => {
+      saveSettings({
+        ...settings,
+        autoDeleteThreshold: Number(autoDeleteThreshold.value)
       });
     });
   }
-
-  // Ganze Wortliste löschen
-  const deleteWordsBtn = document.getElementById("deleteWordsBtn");
-
-  if (deleteWordsBtn) {
-    deleteWordsBtn.addEventListener("click", async () => {
-      if (confirm("Möchtest du wirklich die gesamte Wortliste löschen?")) {
-        await Storage.clearWordsEverywhere();
-        console.log("DEBUG: clearWordsEverywhere() abgeschlossen");
-        alert("Wortliste wurde gelöscht.");
-      }
-    });
-  }
-
-  // Restore
-  const restoreInput = document.getElementById("restoreFile");
-  const restoreButton = document.getElementById("restoreButton");
-
-  if (restoreInput && restoreButton) {
-    restoreInput.onchange = () => {
-      const hasFile = restoreInput.files && restoreInput.files.length > 0;
-      restoreButton.style.display = hasFile ? "block" : "none";
-    };
-
-    restoreButton.onclick = () => restoreBackup({ target: restoreInput });
-  }
-
-  const resetStatsBtn = document.getElementById("resetStatsBtn");
-
-  if (resetStatsBtn) {
-    resetStatsBtn.addEventListener("click", () => {
-      if (confirm("Möchtest du wirklich alle Statistikwerte zurücksetzen?")) {
-        Storage.resetWordStats();
-        alert("Statistik wurde zurückgesetzt.");
-      }
-    });
-  }
-
-  console.log("loadSettings() erfolgreich ausgeführt.");
-}
-
-// ------------------------------------------------------
-// Einstellungen speichern (nur für AutoDelete)
-// ------------------------------------------------------
-function saveSettings() {
-  const settings = Storage.loadSettings();
-
-  const updated = {
-    ...settings,
-    autoDeleteEnabled: document.getElementById("autoDeleteEnabled").checked,
-    autoDeleteThreshold:
-      parseInt(document.getElementById("autoDeleteThreshold").value) || 10
-  };
-
-  Storage.saveSettings(updated);
-  showStatus("Einstellungen gespeichert.");
-}
-
-// ------------------------------------------------------
-// Backup herunterladen
-// ------------------------------------------------------
-export function downloadBackup() {
-  const raw = localStorage.getItem(WORDS_KEY);
-  if (!raw) {
-    showStatus("Keine Wörter vorhanden.");
-    return;
-  }
-
-  const blob = new Blob([raw], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "writeRight-backup.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-  showStatus("Backup wurde heruntergeladen.");
-}
-
-// ------------------------------------------------------
-// Backup wiederherstellen
-// ------------------------------------------------------
-export function restoreBackup(event) {
-  const file = event.target.files[0];
-  if (!file) {
-    showStatus("Keine Datei ausgewählt.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const json = reader.result;
-      const oldList = JSON.parse(json);
-
-      const newList = oldList
-        .map(obj => {
-          if (!obj) return null;
-
-          const text = obj.text ?? obj.Text ?? obj.Name ?? null;
-          if (!text) return null;
-
-          return {
-            text,
-            anzRichtig: obj.anzRichtig ?? obj.AnzRichtigGeschrieben ?? 0,
-            anzFalsch: obj.anzFalsch ?? obj.AnzFalschGeschrieben ?? 0,
-            falscheVarianten:
-              obj.falscheVarianten ?? obj.DictFalscheWoerter ?? {}
-          };
-        })
-        .filter(x => x !== null);
-
-      localStorage.setItem(WORDS_KEY, JSON.stringify(newList));
-      showStatus(`Backup wiederhergestellt. (${newList.length} Wörter)`);
-    } catch (err) {
-      console.error("Fehler beim Restore:", err);
-      showStatus("Fehler beim Einlesen der Datei.");
-    }
-  };
-
-  reader.readAsText(file);
-}
-
-// ------------------------------------------------------
-// Statusmeldung anzeigen
-// ------------------------------------------------------
-function showStatus(msg) {
-  const el = document.getElementById("status");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = "block";
-}
-
-// ------------------------------------------------------
-// DOMContentLoaded – Buttons verbinden & Settings laden
-// ------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  // Speichern-Button
-  const saveBtn = document.getElementById("saveSettings");
-  if (saveBtn) {
-    saveBtn.onclick = () => saveSettings();
-  }
-
-  // Backup-Button
-  const downloadBtn = document.getElementById("downloadBackup");
-  if (downloadBtn) {
-    downloadBtn.onclick = () => downloadBackup();
-  }
-
-  // Fehlerbilanz-Umschalter (automatisch speichern)
-  const fehlerbilanzToggle = document.getElementById("useFehlerbilanz");
-  if (fehlerbilanzToggle) {
-    fehlerbilanzToggle.addEventListener("change", () => {
-      const s = Storage.loadSettings();
-      Storage.saveSettings({
-        ...s,
-        useFehlerbilanz: fehlerbilanzToggle.checked
-      });
-    });
-  }
-
-  // Einstellungen initial laden
-  loadSettings();
 });

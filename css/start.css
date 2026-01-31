@@ -1,0 +1,36 @@
+.start-hero {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.start-logo {
+  width: 220px;   /* Größe des Logos */
+  height: auto;
+  display: block;
+  margin: 0 auto 1.5rem auto;
+}
+
+.start-buttons {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;   /* untereinander */
+  gap: 1rem;                /* Abstand zwischen Buttons */
+  align-items: center;      /* zentriert */
+}
+
+.start-btn {
+  display: block;
+  width: 260px;             /* feste Breite für schöne Optik */
+  padding: 1rem 1.5rem;
+  background: #0078ff;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;       /* Text zentrieren */
+}
+
+.start-btn:hover {
+  background: #005fcc;
+}

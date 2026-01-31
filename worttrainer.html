@@ -7,14 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Worttrainer</title>
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/worttrainer.css">
+
 
     <!-- COMMON -->
     <script type="module" src="js/common/storage.js" defer></script>
     <script type="module" src="js/common/settings.js" defer></script>
-    <script type="module" src="js/common/import.js" defer></script>
-    <script type="module" src="js/common/indexedBackup.js" defer></script>
     <script type="module" src="js/common/menu.js" defer></script>
+
+    <!-- TIMER MUSS EIN MODUL SEIN -->
+    <script type="module" src="js/worttrainer/timer.js" defer></script>
+
+    <!-- indexedBackup (klassisch) -->
+    <script src="js/common/indexedBackup.js"></script>
+
 
     <!-- WORTTRAINER -->
     <script type="module" src="js/worttrainer/worttrainer-storage.js" defer></script>

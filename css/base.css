@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+  --bg: #d9e0e7;
+  --text: #333;
+  --accent: #3498db;
+  --correct: #27ae60;
+  --wrong: #c0392b;
+  --sidebar-bg: #34495e;
+  --sidebar-text: #ecf0f1;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn {
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: white;
+  transition: filter 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+.btn.correct { background: var(--correct); }
+.btn.wrong { background: var(--wrong); }
+.btn.delete { background: #9e9e9e; }
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #e3f2fd;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  font-weight: 500;
+  color: #0a3d62;
+}

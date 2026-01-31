@@ -1,5 +1,4 @@
 import { StorageCore } from "../common/storage.js";
-import { indexedBackup } from "../common/backup.js";
 import { Wort } from "./wort.js";
 
 const STORAGE_KEY = "words";

@@ -1,4 +1,4 @@
-import { Storage } from './storage.js';
+import { StorageCore as Storage } from "./storage.js";
 import { Wort } from '../worttrainer/wort.js';
 
 const fileInput = document.getElementById('file-input');
