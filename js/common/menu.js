@@ -5,9 +5,23 @@ export function loadMenu() {
       <ul>
         <li><a href="index.html">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 12l9-9 9 9-9 9-9-9z" fill="currentColor"/>
+          </svg>
+          Start
+        </a></li>
+
+        <li><a href="worttrainer.html">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M5 3v18l15-9L5 3z" fill="currentColor"/>
           </svg>
-          Trainer
+          Worttrainer
+        </a></li>
+
+        <li><a href="vokabeltrainer.html">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4h16v16H4z" fill="currentColor"/>
+          </svg>
+          Vokabeltrainer
         </a></li>
 
         <li><a href="import.html">

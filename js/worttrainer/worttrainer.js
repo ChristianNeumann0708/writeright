@@ -2,16 +2,26 @@ import { WortStorage } from "./worttrainer-storage.js";
 import { WortLogic } from "./worttrainer-logic.js";
 import { WortUI } from "./worttrainer-ui.js";
 
-async function init() {
-  const words = WortStorage.loadWords();
-  WortLogic.init(words);
+async function initWorttrainer() {
+  try {
+    // 1) Wörter laden
+    const words = WortStorage.loadWords();
+    WortLogic.init(words);
 
-  const settings = WortStorage.loadSettings();
-  WortLogic.autoDeleteEnabled = settings.autoDeleteEnabled;
-  WortLogic.autoDeleteThreshold = settings.autoDeleteThreshold;
+    // 2) Einstellungen laden
+    const settings = WortStorage.loadSettings();
+    WortLogic.autoDeleteEnabled = settings.autoDeleteEnabled;
+    WortLogic.autoDeleteThreshold = settings.autoDeleteThreshold;
 
-  WortUI.init();
-  WortUI.renderAll();
+    // 3) UI initialisieren
+    WortUI.init();
+    WortUI.renderAll();
+
+    console.log("Worttrainer erfolgreich gestartet.");
+  } catch (err) {
+    console.error("Fehler beim Initialisieren des Worttrainers:", err);
+  }
 }
 
-init();
+// Starten
+initWorttrainer();

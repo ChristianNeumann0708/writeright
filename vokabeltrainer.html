@@ -5,16 +5,23 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#1e88e5">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WriteRight – Start</title>
+    <title>Vokabeltrainer</title>
 
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- COMMON MODULES -->
+    <!-- COMMON -->
     <script type="module" src="js/common/storage.js" defer></script>
     <script type="module" src="js/common/settings.js" defer></script>
     <script type="module" src="js/common/import.js" defer></script>
     <script type="module" src="js/common/indexedBackup.js" defer></script>
     <script type="module" src="js/common/menu.js" defer></script>
+
+    <!-- VOKABELTRAINER -->
+    <script type="module" src="js/vokabeltrainer/vokabel.js" defer></script>
+    <script type="module" src="js/vokabeltrainer/vokabeltrainer-storage.js" defer></script>
+    <script type="module" src="js/vokabeltrainer/vokabeltrainer-logic.js" defer></script>
+    <script type="module" src="js/vokabeltrainer/vokabeltrainer-ui.js" defer></script>
+    <script type="module" src="js/vokabeltrainer/vokabeltrainer.js" defer></script>
   </head>
 
   <body>
@@ -22,22 +29,22 @@
       <div id="main-menu"></div>
 
       <div class="content">
-        <h1>Willkommen bei WriteRight</h1>
-        <p>Wähle einen Trainer:</p>
+        <h1>Vokabeltrainer</h1>
 
-        <div class="start-buttons">
-          <a href="worttrainer.html" class="start-btn">Worttrainer starten</a>
-          <a href="vokabeltrainer.html" class="start-btn">Vokabeltrainer starten</a>
-        </div>
+        <p>Der Vokabeltrainer wird gerade aufgebaut.</p>
+        <p>Hier erscheint später:</p>
+        <ul>
+          <li>Vokabel-Liste</li>
+          <li>Trainer-UI</li>
+          <li>Statistik</li>
+          <li>Lernmodus</li>
+        </ul>
       </div>
     </div>
 
-    <!-- Menü laden -->
     <script type="module">
       import { loadMenu } from "./js/common/menu.js";
       loadMenu();
     </script>
-
-    <div id="updateToast" class="update-toast">App wurde aktualisiert</div>
   </body>
 </html>
