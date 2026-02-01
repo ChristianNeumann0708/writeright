@@ -1,7 +1,6 @@
 // ------------------------------------------------------
 // Globaler Session-Timer für WriteRight
-// Läuft nur auf der Trainerseite (index.html)
-// Pausiert automatisch auf allen anderen Seiten
+// Läuft nur auf der Trainerseite (worttrainer.html)
 // Wird NICHT dauerhaft gespeichert – startet neu beim App-Neustart
 // ------------------------------------------------------
 
@@ -12,29 +11,6 @@ let sessionWrong = Number(sessionStorage.getItem("sessionWrong")) || 0;
 let sessionTotal = Number(sessionStorage.getItem("sessionTotal")) || 0;
 
 let timerInterval = null;
-
-//debug kann wieder weg
-const info = document.getElementById('session-info');
-
-function debugLog(tag) {
-  if (!info) return;
-  console.log(tag, {
-    inlineStyle: info.getAttribute('style'),
-    computedWidth: getComputedStyle(info).width,
-    rect: info.getBoundingClientRect()
-  });
-}
-
-document.addEventListener('visibilitychange', () => {
-  debugLog('visibilitychange before');
-  // Erzwinge Reflow / Neuberechnung
-  if (info) void info.offsetWidth;
-  window.dispatchEvent(new Event('resize'));
-  debugLog('visibilitychange after');
-});
-
-window.addEventListener('focus', () => debugLog('focus'));
-
 
 // ------------------------------------------------------
 // Timer starten (nur wenn nicht bereits aktiv)
@@ -82,7 +58,7 @@ export function resetTimer() {
 // ------------------------------------------------------
 export function addCorrect() {
   sessionCorrect++;
-  //sessionTotal++;
+  sessionTotal++;
 
   sessionStorage.setItem("sessionCorrect", sessionCorrect);
   sessionStorage.setItem("sessionTotal", sessionTotal);
@@ -92,17 +68,9 @@ export function addCorrect() {
 
 export function addWrong() {
   sessionWrong++;
-  //sessionTotal++;
-
-  sessionStorage.setItem("sessionWrong", sessionWrong);
-  sessionStorage.setItem("sessionTotal", sessionTotal);
-
-  updateSessionStatsUI();
-}
-
-export function addTotal() {
   sessionTotal++;
 
+  sessionStorage.setItem("sessionWrong", sessionWrong);
   sessionStorage.setItem("sessionTotal", sessionTotal);
 
   updateSessionStatsUI();
@@ -122,9 +90,6 @@ function updateTimerUI() {
   const ss = String(seconds).padStart(2, "0");
 
   el.textContent = `Zeit: ${mm}:${ss}`;
-
-  const btn = document.getElementById("btn-reset");
-  if (btn) btn.style.display = "inline-block";
 }
 
 // ------------------------------------------------------

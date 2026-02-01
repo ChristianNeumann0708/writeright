@@ -6,23 +6,35 @@ export const WortLogic = {
   currentIndex: -1,
   lastWord: null,
   lastIndex: -1,
-  ersterFehler: true,
+
+  // ersetzt "ersterFehler"
+  firstAttempt: true,
+
+  // UI soll Buttons deaktivieren, wenn ein Fehler passiert
+  disableButtons: false,
+
   autoDeleteEnabled: false,
   autoDeleteThreshold: 10,
 
   init(words) {
     this.wortListe = words;
+
     if (words.length > 0) {
       this.currentWord = this.getNextWord(words);
       this.currentIndex = words.indexOf(this.currentWord);
     }
+
+    this.firstAttempt = true;
+    this.disableButtons = false;
   },
 
   markCorrect() {
     if (!this.currentWord) return;
 
     this.currentWord.richtigGeschrieben();
+    WortStorage.saveWords(this.wortListe);
 
+    // Auto-Delete
     if (this.autoDeleteEnabled &&
         this.currentWord.anzRichtig >= this.autoDeleteThreshold) {
 
@@ -33,10 +45,10 @@ export const WortLogic = {
       return;
     }
 
-    WortStorage.saveWords(this.wortListe);
-
-    if (this.ersterFehler) {
-      this.ersterFehler = false;
+    // Session-Statistik nur beim ersten Versuch
+    if (this.firstAttempt) {
+      this.firstAttempt = false;
+      this.disableButtons = false; // richtiges Wort deaktiviert Buttons NICHT
     }
 
     this.nextWord();
@@ -48,8 +60,10 @@ export const WortLogic = {
     this.currentWord.falschGeschrieben("");
     WortStorage.saveWords(this.wortListe);
 
-    if (this.ersterFehler) {
-      this.ersterFehler = false;
+    // Session-Statistik nur beim ersten Fehler
+    if (this.firstAttempt) {
+      this.firstAttempt = false;
+      this.disableButtons = true; // Fehler → Buttons deaktivieren
     }
 
     this.nextWord();
@@ -68,6 +82,10 @@ export const WortLogic = {
       this.currentWord = null;
       this.currentIndex = -1;
     }
+
+    // Löschen zählt NICHT zur Session-Statistik
+    this.firstAttempt = true;
+    this.disableButtons = false;
   },
 
   prevWord() {
@@ -78,6 +96,10 @@ export const WortLogic = {
 
     this.lastWord = null;
     this.lastIndex = -1;
+
+    // neuer Versuch
+    this.firstAttempt = true;
+    this.disableButtons = false;
   },
 
   nextWord() {
@@ -88,10 +110,15 @@ export const WortLogic = {
 
     this.currentWord = this.getNextWord(this.wortListe);
     this.currentIndex = this.wortListe.indexOf(this.currentWord);
+
+    // neuer Versuch
+    this.firstAttempt = true;
+    this.disableButtons = false;
   },
 
   getNextWord(list) {
-    this.ersterFehler = true;
+    this.firstAttempt = true;
+    this.disableButtons = false;
 
     if (list.length === 0) return null;
 

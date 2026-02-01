@@ -1,7 +1,7 @@
 import { WortLogic } from "./worttrainer-logic.js";
 import { WortStorage } from "./worttrainer-storage.js";
 import { Wort } from "./wort.js";
-import { addCorrect, addWrong, addTotal, resetTimer } from "./timer.js";
+import { addCorrect, addWrong, resetTimer } from "./timer.js";
 
 export const WortUI = {
   init() {
@@ -29,16 +29,21 @@ export const WortUI = {
 
   registerEvents() {
     this.btnCorrect.addEventListener("click", () => {
+      // Session-Statistik nur beim ersten Versuch
+      if (WortLogic.firstAttempt) {
+        addCorrect();
+      }
+
       WortLogic.markCorrect();
-      addCorrect(); 
-      addTotal();
       this.renderAll();
     });
 
     this.btnWrong.addEventListener("click", () => {
+      if (WortLogic.firstAttempt) {
+        addWrong();
+      }
+
       WortLogic.markWrong();
-      addWrong(); 
-      addTotal();
       this.renderAll();
     });
 
@@ -75,10 +80,11 @@ export const WortUI = {
     });
 
     this.btnReset.addEventListener("click", () => {
-        resetTimer();
-        this.renderAll();
+      resetTimer();
+      WortLogic.firstAttempt = true;
+      WortLogic.disableButtons = false;
+      this.renderAll();
     });
-
   },
 
   handleAdd() {
@@ -109,7 +115,15 @@ export const WortUI = {
     const falsch = this.inputFalsch.value.trim();
     if (!falsch || !WortLogic.currentWord) return;
 
+    // Session-Statistik nur beim ersten Fehler
+    if (WortLogic.firstAttempt) {
+      addWrong();
+    }
+
     WortLogic.currentWord.falschGeschrieben(falsch);
+    WortLogic.firstAttempt = false;
+    WortLogic.disableButtons = true;
+
     WortStorage.saveWords(WortLogic.wortListe);
 
     this.inputFalsch.value = "";
@@ -120,6 +134,10 @@ export const WortUI = {
     this.renderList();
     this.renderCurrent();
     this.updateWordCount();
+
+    // Buttons entsprechend der Logik aktivieren/deaktivieren
+    this.btnCorrect.disabled = WortLogic.disableButtons;
+    this.btnWrong.disabled = WortLogic.disableButtons;
   },
 
   renderList() {
@@ -158,16 +176,15 @@ export const WortUI = {
     const w = WortLogic.currentWord;
 
     if (!w) {
-    this.display.innerHTML =
-    "<span>Bitte ein Wort auswählen oder eingeben.</span>";
+      this.display.innerHTML =
+        "<span>Bitte ein Wort auswählen oder eingeben.</span>";
 
-    // Statistik korrekt zurücksetzen, ohne HTML zu zerstören
-    document.getElementById("stats-correct").textContent = 0;
-    document.getElementById("stats-wrong").textContent = 0;
-    document.getElementById("stats-diff").textContent = 0;
+      document.getElementById("stats-correct").textContent = 0;
+      document.getElementById("stats-wrong").textContent = 0;
+      document.getElementById("stats-diff").textContent = 0;
 
-    this.variants.innerHTML = "";
-    return;
+      this.variants.innerHTML = "";
+      return;
     }
 
     this.display.textContent = w.text;
