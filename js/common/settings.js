@@ -12,7 +12,8 @@ export function loadSettings() {
   return settings || {
     sortByMistakes: false,
     autoDeleteEnabled: false,
-    autoDeleteThreshold: 5
+    autoDeleteThreshold: 5,
+    tabletMode: false   // ← NEU
   };
 }
 
@@ -27,7 +28,7 @@ export function saveSettings(newSettings) {
 document.addEventListener("DOMContentLoaded", () => {
   const settings = loadSettings();
 
-  // Checkboxen nur setzen, wenn sie existieren
+  // Sortierung
   const sortToggle = document.getElementById("sortByMistakes");
   if (sortToggle) {
     sortToggle.checked = settings.sortByMistakes;
@@ -39,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Auto-Delete
   const autoDeleteToggle = document.getElementById("autoDeleteEnabled");
   if (autoDeleteToggle) {
     autoDeleteToggle.checked = settings.autoDeleteEnabled;
@@ -57,6 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
       saveSettings({
         ...settings,
         autoDeleteThreshold: Number(autoDeleteThreshold.value)
+      });
+    });
+  }
+
+  // Tablet-Modus (NEU)
+  const tabletToggle = document.getElementById("tabletMode");
+  if (tabletToggle) {
+    tabletToggle.checked = settings.tabletMode;
+    tabletToggle.addEventListener("change", () => {
+      saveSettings({
+        ...settings,
+        tabletMode: tabletToggle.checked
       });
     });
   }

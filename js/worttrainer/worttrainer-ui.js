@@ -189,6 +189,12 @@ export const WortUI = {
 
     this.display.textContent = w.text;
     this.renderStats(w);
+
+    // Eingabefeld automatisch fokussieren (außer im Tablet-Modus)
+    const settings = WortStorage.loadSettings();
+    if (!settings.tabletMode) {
+    this.inputFalsch.focus();
+    }
   },
 
   renderStats(w) {
