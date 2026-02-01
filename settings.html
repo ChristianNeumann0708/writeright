@@ -98,12 +98,32 @@
     </div>
 </div>
 
-<script src="./js/common/indexedBackup.js"></script>
-
 <script type="module">
   import { loadMenu } from "./js/common/menu.js";
-  import "./js/common/settings.js";   // nur laden, NICHT loadSettings importieren
+  import "./js/common/settings.js";
+  import { downloadBackup, restoreBackup } from "./js/common/indexedBackup.js";
+
   loadMenu();
+
+  // Backup-Button
+  document.getElementById("downloadBackup")
+    .addEventListener("click", downloadBackup);
+
+  // Restore
+  const restoreInput = document.getElementById("restoreFile");
+  const restoreButton = document.getElementById("restoreButton");
+
+  if (restoreInput && restoreButton) {
+    restoreInput.onchange = () => {
+      const hasFile = restoreInput.files && restoreInput.files.length > 0;
+      restoreButton.style.display = hasFile ? "block" : "none";
+    };
+
+    restoreButton.onclick = () => {
+      const file = restoreInput.files[0];
+      restoreBackup(file);
+    };
+  }
 </script>
 
 </body>

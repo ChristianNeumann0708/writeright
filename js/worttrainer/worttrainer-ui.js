@@ -143,35 +143,37 @@ export const WortUI = {
 
   renderList() {
     const list = WortLogic.wortListe;
-    const sortByMistakes = WortStorage.loadSettings().sortByMistakes;
+    const settings = WortStorage.loadSettings();
 
     this.listEl.innerHTML = "";
 
     list
-      .sort((a, b) => {
-        if (sortByMistakes) {
-          return WortLogic.getScoreForWord(b) - WortLogic.getScoreForWord(a);
+        .sort((a, b) => {
+        if (settings.sortByMistakes) {
+            return WortLogic.getScoreForWord(b, settings) -
+                WortLogic.getScoreForWord(a, settings);
         }
         return a.text.localeCompare(b.text);
-      })
-      .forEach(w => {
+        })
+        .forEach(w => {
         const li = document.createElement("li");
-        li.textContent = sortByMistakes
-          ? `${w.text} (Δ ${w.fehlerbilanz})`
-          : w.text;
+
+        li.textContent = settings.sortByMistakes
+            ? WortLogic.getListLabel(w, settings)
+            : w.text;
 
         li.className =
-          "wordlist-item" + (w === WortLogic.currentWord ? " active" : "");
+            "wordlist-item" + (w === WortLogic.currentWord ? " active" : "");
 
-        li.onclick = () => {
-          WortLogic.currentWord = w;
-          WortLogic.currentIndex = list.indexOf(w);
-          this.renderAll();
+      li.onclick = () => {
+        WortLogic.currentWord = w;
+        WortLogic.currentIndex = list.indexOf(w);
+        this.renderAll();
         };
 
         this.listEl.appendChild(li);
-      });
-  },
+    });
+},
 
   renderCurrent() {
     const w = WortLogic.currentWord;

@@ -1,225 +1,112 @@
-// wwwroot/js/indexedBackup.js
-(function () {
-  function openDb(dbName, storeName) {
-    return new Promise((resolve, reject) => {
-      const req = indexedDB.open(dbName, 4);
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName);
-        }
-      };
-      req.onsuccess = (e) => resolve(e.target.result);
-      req.onerror = (e) => reject(e.target.error);
-    });
+// indexedBackup.js – neue, modulare Version
+
+import { WortStorage } from "../worttrainer/worttrainer-storage.js";
+import { Wort } from "../worttrainer/wort.js";
+
+// ------------------------------------------------------
+// Status anzeigen
+// ------------------------------------------------------
+function showStatus(msg) {
+  const el = document.getElementById("status");
+  if (!el) return;
+
+  el.textContent = msg;
+  el.style.display = "block";
+
+  setTimeout(() => {
+    el.style.display = "none";
+  }, 3000);
+}
+
+// ------------------------------------------------------
+// Backup herunterladen
+// ------------------------------------------------------
+export function downloadBackup() {
+  const words = WortStorage.loadWords();
+
+  if (!words || words.length === 0) {
+    showStatus("Keine Wörter vorhanden.");
+    return;
   }
 
-  async function save(dbName, storeName, json) {
-    console.log("[indexedBackup] Starte Save-Vorgang…");
+  const json = JSON.stringify(words, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
 
-    // 1. DB öffnen
-    let db = await new Promise((resolve, reject) => {
-      const req = indexedDB.open(dbName);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "writeRight-backup.json";
+  a.click();
 
-      req.onerror = () => {
-        console.warn("[indexedBackup] Konnte DB nicht öffnen.");
-      reject(req.error);
-      };
+  URL.revokeObjectURL(url);
+  showStatus("Backup wurde heruntergeladen.");
+}
 
-      req.onsuccess = () => resolve(req.result);
-      req.onupgradeneeded = (e) => {
-        const upgradeDb = e.target.result;
-        if (!upgradeDb.objectStoreNames.contains(storeName)) {
-          console.log(`[indexedBackup] Store '${storeName}' fehlte. Erstelle ihn…`);
-          upgradeDb.createObjectStore(storeName);
-          } 
-      };
-    });
+// ------------------------------------------------------
+// Backup wiederherstellen
+// ------------------------------------------------------
+export function restoreBackup(file) {
+  if (!file) {
+    showStatus("Keine Datei ausgewählt.");
+    return;
+  }
 
-    // 2. Prüfen, ob Store existiert
-    if (!db.objectStoreNames.contains(storeName)) {
-      console.warn(`[indexedBackup] Store '${storeName}' fehlt. Erhöhe DB-Version…`);
+  const reader = new FileReader();
 
-      const newVersion = db.version + 1;
-      db.close();
+  reader.onload = () => {
+    try {
+      const clean = reader.result.replace(/^\uFEFF/, "").trim();
+      let raw = JSON.parse(clean);
 
-      db = await new Promise((resolve, reject) => {
-        const upgradeReq = indexedDB.open(dbName, newVersion);
+      if (!Array.isArray(raw)) {
+        raw = [raw];
+      }
 
-        upgradeReq.onerror = () => reject(upgradeReq.error);
+      const newList = raw
+        .map(obj => {
+          if (!obj || typeof obj !== "object") return null;
 
-        upgradeReq.onupgradeneeded = (e) => {
-          const upgradeDb = e.target.result;
-          upgradeDb.createObjectStore(storeName);
-        };
+          // Text aus allen alten und neuen Formaten
+          const text =
+            obj.text ??
+            obj.Text ??
+            obj.Name ??
+            null;
 
-        upgradeReq.onsuccess = () => resolve(upgradeReq.result);
-      });
+          if (!text) return null;
+
+          // Neues Wort-Objekt erzeugen
+          const w = new Wort(text);
+
+          // Richtig
+          w.anzRichtig =
+            obj.anzRichtig ??
+            obj.AnzRichtigGeschrieben ??
+            0;
+
+          // Falsch
+          w.anzFalsch =
+            obj.anzFalsch ??
+            obj.AnzFalschGeschrieben ??
+            0;
+
+          // Varianten
+          w.falscheVarianten =
+            obj.falscheVarianten ??
+            obj.DictFalscheWoerter ??
+            {};
+
+          return w;
+        })
+        .filter(Boolean);
+
+      WortStorage.saveWords(newList);
+      showStatus(`Backup wiederhergestellt. (${newList.length} Wörter)`);
+    } catch (err) {
+      console.error("Fehler beim Restore:", err);
+      showStatus("Fehler beim Einlesen der Datei.");
     }
+  };
 
-    // 3. Speichern
-    return new Promise((resolve) => {
-      const tx = db.transaction(storeName, "readwrite");
-      const store = tx.objectStore(storeName);
-
-      const req = store.put(json, "backup");
-
-      req.onsuccess = () => {
-        // Timestamp aktualisieren
-        const tsTx = db.transaction(storeName, "readwrite");
-        tsTx.objectStore(storeName).put(Date.now().toString(), "backup_ts");
-
-        console.log("[indexedBackup] Backup erfolgreich gespeichert.");
-        resolve(true);
-      };
-
-      req.onerror = () => {
-        console.warn("[indexedBackup] Fehler beim Speichern.");
-        resolve(false);
-      };
-    });
-  }
-
-  async function load(dbName, storeName) {
-    console.log("[indexedBackup] Starte Load-Vorgang…");
-
-    // 1. DB öffnen
-    let db = await new Promise((resolve, reject) => {
-      const req = indexedDB.open(dbName);
-
-      req.onerror = () => {
-        console.warn("[indexedBackup] Konnte DB nicht öffnen.");
-      reject(req.error);
-      };
-
-      req.onsuccess = () => resolve(req.result);
-      req.onupgradeneeded = (e) => {
-        const upgradeDb = e.target.result;
-        if (!upgradeDb.objectStoreNames.contains(storeName)) {
-          console.log(`[indexedBackup] Store '${storeName}' fehlte. Erstelle ihn…`);
-          upgradeDb.createObjectStore(storeName);
-        }
-      };
-    });
-
-    // 2. Prüfen, ob Store existiert
-    if (!db.objectStoreNames.contains(storeName)) {
-      console.warn(`[indexedBackup] Store '${storeName}' fehlt. Erhöhe DB-Version…`);
-
-      const newVersion = db.version + 1;
-      db.close();
-
-      db = await new Promise((resolve, reject) => {
-        const upgradeReq = indexedDB.open(dbName, newVersion);
-
-        upgradeReq.onerror = () => reject(upgradeReq.error);
-
-        upgradeReq.onupgradeneeded = (e) => {
-          const upgradeDb = e.target.result;
-          upgradeDb.createObjectStore(storeName);
-        };
-
-        upgradeReq.onsuccess = () => resolve(upgradeReq.result);
-      });
-    }
-
-    // 3. Backup laden
-    return new Promise((resolve) => {
-      const tx = db.transaction(storeName, "readonly");
-      const store = tx.objectStore(storeName);
-
-      const req = store.get("backup");
-
-      req.onsuccess = () => {
-        const result = req.result;
-        if (result) {
-          console.log("[indexedBackup] Backup erfolgreich geladen.");
-          resolve(result);
-        } else {
-          console.log("[indexedBackup] Kein Backup gefunden.");
-          resolve("");
-        }
-      };
-
-      req.onerror = () => {
-        console.warn("[indexedBackup] Fehler beim Laden.");
-        resolve("");
-      };
-    });
-  }
-
-
-  const indexedBackup = {
-  clear(dbName, storeName) {
-    return new Promise((resolve) => {
-      console.log("[indexedBackup] Starte Clear-Vorgang…");
-
-      const req = indexedDB.open(dbName);
-
-      req.onerror = () => {
-        console.warn("[indexedBackup] Konnte DB nicht öffnen. Clear übersprungen.");
-        resolve(false);
-      };
-
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        console.log("[indexedBackup] onupgradeneeded ausgelöst.");
-
-        if (!db.objectStoreNames.contains(storeName)) {
-          console.log(`[indexedBackup] Store '${storeName}' existiert nicht. Erstelle ihn…`);
-          db.createObjectStore(storeName);
-        }
-      };
-
-      req.onsuccess = (e) => {
-        const db = e.target.result;
-
-        if (!db.objectStoreNames.contains(storeName)) {
-          console.warn(`[indexedBackup] Store '${storeName}' fehlt. Erstelle ihn dynamisch…`);
-
-          // DB-Version erhöhen, um Store anzulegen
-          const newVersion = db.version + 1;
-          db.close();
-
-          const upgradeReq = indexedDB.open(dbName, newVersion);
-
-          upgradeReq.onupgradeneeded = (ev) => {
-            const upgradedDB = ev.target.result;
-            upgradedDB.createObjectStore(storeName);
-          };
-
-          upgradeReq.onsuccess = () => {
-            console.log("[indexedBackup] Store erfolgreich angelegt. Clear abgeschlossen.");
-            resolve(true);
-          };
-
-          return;
-        }
-
-        // Store existiert → jetzt leeren
-        const tx = db.transaction(storeName, "readwrite");
-        const store = tx.objectStore(storeName);
-
-        const clearReq = store.clear();
-
-        clearReq.onsuccess = () => {
-          console.log("[indexedBackup] Store erfolgreich geleert.");
-          resolve(true);
-        };
-
-        clearReq.onerror = () => {
-          console.warn("[indexedBackup] Fehler beim Leeren des Stores.");
-          resolve(false);
-        };
-      };
-    });
-  }
-};
-
-  window.indexedBackup = {
-  save,
-  load,
-  clear: indexedBackup.clear
-};
-
-})();
+  reader.readAsText(file);
+}

@@ -1,5 +1,6 @@
 import { StorageCore } from "../common/storage.js";
 import { Wort } from "./wort.js";
+import { indexedBackup } from "../common/indexedBackup-global.js";
 
 const STORAGE_KEY = "words";
 const SETTINGS_KEY = "wt_settings";
@@ -11,11 +12,15 @@ export const WortStorage = {
   },
 
   saveWords(words) {
+    // 1. localStorage speichern
     StorageCore.setItem(STORAGE_KEY, words.map(w => w.toJSON()));
-    this.saveWordsToIndexedDB(words);
+
+    // 2. IndexedDB speichern (zweite Sicherung)
+    indexedBackup.save("WriteRightDB", "BackupStore", JSON.stringify(words));
   },
 
   saveWordsToIndexedDB(words) {
+    // bleibt für Kompatibilität bestehen
     indexedBackup.save("WriteRightDB", "BackupStore", JSON.stringify(words));
   },
 

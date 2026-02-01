@@ -1,6 +1,25 @@
 import { WortStorage } from "./worttrainer-storage.js";
 
 export const WortLogic = {
+
+  // NEU HIER EINSETZEN
+  getScoreForWord(w, settings) {
+    if (settings.useFehlerbilanz) {
+      return w.anzFalsch - w.anzRichtig;
+    }
+    return w.anzFalsch;
+  },
+
+  getListLabel(w, settings) {
+    if (settings.useFehlerbilanz) {
+      const diff = w.anzFalsch - w.anzRichtig;
+      const sign = diff > 0 ? "+" : "";
+      return `${w.text} (Δ ${sign}${diff})`;
+    }
+    return `${w.text} (${w.anzFalsch}× falsch)`;
+  },
+  // ENDE NEU
+
   wortListe: [],
   currentWord: null,
   currentIndex: -1,
@@ -130,8 +149,10 @@ export const WortLogic = {
   },
 
   getWeightedWord(list) {
+    const settings = WortStorage.loadSettings();
+
     const weighted = list.flatMap(w => {
-      const score = this.getScoreForWord(w);
+      const score = this.getScoreForWord(w, settings);
       const weight = Math.max(1, 1 + score);
       return Array(weight).fill(w);
     });
@@ -139,10 +160,4 @@ export const WortLogic = {
     return weighted[Math.floor(Math.random() * weighted.length)];
   },
 
-  getScoreForWord(w) {
-    const settings = WortStorage.loadSettings();
-    return settings.useFehlerbilanz
-      ? w.anzFalsch - w.anzRichtig
-      : w.anzFalsch;
-  }
 };

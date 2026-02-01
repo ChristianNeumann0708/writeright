@@ -1,4 +1,4 @@
-// settings.js – final, bereinigte Version
+// settings.js – final, vollständige Version
 
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 
@@ -21,7 +21,9 @@ export function saveSettings(newSettings) {
 document.addEventListener("DOMContentLoaded", () => {
   const settings = loadSettings();
 
-  // Sortierung
+  // ---------------------------------------------
+  // Sortierung nach Fehlern
+  // ---------------------------------------------
   const sortToggle = document.getElementById("sortByMistakes");
   if (sortToggle) {
     sortToggle.checked = settings.sortByMistakes;
@@ -33,7 +35,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Auto-Delete
+  // ---------------------------------------------
+  // Fehlerbilanz statt Fehlerhäufigkeit
+  // ---------------------------------------------
+  const fehlerbilanzToggle = document.getElementById("useFehlerbilanz");
+  if (fehlerbilanzToggle) {
+    fehlerbilanzToggle.checked = settings.useFehlerbilanz;
+    fehlerbilanzToggle.addEventListener("change", () => {
+      saveSettings({
+        ...settings,
+        useFehlerbilanz: fehlerbilanzToggle.checked
+      });
+    });
+  }
+
+  // ---------------------------------------------
+  // Auto-Delete aktivieren
+  // ---------------------------------------------
   const autoDeleteToggle = document.getElementById("autoDeleteEnabled");
   if (autoDeleteToggle) {
     autoDeleteToggle.checked = settings.autoDeleteEnabled;
@@ -45,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Auto-Delete Schwelle
   const autoDeleteThreshold = document.getElementById("autoDeleteThreshold");
   if (autoDeleteThreshold) {
     autoDeleteThreshold.value = settings.autoDeleteThreshold;
@@ -56,7 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ---------------------------------------------
   // Tablet-Modus
+  // ---------------------------------------------
   const tabletToggle = document.getElementById("tabletMode");
   if (tabletToggle) {
     tabletToggle.checked = settings.tabletMode;
