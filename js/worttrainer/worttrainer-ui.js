@@ -7,6 +7,7 @@ export const WortUI = {
   init() {
     this.cacheDom();
     this.registerEvents();
+    this.renderAll();
   },
 
   cacheDom() {
@@ -192,6 +193,8 @@ export const WortUI = {
 
     // Eingabefeld automatisch fokussieren (außer im Tablet-Modus)
     const settings = WortStorage.loadSettings();
+    console.log("UI sees tabletMode:", settings.tabletMode);
+
     if (!settings.tabletMode) {
     this.inputFalsch.focus();
     }

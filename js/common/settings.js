@@ -1,28 +1,21 @@
-// settings.js
-// KORRIGIERTE VERSION – kompatibel mit StorageCore
+// settings.js – final, bereinigte Version
 
-import { StorageCore as Storage } from "./storage.js";
+import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 
 // ---------------------------------------------
 // SETTINGS – Laden & Speichern
 // ---------------------------------------------
 
 export function loadSettings() {
-  const settings = Storage.getItem("settings");
-  return settings || {
-    sortByMistakes: false,
-    autoDeleteEnabled: false,
-    autoDeleteThreshold: 5,
-    tabletMode: false   // ← NEU
-  };
+  return WortStorage.loadSettings();
 }
 
 export function saveSettings(newSettings) {
-  Storage.setItem("settings", newSettings);
+  WortStorage.saveSettings(newSettings);
 }
 
 // ---------------------------------------------
-// UI-Initialisierung (nur wenn Elemente existieren)
+// UI-Initialisierung
 // ---------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -63,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Tablet-Modus (NEU)
+  // Tablet-Modus
   const tabletToggle = document.getElementById("tabletMode");
   if (tabletToggle) {
     tabletToggle.checked = settings.tabletMode;

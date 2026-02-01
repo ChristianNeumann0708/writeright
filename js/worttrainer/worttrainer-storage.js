@@ -24,7 +24,8 @@ export const WortStorage = {
       useFehlerbilanz: false,
       sortByMistakes: false,
       autoDeleteEnabled: false,
-      autoDeleteThreshold: 10
+      autoDeleteThreshold: 10,
+      tabletMode: false
     };
     const settings = StorageCore.getItem(SETTINGS_KEY);
     return { ...defaults, ...(settings || {}) };
