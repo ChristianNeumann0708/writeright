@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" >
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Einstellungen – WriteRight</title>
+
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/menu.css">
@@ -20,7 +21,7 @@
         <h1>Einstellungen</h1>
 
         <div class="settings-container">
-            <!-- Fehler-Modus -->
+
             <h4>Fehler Modus</h4>
             <div class="inline-checkbox">
                 <input type="checkbox" id="useFehlerbilanz">
@@ -28,12 +29,11 @@
             </div>
             <label>Hier wird entschieden, ob die Fehlerbilanz oder die Fehlerhäufigkeit verwendet wird.</label>
 
-            <hr >
+            <hr>
 
-            <!-- Auto Delete -->
             <h4>Automatisches Löschen</h4>
             <div class="inline-checkbox">
-                <input type="checkbox" id="autoDeleteEnabled" >
+                <input type="checkbox" id="autoDeleteEnabled">
                 <span>Automatisches Löschen aktivieren</span>
             </div>
 
@@ -43,87 +43,60 @@
                 <span>mal richtig geschrieben</span>
             </div>
 
+            <hr>
 
-            <!-- <div class="buttons">
-                <button id="saveSettings" type="button">Speichern</button>
-            </div> -->
-
-            <hr >
-
-            <!-- Backup -->
             <h4>Backup</h4>
             <div class="buttons">
                 <button id="downloadBackup" type="button">Backup herunterladen</button>
             </div>
 
-            <!-- Restore -->
             <h4>Wiederherstellen</h4>
-            <input type="file" id="restoreFile" >
+            <input type="file" id="restoreFile">
             <button id="restoreButton" style="display:none;" type="button">Backup importieren</button>
-            <hr >
+
+            <hr>
 
             <div id="status" class="status-message" style="display:none;"></div>
 
             <h4>Tablet-Modus</h4>
             <div class="inline-checkbox">
-            <input type="checkbox" id="tabletMode">
-            <span>Tablet-Modus aktivieren</span>
+                <input type="checkbox" id="tabletMode">
+                <span>Tablet-Modus aktivieren</span>
             </div>
             <div class="settings-hint">
                 Verhindert die Bildschirmtastatur durch den Fokus auf das Eingabefeld
             </div>
 
-            <hr >
+            <hr>
 
             <h4>Statistik zurücksetzen</h4>
             <div class="inline-checkbox">
-            <button id="resetStatsBtn" type="button">Statistik zurücksetzen</button>
+                <button id="resetStatsBtn" type="button">Statistik zurücksetzen</button>
             </div>
             <div class="settings-hint">
                 Setzt für alle Wörter die Werte für Richtig/Falsch und die Varianten zurück.
             </div>
 
-            <hr >
+            <hr>
 
             <h4>Wortliste löschen</h4>
             <div class="inline-checkbox">
-            <button id="deleteWordsBtn" type="button">Wortliste löschen</button>
+                <button id="deleteWordsBtn" type="button">Wortliste löschen</button>
             </div>
             <div class="settings-hint">
-            Löscht alle gespeicherten Wörter unwiderruflich.
+                Löscht alle gespeicherten Wörter unwiderruflich.
             </div>
-
 
         </div>
     </div>
 </div>
 
+<!-- EINZIGES Script, das bleiben muss -->
 <script type="module">
   import { loadMenu } from "./js/common/menu.js";
   import "./js/common/settings.js";
-  import { downloadBackup, restoreBackup } from "./js/common/indexedBackup.js";
 
   loadMenu();
-
-  // Backup-Button
-  document.getElementById("downloadBackup")
-    .addEventListener("click", downloadBackup);
-
-  // Restore
-  const restoreInput = document.getElementById("restoreFile");
-  const restoreButton = document.getElementById("restoreButton");
-
-  if (restoreInput && restoreButton) {
-    restoreInput.onchange = () => {
-      const hasFile = restoreInput.files && restoreInput.files.length > 0;
-      restoreButton.style.display = hasFile ? "block" : "none";
-    };
-
-    restoreButton.onclick = () => {
-      const file = restoreInput.files[0];
-      restoreBackup(file);
-    };
-  }
 </script>
 
 </body>

@@ -48,5 +48,21 @@ export const WortStorage = {
   clearWordsEverywhere() {
     StorageCore.removeItem(STORAGE_KEY);
     return indexedBackup.clear("WriteRightDB", "BackupStore");
-  }
+  },
+
+  resetWordStats() {
+  const words = this.loadWords();
+
+  const updated = words.map(w => {
+    return new Wort(
+      w.text,
+      0, // anzRichtig
+      0, // anzFalsch
+      {} // falscheVarianten
+    );
+  });
+
+  this.saveWords(updated);
+}
+
 };
