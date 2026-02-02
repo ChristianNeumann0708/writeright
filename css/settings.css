@@ -1,35 +1,53 @@
-.import-container,
+/* --------------------------------------------------
+   Container
+-------------------------------------------------- */
+
 .settings-container {
   max-width: 600px;
   margin: 2rem 0 0 0;
+  padding: 0;
+}
+
+/* Bereichs-Wrapper */
+.settings-block {
   padding: 2rem;
-  background: white;
   border-radius: 12px;
+  margin-bottom: 2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white;
 }
 
-.import-container input[type="file"],
-.settings-container input[type="file"] {
-  padding: 1rem;
-  border: 2px dashed var(--accent);
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  box-sizing: border-box;
-  margin: 0 auto;
-  display: block;
-  background: #f8f9fa;
-  cursor: pointer;
+/* Farben für die Bereiche */
+.global-settings {
+  background: #f7f7f7;
 }
 
-.settings-container h4 {
+.worttrainer-settings {
+  background: #eef6ff;
+}
+
+.vokabeltrainer-settings {
+  background: #f2fff2;
+}
+
+/* --------------------------------------------------
+   Überschriften & Labels
+-------------------------------------------------- */
+
+.settings-block h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.settings-block h4 {
   margin-top: 2rem;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
   color: var(--sidebar-bg);
 }
 
-.settings-container label {
+.settings-block label {
   display: flex;
   flex-direction: column;
   margin-bottom: 1.2rem;
@@ -37,12 +55,16 @@
   color: var(--text);
 }
 
-.settings-container input[type="checkbox"] {
+/* --------------------------------------------------
+   Inputs
+-------------------------------------------------- */
+
+.settings-block input[type="checkbox"] {
   width: 18px;
   height: 18px;
 }
 
-.settings-container input[type="number"] {
+.settings-block input[type="number"] {
   width: 120px;
   padding: 0.5rem;
   margin-top: 0.4rem;
@@ -51,13 +73,43 @@
   font-size: 1rem;
 }
 
-.settings-container .buttons {
+/* File Inputs */
+.settings-block input[type="file"] {
+  padding: 1rem;
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  margin: 0;
+  display: block;
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Restore-Buttons */
+#restoreFile,
+#vt-restoreFile {
+  margin: 0;
+  max-width: 300px;
+}
+
+#restoreButton,
+#vt-restoreButton {
+  margin-top: 12px;
+}
+
+/* --------------------------------------------------
+   Buttons
+-------------------------------------------------- */
+
+.settings-block .buttons {
   margin-top: 1rem;
   display: flex;
   gap: 1rem;
 }
 
-.settings-container button {
+.settings-block button {
   padding: 0.7rem 1.4rem;
   border-radius: 8px;
   border: none;
@@ -67,6 +119,10 @@
   color: white;
   transition: filter 0.15s ease;
 }
+
+/* --------------------------------------------------
+   Switch (falls genutzt)
+-------------------------------------------------- */
 
 .switch {
   position: relative;
@@ -114,50 +170,16 @@ input:checked + .slider:before {
   transform: translateX(22px);
 }
 
-#session-info {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 140px;
-  box-sizing: border-box;
-  padding: 8px;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+/* --------------------------------------------------
+   Status / Toast
+-------------------------------------------------- */
 
-#session-timer {
-  width: 100%;
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-#session-stats {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-  text-align: right;
-}
-
-#session-stats > div {
-  width: 100%;
-}
-
-#btn-reset,
-.btn.reset {
-  align-self: flex-end;
-  display: inline-block;
-  margin-top: 6px;
-  background-color: #e0e0e0;
-  color: #333;
+.status-message {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: #e8f4ff;
   border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  border: 1px solid #ccc;
+  color: #004a7c;
 }
 
 .update-toast {
@@ -178,14 +200,3 @@ input:checked + .slider:before {
 .update-toast.show {
   opacity: 1;
 }
-
-#restoreFile {
-  display: block;
-  margin-left: 0;
-  max-width: 300px;
-}
-
-#restoreButton {
-  margin-top: 12px;
-}
-

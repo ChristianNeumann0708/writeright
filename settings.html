@@ -22,76 +22,117 @@
 
         <div class="settings-container">
 
-            <h4>Fehler Modus</h4>
-            <div class="inline-checkbox">
-                <input type="checkbox" id="useFehlerbilanz">
-                <span>Fehlerbilanz statt Fehlerhäufigkeit verwenden</span>
-            </div>
-            <label>Hier wird entschieden, ob die Fehlerbilanz oder die Fehlerhäufigkeit verwendet wird.</label>
+            <!-- GLOBAL -->
+            <div class="settings-block global-settings">
+                <h2>Globale Einstellungen</h2>
 
-            <hr>
+                <h4>Fehler Modus</h4>
+                <div class="inline-checkbox">
+                    <input type="checkbox" id="useFehlerbilanz">
+                    <span>Fehlerbilanz statt Fehlerhäufigkeit verwenden</span>
+                </div>
+                <label>Hier wird entschieden, ob die Fehlerbilanz oder die Fehlerhäufigkeit verwendet wird.</label>
 
-            <h4>Automatisches Löschen</h4>
-            <div class="inline-checkbox">
-                <input type="checkbox" id="autoDeleteEnabled">
-                <span>Automatisches Löschen aktivieren</span>
-            </div>
+                <hr>
 
-            <div class="auto-delete-row">
-                <span>Bei</span>
-                <input type="number" id="autoDeleteThreshold" min="1">
-                <span>mal richtig geschrieben</span>
-            </div>
-
-            <hr>
-
-            <h4>Backup</h4>
-            <div class="buttons">
-                <button id="downloadBackup" type="button">Backup herunterladen</button>
+                <h4>Tablet-Modus</h4>
+                <div class="inline-checkbox">
+                    <input type="checkbox" id="tabletMode">
+                    <span>Tablet-Modus aktivieren</span>
+                </div>
+                <div class="settings-hint">
+                    Verhindert die Bildschirmtastatur durch den Fokus auf das Eingabefeld
+                </div>
             </div>
 
-            <h4>Wiederherstellen</h4>
-            <input type="file" id="restoreFile">
-            <button id="restoreButton" style="display:none;" type="button">Backup importieren</button>
+            <!-- WORTTRAINER -->
+            <div class="settings-block worttrainer-settings">
+                <h2>Worttrainer</h2>
 
-            <hr>
+                <h4>Automatisches Löschen</h4>
+                <div class="inline-checkbox">
+                    <input type="checkbox" id="autoDeleteEnabled">
+                    <span>Automatisches Löschen aktivieren</span>
+                </div>
 
-            <div id="status" class="status-message" style="display:none;"></div>
+                <div class="auto-delete-row">
+                    <span>Bei</span>
+                    <input type="number" id="autoDeleteThreshold" min="1">
+                    <span>mal richtig geschrieben</span>
+                </div>
 
-            <h4>Tablet-Modus</h4>
-            <div class="inline-checkbox">
-                <input type="checkbox" id="tabletMode">
-                <span>Tablet-Modus aktivieren</span>
+                <hr>
+
+                <h4>Backup</h4>
+                <div class="buttons">
+                    <button id="downloadBackup" type="button">Backup herunterladen</button>
+                </div>
+
+                <h4>Wiederherstellen</h4>
+                <input type="file" id="restoreFile">
+                <button id="restoreButton" style="display:none;" type="button">Backup importieren</button>
+
+                <hr>
+
+                <div id="status" class="status-message" style="display:none;"></div>
+
+                <h4>Statistik zurücksetzen</h4>
+                <div class="inline-checkbox">
+                    <button id="resetStatsBtn" type="button">Statistik zurücksetzen</button>
+                </div>
+                <div class="settings-hint">
+                    Setzt für alle Wörter die Werte für Richtig/Falsch und die Varianten zurück.
+                </div>
+
+                <hr>
+
+                <h4>Wortliste löschen</h4>
+                <div class="inline-checkbox">
+                    <button id="deleteWordsBtn" type="button">Wortliste löschen</button>
+                </div>
+                <div class="settings-hint">
+                    Löscht alle gespeicherten Wörter unwiderruflich.
+                </div>
             </div>
-            <div class="settings-hint">
-                Verhindert die Bildschirmtastatur durch den Fokus auf das Eingabefeld
-            </div>
 
-            <hr>
+            <!-- VOKABELTRAINER -->
+            <div class="settings-block vokabeltrainer-settings">
+                <h2>Vokabeltrainer</h2>
 
-            <h4>Statistik zurücksetzen</h4>
-            <div class="inline-checkbox">
-                <button id="resetStatsBtn" type="button">Statistik zurücksetzen</button>
-            </div>
-            <div class="settings-hint">
-                Setzt für alle Wörter die Werte für Richtig/Falsch und die Varianten zurück.
-            </div>
+                <h4>Backup</h4>
+                <div class="buttons">
+                    <button id="vt-downloadBackup" type="button">Backup herunterladen</button>
+                </div>
 
-            <hr>
+                <h4>Wiederherstellen</h4>
+                <input type="file" id="vt-restoreFile">
+                <button id="vt-restoreButton" style="display:none;" type="button">Backup importieren</button>
 
-            <h4>Wortliste löschen</h4>
-            <div class="inline-checkbox">
-                <button id="deleteWordsBtn" type="button">Wortliste löschen</button>
-            </div>
-            <div class="settings-hint">
-                Löscht alle gespeicherten Wörter unwiderruflich.
+                <hr>
+
+                <h4>Statistik zurücksetzen</h4>
+                <div class="inline-checkbox">
+                    <button id="vt-resetStatsBtn" type="button">Statistik zurücksetzen</button>
+                </div>
+                <div class="settings-hint">
+                    Setzt für alle Vokabeln die Werte für Richtig/Falsch und die Varianten zurück.
+                </div>
+
+                <hr>
+
+                <h4>Wortliste löschen</h4>
+                <div class="inline-checkbox">
+                    <button id="vt-deleteWordsBtn" type="button">Wortliste löschen</button>
+                </div>
+                <div class="settings-hint">
+                    Löscht alle gespeicherten Vokabeln unwiderruflich.
+                </div>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- EINZIGES Script, das bleiben muss -->
 <script type="module">
   import { loadMenu } from "./js/common/menu.js";
   import "./js/common/settings.js";
