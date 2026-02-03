@@ -1,0 +1,176 @@
+/* --------------------------------------------------
+   Container für den Eingabebereich
+-------------------------------------------------- */
+
+.vocab-input-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  max-width: 900px;
+}
+
+.vocab-input-container h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+/* --------------------------------------------------
+   Eingabefelder Englisch / Deutsch
+-------------------------------------------------- */
+
+.vocab-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.vocab-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vocab-field label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.vocab-field input[type="text"] {
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+}
+
+/* --------------------------------------------------
+   Listen-Auswahl + Neue Liste (2-Spalten-Layout)
+-------------------------------------------------- */
+
+.vocab-list-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.vocab-list-select,
+.vocab-list-new {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vocab-list-select label,
+.vocab-list-new label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.vocab-list-select select,
+.vocab-list-new input {
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+}
+
+/* --------------------------------------------------
+   Buttons exakt unter den Feldern, gleiche Breite
+-------------------------------------------------- */
+
+.vocab-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.vocab-actions button {
+  flex: 1; /* Buttons werden genauso breit wie die Spalte */
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* --------------------------------------------------
+   Statusmeldung
+-------------------------------------------------- */
+
+.vocab-status {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: #e8f4ff;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  color: #004a7c;
+  font-size: 0.95rem;
+}
+
+/* --------------------------------------------------
+   Platzhalter-Bereiche
+-------------------------------------------------- */
+
+.vocab-placeholder {
+  background: #f7f7f7;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.vocab-placeholder h2 {
+  margin-top: 0;
+}
+
+/* Gruppierter Listenblock */
+.vocab-list-group {
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+/* Abwechselnde Hintergrundfarben */
+.vocab-list-group:nth-child(odd) {
+  background: #f5f5f5;
+}
+
+.vocab-list-group:nth-child(even) {
+  background: #ffffff;
+}
+
+/* Überschrift wie beim Worttrainer */
+.vocab-list-title {
+  font-weight: bold;
+  margin: 0 0 6px 0;
+  font-size: 15px;
+}
+
+/* UL innerhalb eines Blocks */
+.vocab-list-inner {
+  list-style: none;
+  padding-left: 10px;
+  margin: 0;
+}
+
+/* Vokabel-Einträge */
+.vocab-list-inner li {
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+/* Leerer Block */
+.vocab-empty {
+  font-style: italic;
+  opacity: 0.6;
+}

@@ -10,8 +10,12 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/menu.css">
-    <link rel="stylesheet" href="css/vokabeltrainer.css">
 
+    <!-- Wir übernehmen das Layout vom Worttrainer -->
+    <link rel="stylesheet" href="css/worttrainer.css">
+
+    <!-- Spezifische Styles für den Vokabeltrainer -->
+    <link rel="stylesheet" href="css/vokabeltrainer.css">
 
     <!-- COMMON -->
     <script type="module" src="js/common/storage.js" defer></script>
@@ -35,14 +39,56 @@
       <div class="content">
         <h1>Vokabeltrainer</h1>
 
-        <p>Der Vokabeltrainer wird gerade aufgebaut.</p>
-        <p>Hier erscheint später:</p>
-        <ul>
-          <li>Vokabel-Liste</li>
-          <li>Trainer-UI</li>
-          <li>Statistik</li>
-          <li>Lernmodus</li>
-        </ul>
+        <div class="trainer-layout">
+
+          <!-- Linke Spalte: Gruppierte Vokabelliste -->
+          <div class="trainer-wordlist">
+            <h4>Vokabelliste</h4>
+            <div id="vocab-list-display"></div>
+          </div>
+
+          <!-- Rechte Spalte: Eingabebereich -->
+          <div class="trainer-main">
+
+            <div class="vocab-input-container">
+              <h2>Neue Vokabel hinzufügen</h2>
+
+              <div class="vocab-row">
+                <div class="vocab-field">
+                  <label for="vocab-en">Englisch</label>
+                  <input type="text" id="vocab-en" placeholder="Englisches Wort eingeben">
+                </div>
+
+                <div class="vocab-field">
+                  <label for="vocab-de">Deutsch</label>
+                  <input type="text" id="vocab-de" placeholder="Deutsches Wort eingeben">
+                </div>
+              </div>
+
+              <div class="vocab-list-row">
+                <div class="vocab-list-select">
+                  <label for="vocab-list">Liste</label>
+                  <select id="vocab-list">
+                    <option value="default">Allgemeine Liste</option>
+                  </select>
+                </div>
+
+                <div class="vocab-list-new">
+                  <label for="vocab-new-list-name">Neue Liste</label>
+                  <input type="text" id="vocab-new-list-name" placeholder="Name der neuen Liste">
+                </div>
+              </div>
+
+              <div class="vocab-actions">
+                <button type="button" id="vocab-save-btn">Vokabel speichern</button>
+                <button type="button" id="vocab-new-list-btn">Neue Liste anlegen</button>
+              </div>
+
+              <div id="vocab-status" class="vocab-status" style="display:none;"></div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
@@ -50,5 +96,7 @@
       import { loadMenu } from "./js/common/menu.js";
       loadMenu();
     </script>
+
+    <div id="updateToast" class="update-toast">App wurde aktualisiert</div>
   </body>
 </html>
