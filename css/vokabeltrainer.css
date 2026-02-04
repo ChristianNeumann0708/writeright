@@ -174,3 +174,19 @@
   font-style: italic;
   opacity: 0.6;
 }
+
+.vocab-selected {
+  background-color: #d0e7ff;
+  font-weight: bold;
+  border-left: 4px solid #007bff;
+}
+
+.vocab-list-inner li {
+  cursor: pointer;
+}
+
+.vocab-selected {
+  background-color: #d0e7ff;
+  font-weight: bold;
+  border-left: 4px solid #007bff;
+}

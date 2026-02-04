@@ -13,14 +13,18 @@ const saveBtn = document.getElementById("vocab-save-btn");
 const newListBtn = document.getElementById("vocab-new-list-btn");
 const newListInput = document.getElementById("vocab-new-list-name");
 const statusBox = document.getElementById("vocab-status");
-
 const vocabListDisplay = document.getElementById("vocab-list-display");
+
+// Neuer Button für Abbrechen
+let cancelBtn = null;
 
 // --------------------------------------------------
 // UI-Modul
 // --------------------------------------------------
 
 export const VokabelUI = {
+  selectedVocabId: null,
+
   init() {
     this.loadLists();
     this.bindEvents();
@@ -28,7 +32,7 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Listen laden (Reihenfolge aus listOrder)
+  // Listen laden
   // --------------------------------------------------
 
   loadLists() {
@@ -42,18 +46,16 @@ export const VokabelUI = {
       listSelect.appendChild(option);
     });
 
-    // Falls die aktuelle Auswahl nicht existiert → default
     if (!lists.some(l => l.id === listSelect.value)) {
       listSelect.value = "default";
     }
   },
 
   // --------------------------------------------------
-  // Events binden
+  // Events
   // --------------------------------------------------
 
   bindEvents() {
-    // ENTER in Englisch → springt zu Deutsch
     enInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -61,7 +63,6 @@ export const VokabelUI = {
       }
     });
 
-    // ENTER in Deutsch → speichert
     deInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -69,10 +70,8 @@ export const VokabelUI = {
       }
     });
 
-    // Speichern-Button
     saveBtn.addEventListener("click", saveVocab);
 
-    // Neue Liste anlegen
     newListBtn.addEventListener("click", () => {
       const name = newListInput.value.trim();
 
@@ -92,14 +91,61 @@ export const VokabelUI = {
       this.renderVocabList();
     });
 
-    // Beim Wechsel der Liste → Liste neu rendern
     listSelect.addEventListener("change", () => {
       this.renderVocabList();
     });
   },
 
   // --------------------------------------------------
-  // Vokabelliste rendern (Listenblöcke in listOrder)
+  // Vokabel auswählen
+  // --------------------------------------------------
+
+  selectVocab(v) {
+    this.selectedVocabId = v.id;
+
+    enInput.value = v.word;
+    deInput.value = v.translation.join(", ");
+    listSelect.value = v.list;
+
+    saveBtn.textContent = "Vokabel ändern";
+
+    // Abbrechen-Button einblenden
+    this.showCancelButton();
+
+    this.renderVocabList();
+  },
+
+  // --------------------------------------------------
+  // Abbrechen-Button erzeugen
+  // --------------------------------------------------
+
+  showCancelButton() {
+    if (cancelBtn) return;
+
+    cancelBtn = document.createElement("button");
+    cancelBtn.id = "vocab-cancel-btn";
+    cancelBtn.textContent = "Abbrechen";
+    cancelBtn.className = "btn btn-secondary mt-2";
+
+    cancelBtn.addEventListener("click", () => {
+      this.selectedVocabId = null;
+      enInput.value = "";
+      deInput.value = "";
+      listSelect.value = "default";
+
+      saveBtn.textContent = "Vokabel speichern";
+
+      cancelBtn.remove();
+      cancelBtn = null;
+
+      this.renderVocabList();
+    });
+
+    saveBtn.insertAdjacentElement("afterend", cancelBtn);
+  },
+
+  // --------------------------------------------------
+  // Vokabelliste rendern
   // --------------------------------------------------
 
   renderVocabList() {
@@ -110,21 +156,17 @@ export const VokabelUI = {
     const allVocab = VokabelTrainerStorage.getAllVokabeln();
 
     lists.forEach(list => {
-      // Block-Container
       const group = document.createElement("div");
       group.className = "vocab-list-group";
 
-      // Überschrift
       const title = document.createElement("h5");
       title.className = "vocab-list-title";
       title.textContent = list.name;
       group.appendChild(title);
 
-      // UL für Vokabeln
       const ul = document.createElement("ul");
       ul.className = "vocab-list-inner";
 
-      // Vokabeln dieser Liste filtern
       const vocabOfList = allVocab
         .filter(v => v.list === list.id)
         .sort((a, b) => a.word.localeCompare(b.word));
@@ -138,6 +180,17 @@ export const VokabelUI = {
         vocabOfList.forEach(v => {
           const li = document.createElement("li");
           li.textContent = `${v.word} – ${v.translation.join(", ")}`;
+
+          li.style.cursor = "pointer";
+
+          li.addEventListener("click", () => {
+            VokabelUI.selectVocab(v);
+          });
+
+          if (this.selectedVocabId === v.id) {
+            li.classList.add("vocab-selected");
+          }
+
           ul.appendChild(li);
         });
       }
@@ -149,7 +202,7 @@ export const VokabelUI = {
 };
 
 // --------------------------------------------------
-// Vokabel speichern
+// Speichern / Aktualisieren
 // --------------------------------------------------
 
 function saveVocab() {
@@ -167,6 +220,40 @@ function saveVocab() {
     .map(t => t.trim())
     .filter(t => t.length > 0);
 
+  // UPDATE
+  if (VokabelUI.selectedVocabId) {
+    const vokabel = new Vokabel({
+      id: VokabelUI.selectedVocabId,
+      word: en,
+      translation: translationArray,
+      list
+    });
+
+    const ok = VokabelTrainerStorage.updateVokabel(vokabel);
+
+    if (ok) {
+      showStatus("Vokabel aktualisiert");
+    } else {
+      showStatus("Fehler beim Aktualisieren");
+    }
+
+    VokabelUI.selectedVocabId = null;
+    enInput.value = "";
+    deInput.value = "";
+    listSelect.value = "default";
+
+    saveBtn.textContent = "Vokabel speichern";
+
+    if (cancelBtn) {
+      cancelBtn.remove();
+      cancelBtn = null;
+    }
+
+    VokabelUI.renderVocabList();
+    return;
+  }
+
+  // NEU
   const vokabel = new Vokabel({
     word: en,
     translation: translationArray,
@@ -176,7 +263,7 @@ function saveVocab() {
   const result = VokabelTrainerStorage.addVokabel(vokabel);
 
   if (!result.success) {
-    showStatus(`Vokabel existiert bereits in dieser Liste`);
+    showStatus("Vokabel existiert bereits in dieser Liste");
     return;
   }
 
