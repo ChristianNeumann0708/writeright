@@ -14,8 +14,9 @@ const newListBtn = document.getElementById("vocab-new-list-btn");
 const newListInput = document.getElementById("vocab-new-list-name");
 const statusBox = document.getElementById("vocab-status");
 const vocabListDisplay = document.getElementById("vocab-list-display");
+const totalCountBox = document.getElementById("vocab-total-count");
 
-// Neuer Button für Abbrechen
+// Abbrechen-Button (dynamisch erzeugt)
 let cancelBtn = null;
 
 // --------------------------------------------------
@@ -32,8 +33,8 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Listen laden
-  // --------------------------------------------------
+  // Listen laden (Reihenfolge aus listOrder)
+// --------------------------------------------------
 
   loadLists() {
     const lists = VokabelTrainerStorage.getLists();
@@ -52,7 +53,7 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Events
+  // Events binden
   // --------------------------------------------------
 
   bindEvents() {
@@ -108,15 +109,13 @@ export const VokabelUI = {
     listSelect.value = v.list;
 
     saveBtn.textContent = "Vokabel ändern";
-
-    // Abbrechen-Button einblenden
     this.showCancelButton();
 
     this.renderVocabList();
   },
 
   // --------------------------------------------------
-  // Abbrechen-Button erzeugen
+  // Abbrechen-Button
   // --------------------------------------------------
 
   showCancelButton() {
@@ -145,6 +144,17 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
+  // Gesamtanzahl aktualisieren
+  // --------------------------------------------------
+
+  updateTotalCount() {
+    const total = VokabelTrainerStorage.getAllVokabeln().length;
+    if (totalCountBox) {
+      totalCountBox.textContent = `Gesamt: ${total} Vokabeln`;
+    }
+  },
+
+  // --------------------------------------------------
   // Vokabelliste rendern
   // --------------------------------------------------
 
@@ -159,17 +169,19 @@ export const VokabelUI = {
       const group = document.createElement("div");
       group.className = "vocab-list-group";
 
-      const title = document.createElement("h5");
-      title.className = "vocab-list-title";
-      title.textContent = list.name;
-      group.appendChild(title);
-
       const ul = document.createElement("ul");
       ul.className = "vocab-list-inner";
 
       const vocabOfList = allVocab
         .filter(v => v.list === list.id)
         .sort((a, b) => a.word.localeCompare(b.word));
+
+      const count = vocabOfList.length;
+
+      const title = document.createElement("h5");
+      title.className = "vocab-list-title";
+      title.textContent = `${list.name} (${count})`;
+      group.appendChild(title);
 
       if (vocabOfList.length === 0) {
         const li = document.createElement("li");
@@ -180,7 +192,6 @@ export const VokabelUI = {
         vocabOfList.forEach(v => {
           const li = document.createElement("li");
           li.textContent = `${v.word} – ${v.translation.join(", ")}`;
-
           li.style.cursor = "pointer";
 
           li.addEventListener("click", () => {
@@ -198,11 +209,13 @@ export const VokabelUI = {
       group.appendChild(ul);
       container.appendChild(group);
     });
+
+    this.updateTotalCount();
   }
 };
 
 // --------------------------------------------------
-// Speichern / Aktualisieren
+// Vokabel speichern / aktualisieren
 // --------------------------------------------------
 
 function saveVocab() {
@@ -263,7 +276,7 @@ function saveVocab() {
   const result = VokabelTrainerStorage.addVokabel(vokabel);
 
   if (!result.success) {
-    showStatus("Vokabel existiert bereits in dieser Liste");
+    showStatus(`Vokabel existiert bereits in dieser Liste`);
     return;
   }
 

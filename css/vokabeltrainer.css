@@ -175,6 +175,7 @@
   opacity: 0.6;
 }
 
+
 .vocab-selected {
   background-color: #d0e7ff;
   font-weight: bold;
@@ -189,4 +190,9 @@
   background-color: #d0e7ff;
   font-weight: bold;
   border-left: 4px solid #007bff;
+}
+
+.vocab-total-count {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
