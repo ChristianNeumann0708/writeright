@@ -1,3 +1,4 @@
+// vokabeltrainer-ui.js
 import { Vokabel } from "./vokabel.js";
 import { VokabelTrainerStorage } from "./vokabeltrainer-storage.js";
 
@@ -27,21 +28,24 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Listen laden
+  // Listen laden (Reihenfolge aus listOrder)
   // --------------------------------------------------
 
   loadLists() {
     const lists = VokabelTrainerStorage.getLists();
     listSelect.innerHTML = "";
 
-    for (const list of lists) {
+    lists.forEach(list => {
       const option = document.createElement("option");
       option.value = list.id;
       option.textContent = list.name;
       listSelect.appendChild(option);
-    }
+    });
 
-    listSelect.value = "default";
+    // Falls die aktuelle Auswahl nicht existiert → default
+    if (!lists.some(l => l.id === listSelect.value)) {
+      listSelect.value = "default";
+    }
   },
 
   // --------------------------------------------------
@@ -95,37 +99,35 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Vokabelliste rendern
+  // Vokabelliste rendern (Listenblöcke in listOrder)
   // --------------------------------------------------
 
   renderVocabList() {
-    const container = document.getElementById("vocab-list-display");
+    const container = vocabListDisplay;
     container.innerHTML = "";
 
-  const lists = VokabelTrainerStorage.getLists(); 
-  const allVocab = VokabelTrainerStorage.getAllVokabeln();
+    const lists = VokabelTrainerStorage.getLists();
+    const allVocab = VokabelTrainerStorage.getAllVokabeln();
 
-  // Listen NICHT alphabetisch sortieren → Reihenfolge der Erstellung bleibt erhalten
+    lists.forEach(list => {
+      // Block-Container
+      const group = document.createElement("div");
+      group.className = "vocab-list-group";
 
-  lists.forEach((list, index) => {
-    // Block-Container
-    const group = document.createElement("div");
-    group.className = "vocab-list-group";
+      // Überschrift
+      const title = document.createElement("h5");
+      title.className = "vocab-list-title";
+      title.textContent = list.name;
+      group.appendChild(title);
 
-    // Überschrift
-    const title = document.createElement("h5");
-    title.className = "vocab-list-title";
-    title.textContent = list.name;
-    group.appendChild(title);
+      // UL für Vokabeln
+      const ul = document.createElement("ul");
+      ul.className = "vocab-list-inner";
 
-    // UL für Vokabeln
-    const ul = document.createElement("ul");
-    ul.className = "vocab-list-inner";
-
-    // Vokabeln dieser Liste filtern
-    const vocabOfList = allVocab
-      .filter(v => v.list === list.id)
-      .sort((a, b) => a.word.localeCompare(b.word)); // alphabetisch
+      // Vokabeln dieser Liste filtern
+      const vocabOfList = allVocab
+        .filter(v => v.list === list.id)
+        .sort((a, b) => a.word.localeCompare(b.word));
 
       if (vocabOfList.length === 0) {
         const li = document.createElement("li");
@@ -140,7 +142,7 @@ export const VokabelUI = {
         });
       }
 
-     group.appendChild(ul);
+      group.appendChild(ul);
       container.appendChild(group);
     });
   }
@@ -160,7 +162,6 @@ function saveVocab() {
     return;
   }
 
-  // Übersetzungen als Array
   const translationArray = de
     .split(",")
     .map(t => t.trim())
@@ -185,7 +186,6 @@ function saveVocab() {
   deInput.value = "";
   enInput.focus();
 
-  // Liste aktualisieren
   VokabelUI.renderVocabList();
 }
 
