@@ -10,11 +10,7 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/menu.css">
-
-    <!-- Wir übernehmen das Layout vom Worttrainer -->
     <link rel="stylesheet" href="css/worttrainer.css">
-
-    <!-- Spezifische Styles für den Vokabeltrainer -->
     <link rel="stylesheet" href="css/vokabeltrainer.css">
 
     <!-- COMMON -->
@@ -51,7 +47,16 @@
           <!-- Rechte Spalte: Eingabebereich -->
           <div class="trainer-main">
 
-            <div class="vocab-input-container">
+            <!-- Toggle-Button (immer sichtbar) -->
+            <div class="vocab-actions">
+              <button type="button" id="vocab-toggle-btn">
+                ▲ Neue Vokabel hinzufügen ▲
+              </button>
+            </div>
+
+            <!-- Eingabepanel (ein-/ausklappbar) -->
+            <div id="vocab-input-panel" class="vocab-input-container">
+
               <h2>Neue Vokabel hinzufügen</h2>
 
               <div class="vocab-row">
@@ -84,6 +89,18 @@
                 <button type="button" id="vocab-save-btn">Vokabel speichern</button>
                 <button type="button" id="vocab-new-list-btn">Neue Liste anlegen</button>
               </div>
+
+              <!-- Sekundäre Buttons: Abbrechen (links) + Bereich schließen (rechts) -->
+              <div class="vocab-actions-secondary">
+                <button type="button" id="vocab-cancel-btn" class="vocab-secondary-btn" style="display:none;">
+                  Abbrechen
+                </button>
+
+                <button type="button" id="vocab-close-panel-btn" class="vocab-secondary-btn vocab-close-right">
+                  Bereich schließen
+                </button>
+            </div>
+
 
               <div id="vocab-status" class="vocab-status" style="display:none;"></div>
             </div>

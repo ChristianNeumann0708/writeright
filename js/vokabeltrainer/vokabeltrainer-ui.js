@@ -16,8 +16,10 @@ const statusBox = document.getElementById("vocab-status");
 const vocabListDisplay = document.getElementById("vocab-list-display");
 const totalCountBox = document.getElementById("vocab-total-count");
 
-// Abbrechen-Button (dynamisch erzeugt)
-let cancelBtn = null;
+const inputPanel = document.getElementById("vocab-input-panel");
+const togglePanelBtn = document.getElementById("vocab-toggle-btn");
+const cancelBtn = document.getElementById("vocab-cancel-btn");
+const closePanelBtn = document.getElementById("vocab-close-panel-btn");
 
 // --------------------------------------------------
 // UI-Modul
@@ -29,12 +31,33 @@ export const VokabelUI = {
   init() {
     this.loadLists();
     this.bindEvents();
+    this.expandInputPanel(); // beim Start sichtbar
     this.renderVocabList();
   },
 
   // --------------------------------------------------
-  // Listen laden (Reihenfolge aus listOrder)
+  // Panel steuern (für Training etc. nutzbar)
 // --------------------------------------------------
+
+  expandInputPanel() {
+    inputPanel.classList.remove("collapsed");
+  },
+
+  collapseInputPanel() {
+    inputPanel.classList.add("collapsed");
+    this.selectedVocabId = null;
+    enInput.value = "";
+    deInput.value = "";
+    listSelect.value = "default";
+    saveBtn.textContent = "Vokabel speichern";
+    cancelBtn.style.display = "none";
+    this.renderVocabList();
+    togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
+  },
+
+  // --------------------------------------------------
+  // Listen laden
+  // --------------------------------------------------
 
   loadLists() {
     const lists = VokabelTrainerStorage.getLists();
@@ -95,6 +118,37 @@ export const VokabelUI = {
     listSelect.addEventListener("change", () => {
       this.renderVocabList();
     });
+
+    // Panel einblenden (wenn zu)
+    togglePanelBtn.addEventListener("click", () => {
+        const isCollapsed = inputPanel.classList.contains("collapsed");
+
+        if (isCollapsed) {
+          this.expandInputPanel();
+          togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+
+          enInput.focus();
+        } else {
+          this.collapseInputPanel();
+          togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
+        }
+    });
+
+    // Abbrechen (Bearbeiten abbrechen)
+    cancelBtn.addEventListener("click", () => {
+      this.selectedVocabId = null;
+      enInput.value = "";
+      deInput.value = "";
+      listSelect.value = "default";
+      saveBtn.textContent = "Vokabel speichern";
+      cancelBtn.style.display = "none";
+      this.renderVocabList();
+    });
+
+    // Bereich schließen (Panel einklappen)
+    closePanelBtn.addEventListener("click", () => {
+      this.collapseInputPanel();
+    });
   },
 
   // --------------------------------------------------
@@ -104,43 +158,17 @@ export const VokabelUI = {
   selectVocab(v) {
     this.selectedVocabId = v.id;
 
+    this.expandInputPanel();
+    togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+
     enInput.value = v.word;
     deInput.value = v.translation.join(", ");
     listSelect.value = v.list;
 
     saveBtn.textContent = "Vokabel ändern";
-    this.showCancelButton();
+    cancelBtn.style.display = "inline-block";
 
     this.renderVocabList();
-  },
-
-  // --------------------------------------------------
-  // Abbrechen-Button
-  // --------------------------------------------------
-
-  showCancelButton() {
-    if (cancelBtn) return;
-
-    cancelBtn = document.createElement("button");
-    cancelBtn.id = "vocab-cancel-btn";
-    cancelBtn.textContent = "Abbrechen";
-    cancelBtn.className = "btn btn-secondary mt-2";
-
-    cancelBtn.addEventListener("click", () => {
-      this.selectedVocabId = null;
-      enInput.value = "";
-      deInput.value = "";
-      listSelect.value = "default";
-
-      saveBtn.textContent = "Vokabel speichern";
-
-      cancelBtn.remove();
-      cancelBtn = null;
-
-      this.renderVocabList();
-    });
-
-    saveBtn.insertAdjacentElement("afterend", cancelBtn);
   },
 
   // --------------------------------------------------
@@ -256,11 +284,7 @@ function saveVocab() {
     listSelect.value = "default";
 
     saveBtn.textContent = "Vokabel speichern";
-
-    if (cancelBtn) {
-      cancelBtn.remove();
-      cancelBtn = null;
-    }
+    cancelBtn.style.display = "none";
 
     VokabelUI.renderVocabList();
     return;

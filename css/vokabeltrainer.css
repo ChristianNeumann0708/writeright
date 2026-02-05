@@ -49,7 +49,7 @@
 }
 
 /* --------------------------------------------------
-   Listen-Auswahl + Neue Liste (2-Spalten-Layout)
+   Listen-Auswahl + Neue Liste
 -------------------------------------------------- */
 
 .vocab-list-row {
@@ -83,17 +83,10 @@
 }
 
 /* --------------------------------------------------
-   Buttons exakt unter den Feldern, gleiche Breite
+   Buttons – einheitlicher Stil
 -------------------------------------------------- */
 
-.vocab-actions {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-}
-
-.vocab-actions button {
-  flex: 1; /* Buttons werden genauso breit wie die Spalte */
+.vocab-btn {
   padding: 0.7rem;
   border-radius: 8px;
   border: none;
@@ -102,6 +95,32 @@
   font-size: 1rem;
   cursor: pointer;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vocab-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.vocab-actions button {
+  flex: 1;
+}
+
+/* --------------------------------------------------
+   Sekundäre Buttons (Abbrechen / Bereich schließen)
+-------------------------------------------------- */
+
+.vocab-actions-secondary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.vocab-actions-secondary button {
+  width: 48%;
 }
 
 /* --------------------------------------------------
@@ -119,28 +138,15 @@
 }
 
 /* --------------------------------------------------
-   Platzhalter-Bereiche
+   Gruppierte Listenblöcke
 -------------------------------------------------- */
 
-.vocab-placeholder {
-  background: #f7f7f7;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-}
-
-.vocab-placeholder h2 {
-  margin-top: 0;
-}
-
-/* Gruppierter Listenblock */
 .vocab-list-group {
   padding: 10px 12px;
   margin-bottom: 10px;
   border-radius: 6px;
 }
 
-/* Abwechselnde Hintergrundfarben */
 .vocab-list-group:nth-child(odd) {
   background: #f5f5f5;
 }
@@ -149,32 +155,32 @@
   background: #ffffff;
 }
 
-/* Überschrift wie beim Worttrainer */
 .vocab-list-title {
   font-weight: bold;
   margin: 0 0 6px 0;
   font-size: 15px;
 }
 
-/* UL innerhalb eines Blocks */
 .vocab-list-inner {
   list-style: none;
   padding-left: 10px;
   margin: 0;
 }
 
-/* Vokabel-Einträge */
 .vocab-list-inner li {
   padding: 2px 0;
   font-size: 14px;
+  cursor: pointer;
 }
 
-/* Leerer Block */
 .vocab-empty {
   font-style: italic;
   opacity: 0.6;
 }
 
+/* --------------------------------------------------
+   Markierung ausgewählter Vokabel
+-------------------------------------------------- */
 
 .vocab-selected {
   background-color: #d0e7ff;
@@ -182,17 +188,88 @@
   border-left: 4px solid #007bff;
 }
 
-.vocab-list-inner li {
-  cursor: pointer;
-}
-
-.vocab-selected {
-  background-color: #d0e7ff;
-  font-weight: bold;
-  border-left: 4px solid #007bff;
-}
+/* --------------------------------------------------
+   Gesamtzähler
+-------------------------------------------------- */
 
 .vocab-total-count {
   font-weight: bold;
   margin-bottom: 10px;
 }
+
+/* --------------------------------------------------
+   Ein-/Ausklappbarer Bereich
+-------------------------------------------------- */
+
+#vocab-input-panel.collapsed {
+  display: none;
+}
+
+.vocab-toggle-btn {
+  margin-bottom: 10px;
+}
+
+/* --------------------------------------------------
+   Hauptbuttons (Vokabel speichern / Neue Liste)
+-------------------------------------------------- */
+
+.vocab-actions button {
+  flex: 1;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* --------------------------------------------------
+   Sekundäre Buttons (Abbrechen / Bereich schließen)
+   → exakt gleicher Look wie die Hauptbuttons
+-------------------------------------------------- */
+
+.vocab-actions-secondary button {
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 48%;
+}
+
+/* Mit der Einstellung wird der Button zum Ein- und Ausklappen des Vokabel-Eingabebereichs angepasst. */
+/* #vocab-toggle-btn {
+  flex: none;
+  width: auto;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+} */
+
+.vocab-actions-secondary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  gap: 1rem;
+}
+
+.vocab-secondary-btn {
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+/* Dieser Fix sorgt dafür, dass der rechte Button wirklich rechts bleibt */
+.vocab-close-right {
+  margin-left: auto;
+  flex: none;
+}
+
