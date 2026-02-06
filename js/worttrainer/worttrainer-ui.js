@@ -6,6 +6,11 @@ import { addCorrect, addWrong, resetTimer } from "./timer.js";
 export const WortUI = {
   init() {
     this.cacheDom();
+
+    // gespeicherten Zustand des Schalters setzen(Fehlerbilanz oder alphabetisch)
+    const settings = WortStorage.loadSettings();
+    this.sortToggle.checked = !!settings.sortByMistakes;
+
     this.registerEvents();
     this.renderAll();
   },
