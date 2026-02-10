@@ -613,3 +613,31 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Sammelfehler-Eingabefeld größer machen */
+#sammelfehler-input {
+  width: 100%;
+  max-width: 500px;
+  height: 120px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+/* Button unter dem Eingabefeld mit Abstand */
+#sammelfehler-btn {
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.settings-block input[type="file"] {
+  margin-top: 18px;   /* größerer Abstand nach oben */
+  margin-bottom: 20px;
+}
+
+.settings-block input[type="file"] {
+  display: block;
+  text-align: left;
+}

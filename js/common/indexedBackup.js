@@ -30,12 +30,19 @@ export function downloadBackup() {
   }
 
   const json = JSON.stringify(words, null, 2);
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+  const filename = `${stamp}_worttrainer-backup.json`;
+
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = "writeRight-backup.json";
+  a.download = filename;
   a.click();
 
   URL.revokeObjectURL(url);

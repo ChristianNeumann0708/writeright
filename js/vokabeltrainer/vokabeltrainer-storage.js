@@ -17,6 +17,35 @@ class VokabelTrainerStorageClass {
   }
 
   // ---------------------------------------
+  // Initialisierung
+  // ---------------------------------------
+  async init() {
+    try {
+      this._idb = await this._openIndexedDB();
+    } catch (e) {
+      console.error("IndexedDB konnte nicht geöffnet werden:", e);
+    }
+
+    await this.load();
+  }
+
+  _openIndexedDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(IDB_DB_NAME, 1);
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+          db.createObjectStore(IDB_STORE_NAME);
+        }
+      };
+
+      request.onsuccess = (event) => resolve(event.target.result);
+      request.onerror = (event) => reject(event.target.error);
+    });
+  }
+
+  // ---------------------------------------
   // Laden (modern, robust)
   // ---------------------------------------
   async load() {
@@ -62,35 +91,6 @@ class VokabelTrainerStorageClass {
 
     // Konsistenz sichern
     this._saveAndBackup();
-  }
-
-  // ---------------------------------------
-  // Initialisierung
-  // ---------------------------------------
-  async init() {
-    try {
-      this._idb = await this._openIndexedDB();
-    } catch (e) {
-      console.error("IndexedDB konnte nicht geöffnet werden:", e);
-    }
-
-    await this.load();
-  }
-
-  _openIndexedDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(IDB_DB_NAME, 1);
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
-          db.createObjectStore(IDB_STORE_NAME);
-        }
-      };
-
-      request.onsuccess = (event) => resolve(event.target.result);
-      request.onerror = (event) => reject(event.target.error);
-    });
   }
 
   // ---------------------------------------
@@ -260,6 +260,57 @@ class VokabelTrainerStorageClass {
     );
 
     return found ? Vokabel.fromJSON(found) : null;
+  }
+
+  // ---------------------------------------
+  // Backup herunterladen
+  // ---------------------------------------
+  downloadBackup() {
+    const json = JSON.stringify(this.data, null, 2);
+
+    const now = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+    const filename = `${stamp}_vokabeltrainer-backup.json`;
+
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------------------------------------
+  // Backup wiederherstellen
+  // ---------------------------------------
+  async restoreBackup(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+
+          const migrated = this._migrateStructure(parsed);
+
+          this.data = migrated;
+
+          this._saveAndBackup();
+
+          resolve(true);
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
   }
 
   // ---------------------------------------

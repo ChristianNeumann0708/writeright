@@ -4,15 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Import</title>
+
+  <!-- Alle benötigten CSS-Dateien -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/settings.css">
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- JS -->
   <script type="module" src="js/common/import.js" defer></script>
   <script type="module" src="./js/worttrainer/timer.js"></script>
 </head>
+
 <body>
 
   <div class="layout">
 
-<div id="main-menu"></div>
+    <!-- Menü -->
+    <div id="main-menu"></div>
 
     <!-- Hauptinhalt -->
     <div class="content">
@@ -20,18 +30,56 @@
       <h1>Import</h1>
 
       <div class="import-container">
-        <input type="file" id="file-input" accept=".txt">
-        <div id="status" class="status-message"></div>
+
+        <!-- WORTTRAINER -->
+        <div class="settings-block worttrainer-settings">
+          <h2>Worttrainer</h2>
+
+          <h4>Wörter aus Datei importieren</h4>
+          <div class="settings-hint">
+            Importiert neue Wörter aus einer .txt‑Datei.<br>
+            Jede Zeile = ein Wort.<br>
+            Bereits vorhandene Wörter werden übersprungen.
+          </div>
+
+          <input type="file" id="file-input" accept=".txt">
+          <div id="status" class="status-message"></div>
+
+          <hr>
+
+          <h4>Sammelfehler eintragen</h4>
+          <div class="settings-hint">
+            Mehrere falsch geschriebene Wörter auf einmal eintragen.<br>
+            Trenne die Wörter mit Kommas.<br>
+            Jedes Wort erhöht den Fehlerzähler um +1.<br>
+            Nicht vorhandene Wörter werden automatisch neu angelegt.
+          </div>
+
+          <textarea id="sammelfehler-input" placeholder="z.B.: Katze, Hund, Fahrrad" rows="3"></textarea>
+          <button id="sammelfehler-btn" type="button">Sammelfehler importieren</button>
+
+          <div id="sammelfehler-status" class="status-message"></div>
+        </div>
+
+        <!-- VOKABELTRAINER -->
+        <div class="settings-block vokabeltrainer-settings">
+          <h2>Vokabeltrainer</h2>
+          <div class="settings-hint">
+            Import‑Funktionen folgen später.
+          </div>
+        </div>
+
       </div>
 
     </div>
 
-</div>
-<!-- Menü automatisch laden  -->
-<script type="module">
-import { loadMenu } from "./js/common/menu.js";
-loadMenu();
-</script>
+  </div>
+
+  <!-- Menü laden -->
+  <script type="module">
+    import { loadMenu } from "./js/common/menu.js";
+    loadMenu();
+  </script>
 
 </body>
 </html>

@@ -1,7 +1,8 @@
-// settings.js – perfekte modulare Version
+// settings.js – finale Version für Worttrainer + Vokabeltrainer
 
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 import { downloadBackup, restoreBackup } from "./indexedBackup.js";
+import { VokabelTrainerStorage } from "../vokabeltrainer/vokabeltrainer-storage.js";
 
 // ------------------------------------------------------
 // Settings laden & speichern
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------
-  // Backup herunterladen
+  // Worttrainer – Backup herunterladen
   // ------------------------------------------------------
   const downloadBtn = document.getElementById("downloadBackup");
   if (downloadBtn) {
@@ -98,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------
-  // Backup wiederherstellen
+  // Worttrainer – Backup wiederherstellen
   // ------------------------------------------------------
   const restoreInput = document.getElementById("restoreFile");
   const restoreButton = document.getElementById("restoreButton");
@@ -117,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------
-  // Statistik zurücksetzen
+  // Worttrainer – Statistik zurücksetzen
   // ------------------------------------------------------
   const resetStatsBtn = document.getElementById("resetStatsBtn");
   if (resetStatsBtn) {
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------
-  // Wortliste löschen
+  // Worttrainer – Wortliste löschen
   // ------------------------------------------------------
   const deleteWordsBtn = document.getElementById("deleteWordsBtn");
   if (deleteWordsBtn) {
@@ -138,6 +139,68 @@ document.addEventListener("DOMContentLoaded", () => {
       if (confirm("Möchtest du wirklich die gesamte Wortliste löschen?")) {
         await WortStorage.clearWordsEverywhere();
         showStatus("Wortliste wurde gelöscht.");
+      }
+    });
+  }
+
+  // ------------------------------------------------------
+  // Vokabeltrainer – Backup herunterladen
+  // ------------------------------------------------------
+  const vtDownloadBtn = document.getElementById("vt-downloadBackup");
+  if (vtDownloadBtn) {
+    vtDownloadBtn.addEventListener("click", () => {
+      VokabelTrainerStorage.downloadBackup();
+      showStatus("Vokabeltrainer-Backup wurde heruntergeladen.");
+    });
+  }
+
+  // ------------------------------------------------------
+  // Vokabeltrainer – Backup wiederherstellen
+  // ------------------------------------------------------
+  const vtRestoreInput = document.getElementById("vt-restoreFile");
+  const vtRestoreButton = document.getElementById("vt-restoreButton");
+
+  if (vtRestoreInput && vtRestoreButton) {
+    vtRestoreInput.onchange = () => {
+      const hasFile = vtRestoreInput.files?.length > 0;
+      vtRestoreButton.style.display = hasFile ? "block" : "none";
+    };
+
+    vtRestoreButton.onclick = async () => {
+      const file = vtRestoreInput.files[0];
+      await VokabelTrainerStorage.restoreBackup(file);
+      showStatus("Vokabeltrainer-Backup wurde importiert.");
+    };
+  }
+
+  // ------------------------------------------------------
+  // Vokabeltrainer – Statistik zurücksetzen
+  // ------------------------------------------------------
+  const vtResetStatsBtn = document.getElementById("vt-resetStatsBtn");
+  if (vtResetStatsBtn) {
+    vtResetStatsBtn.addEventListener("click", () => {
+      if (confirm("Möchtest du wirklich alle Statistikwerte zurücksetzen?")) {
+        VokabelTrainerStorage.data.vokabeln.forEach(v => {
+          v.correct = 0;
+          v.wrong = 0;
+          v.variants = {};
+        });
+        VokabelTrainerStorage._saveAndBackup();
+        showStatus("Vokabeltrainer-Statistik wurde zurückgesetzt.");
+      }
+    });
+  }
+
+  // ------------------------------------------------------
+  // Vokabeltrainer – Wortliste löschen
+  // ------------------------------------------------------
+  const vtDeleteWordsBtn = document.getElementById("vt-deleteWordsBtn");
+  if (vtDeleteWordsBtn) {
+    vtDeleteWordsBtn.addEventListener("click", () => {
+      if (confirm("Möchtest du wirklich alle Vokabeln löschen?")) {
+        VokabelTrainerStorage.data.vokabeln = [];
+        VokabelTrainerStorage._saveAndBackup();
+        showStatus("Alle Vokabeln wurden gelöscht.");
       }
     });
   }

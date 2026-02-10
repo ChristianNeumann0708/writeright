@@ -196,7 +196,19 @@ export const WortUI = {
     }
 
     this.display.textContent = w.text;
+
+    // Farbe anhand der Fehlerbilanz setzen
+    const bilanz = w.fehlerbilanz;
     this.renderStats(w);
+
+    if (bilanz > 0) {
+      this.display.style.color = "red";      // positive Bilanz → rot
+    } else if (bilanz < 0) {
+      this.display.style.color = "green";    // negative Bilanz → grün
+    } else {
+      this.display.style.color = "black";    // Bilanz 0 → schwarz
+    }
+
 
     // Eingabefeld automatisch fokussieren (außer im Tablet-Modus)
     const settings = WortStorage.loadSettings();
