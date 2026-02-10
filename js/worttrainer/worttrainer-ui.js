@@ -150,6 +150,11 @@ export const WortUI = {
     const list = WortLogic.wortListe;
     const settings = WortStorage.loadSettings();
 
+    // Dynamische Beschriftung für den Sortier-Schalter
+    const modeLabel = settings.useFehlerbilanz ? "Fehlerbilanz" : "Fehlerhäufigkeit";
+    const labelEl = document.getElementById("sort-label");
+    if (labelEl) labelEl.textContent = modeLabel;
+
     this.listEl.innerHTML = "";
 
     list
