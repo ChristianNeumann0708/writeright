@@ -7,7 +7,6 @@ export const WortUI = {
   init() {
     this.cacheDom();
 
-    // gespeicherten Zustand des Schalters setzen(Fehlerbilanz oder alphabetisch)
     const settings = WortStorage.loadSettings();
     this.sortToggle.checked = !!settings.sortByMistakes;
 
@@ -35,20 +34,13 @@ export const WortUI = {
 
   registerEvents() {
     this.btnCorrect.addEventListener("click", () => {
-      // Session-Statistik nur beim ersten Versuch
-      if (WortLogic.firstAttempt) {
-        addCorrect();
-      }
-
+      if (WortLogic.firstAttempt) addCorrect();
       WortLogic.markCorrect();
       this.renderAll();
     });
 
     this.btnWrong.addEventListener("click", () => {
-      if (WortLogic.firstAttempt) {
-        addWrong();
-      }
-
+      if (WortLogic.firstAttempt) addWrong();
       WortLogic.markWrong();
       this.renderAll();
     });
@@ -121,10 +113,7 @@ export const WortUI = {
     const falsch = this.inputFalsch.value.trim();
     if (!falsch || !WortLogic.currentWord) return;
 
-    // Session-Statistik nur beim ersten Fehler
-    if (WortLogic.firstAttempt) {
-      addWrong();
-    }
+    if (WortLogic.firstAttempt) addWrong();
 
     WortLogic.currentWord.falschGeschrieben(falsch);
     WortLogic.firstAttempt = false;
@@ -141,7 +130,6 @@ export const WortUI = {
     this.renderCurrent();
     this.updateWordCount();
 
-    // Buttons entsprechend der Logik aktivieren/deaktivieren
     this.btnCorrect.disabled = WortLogic.disableButtons;
     this.btnWrong.disabled = WortLogic.disableButtons;
   },
@@ -150,7 +138,6 @@ export const WortUI = {
     const list = WortLogic.wortListe;
     const settings = WortStorage.loadSettings();
 
-    // Dynamische Beschriftung für den Sortier-Schalter
     const modeLabel = settings.useFehlerbilanz ? "Fehlerbilanz" : "Fehlerhäufigkeit";
     const labelEl = document.getElementById("sort-label");
     if (labelEl) labelEl.textContent = modeLabel;
@@ -158,32 +145,34 @@ export const WortUI = {
     this.listEl.innerHTML = "";
 
     list
-        .sort((a, b) => {
+      .sort((a, b) => {
         if (settings.sortByMistakes) {
-            return WortLogic.getScoreForWord(b, settings) -
-                WortLogic.getScoreForWord(a, settings);
+          return WortLogic.getScoreForWord(b, settings) -
+                 WortLogic.getScoreForWord(a, settings);
         }
         return a.text.localeCompare(b.text);
-        })
-        .forEach(w => {
+      })
+      .forEach(w => {
         const li = document.createElement("li");
 
-        li.textContent = settings.sortByMistakes
-            ? WortLogic.getListLabel(w, settings)
-            : w.text;
+        const label = settings.sortByMistakes
+          ? WortLogic.getListLabel(w, settings)
+          : w.text;
+
+        li.innerHTML = this.colorizeWord(label, w, settings);
 
         li.className =
-            "wordlist-item" + (w === WortLogic.currentWord ? " active" : "");
+          "wordlist-item" + (w === WortLogic.currentWord ? " active" : "");
 
-      li.onclick = () => {
-        WortLogic.currentWord = w;
-        WortLogic.currentIndex = list.indexOf(w);
-        this.renderAll();
+        li.onclick = () => {
+          WortLogic.currentWord = w;
+          WortLogic.currentIndex = list.indexOf(w);
+          this.renderAll();
         };
 
         this.listEl.appendChild(li);
-    });
-},
+      });
+  },
 
   renderCurrent() {
     const w = WortLogic.currentWord;
@@ -200,27 +189,14 @@ export const WortUI = {
       return;
     }
 
-    this.display.textContent = w.text;
+    const settings = WortStorage.loadSettings();
 
-    // Farbe anhand der Fehlerbilanz setzen
-    const bilanz = w.fehlerbilanz;
+    this.display.innerHTML = this.colorizeWord(w.text, w, settings);
+
     this.renderStats(w);
 
-    if (bilanz > 0) {
-      this.display.style.color = "red";      // positive Bilanz → rot
-    } else if (bilanz < 0) {
-      this.display.style.color = "green";    // negative Bilanz → grün
-    } else {
-      this.display.style.color = "black";    // Bilanz 0 → schwarz
-    }
-
-
-    // Eingabefeld automatisch fokussieren (außer im Tablet-Modus)
-    const settings = WortStorage.loadSettings();
-    console.log("UI sees tabletMode:", settings.tabletMode);
-
     if (!settings.tabletMode) {
-    this.inputFalsch.focus();
+      this.inputFalsch.focus();
     }
   },
 
@@ -255,5 +231,23 @@ export const WortUI = {
     const el = document.getElementById("wordCount");
     if (!el) return;
     el.textContent = `– ${WortLogic.wortListe.length} Wörter`;
+  },
+
+  colorizeWord(text, w, settings) {
+    const value = settings.useFehlerbilanz
+      ? w.fehlerbilanz
+      : w.anzFalsch;
+
+    if (value === 0) return text;
+
+    const count = Math.min(Math.abs(value), text.length);
+    const color = value > 0 ? "red" : "green";
+
+    return text
+      .split("")
+      .map((ch, i) =>
+        i < count ? `<span style="color:${color}">${ch}</span>` : ch
+      )
+      .join("");
   }
 };

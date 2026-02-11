@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-
 /* === Basisfarben === */
 :root {
   --bg: #d9e0e7;
@@ -89,148 +88,10 @@ html, body {
   min-width: 0;
 }
 
-.trainer-layout {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  min-height: 100%;
-  gap: 2rem;
-  box-sizing: border-box;
-}
+/* =========================================
+   IMPORT-SEITE
+   ========================================= */
 
-/* === Wortliste === */
-/* .trainer-wordlist {
-  width: 220px;
-  background: #eee;
-  padding: 1rem;
-  border-radius: 0;
-  overflow-y: auto;
-  height: 100%;
-  flex-shrink: 0;
-} */
-.trainer-wordlist {
-  width: 260px;
-  background:white;
-  padding: 1rem;
-  border-radius: 12px;
-  overflow-y: auto;
-  height: 100%;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-
-.trainer-wordlist h4 {
-  margin-top: 0;
-}
-
-.wordlist-item {
-  cursor: pointer;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-size: 1.1rem; /* oder z.B. 18px */
-}
-
-.wordlist-item:hover {
-  background: #ddd;
-}
-
-.wordlist-item.active {
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-}
-
-/* === Trainer-Hauptbereich === */
-.trainer-main {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  height: 100%;
-  min-width: 0;
-}
-
-.word-display {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-input[type="text"],
-input[type="number"] {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 0.6rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-/* === Buttons === */
-.trainer-buttons,
-.navigation {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.navigation {
-  margin-top: -1rem;
-}
-
-.trainer-buttons button,
-.navigation button {
-  width: 140px;
-  height: 48px;
-}
-
-.btn {
-  padding: 0.8rem 1.6rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: white;
-  transition: filter 0.15s ease;
-}
-
-.btn:hover {
-  filter: brightness(1.1);
-}
-
-.btn.correct {
-  background: var(--correct);
-}
-
-.btn.wrong {
-  background: var(--wrong);
-}
-
-.btn.delete {
-  background: #9e9e9e;
-}
-
-/* === Statistik === */
-.stats {
-  margin-top: 2rem;
-  text-align: right;
-  font-weight: bold;
-}
-
-/* === Statusmeldungen === */
-.status-message {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: #e3f2fd;
-  border-left: 4px solid var(--accent);
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-/* === Import-Seite === */
 .import-container {
   max-width: 600px;
   margin: 2rem 0 0 0;
@@ -261,7 +122,37 @@ input[type="number"] {
   display: block;
 }
 
-/* === Settings-Seite === */
+/* Sammelfehler-Eingabefeld */
+#sammelfehler-input {
+  width: 100%;
+  max-width: 500px;
+  height: 120px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+/* Button unter dem Eingabefeld */
+#sammelfehler-btn {
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+/* Abstand & Ausrichtung Datei-Upload */
+.settings-block input[type="file"] {
+  margin-top: 18px;
+  margin-bottom: 20px;
+  display: block;
+  text-align: left;
+}
+
+/* =========================================
+   SETTINGS-SEITE
+   ========================================= */
+
 .settings-container {
   max-width: 600px;
   margin: 2rem 0 0 0;
@@ -354,7 +245,14 @@ input[type="number"] {
   height: 18px;
 }
 
-/* Statusmeldung */
+.settings-hint {
+  font-weight: 600;
+}
+
+/* =========================================
+   GLOBALE ELEMENTE
+   ========================================= */
+
 .status-message {
   margin-top: 1.5rem;
   padding: 1rem;
@@ -363,230 +261,6 @@ input[type="number"] {
   border-radius: 6px;
   font-weight: 500;
   color: #0a3d62;
-}
-
-#session-info {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #f3f3f3;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  font-size: 14px;
-  z-index: 999;
-}
-
-#session-info div {
-  margin-bottom: 4px;
-}
-
-#session-info #session-timer {
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-#restoreButton {
-  margin-top: 12px; /* oder 16px für etwas mehr Luft */
-}
-
-/* Container */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 46px;
-  height: 24px;
-  margin-right: 8px;
-}
-
-/* Checkbox verstecken */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* Slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .3s;
-  border-radius: 24px;
-}
-
-/* Kreis */
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .3s;
-  border-radius: 50%;
-}
-
-/* Aktiv */
-input:checked + .slider {
-  background-color: #4CAF50; /* schönes Grün */
-}
-
-input:checked + .slider:before {
-  transform: translateX(22px);
-}
-
-/* Navigation-Buttons */
-.btn.nav {
-  background-color: #4a4a4a;     /* dunkles Grau, gut sichtbar */
-  color: white;                  /* weiße Schrift */
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;            /* gleiche Rundung wie andere Buttons */
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color .2s, transform .1s;
-}
-
-/* Hover */
-
-/* Klick-Effekt */
-.btn.nav:active {
-  transform: scale(0.97);
-}
-
-.btn:active {
-  transform: scale(0.97);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-/* Reset-Button wie die anderen, aber kleiner und grau */
-button.btn.reset {
-  background-color: #e0e0e0;
-  color: #333;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  border: 1px solid #ccc;
-}
-
-.btn.reset:hover {
-  background-color: #d5d5d5;
-}
-
-/* Panel: unten rechts, feste Breite */
-#session-info {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 140px;           /* beibehalten oder anpassen */
-  box-sizing: border-box;
-  padding: 8px;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Zeit: horizontal zentriert innerhalb des Panels */
-#session-timer {
-  width: 100%;
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-/* Statistiken: volle Breite, Inhalte rechtsbündig */
-#session-stats {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;  /* Zahlen rechtsbündig */
-  text-align: right;
-}
-
-/* Jede Statistikzeile nimmt die volle Breite */
-#session-stats > div {
-  width: 100%;
-}
-
-/* Reset-Button: rechtsbündig (an der Panel-Kante) */
-#btn-reset,
-.btn.reset {
-  align-self: flex-end;
-  display: inline-block;
-  margin-top: 6px;
-  background-color: #e0e0e0;
-  color: #333;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  border: 1px solid #ccc;
-}
-
-/* Optional: Hover für Reset */
-#btn-reset:hover,
-.btn.reset:hover {
-  background-color: #d4d4d4;
-}
-
-.stats span {
-  font-weight: 600;
-}
-
-.stats .pos {
-  color: #2e7d32; /* Grün */
-}
-
-.stats .neg {
-  color: #c62828; /* Rot */
-}
-
-.stats .neutral {
-  color: #555; /* Grau */
-}
-
-.inline-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.inline-checkbox input[type="checkbox"] {
-    transform: scale(1.2);
-}
-
-#autoDeleteThreshold {
-  width: 60px;   /* oder 40px, 50px – je nach Geschmack */
-  text-align: right; /* optional: Zahl rechtsbündig */
-}
-
-.auto-delete-row {
-  font-weight: 600; /* oder 500, 700 – je nach Geschmack */
-}
-
-.settings-hint {
-  font-weight: 600; /* oder 500, 700 – je nach Geschmack */
-}
-
-.word-count {
-  margin-left: 8px;
-  color: #666;
-  font-weight: normal;
 }
 
 .update-toast {
@@ -613,31 +287,22 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Sammelfehler-Eingabefeld größer machen */
-#sammelfehler-input {
-  width: 100%;
-  max-width: 500px;
-  height: 120px;
-  padding: 10px;
-  font-size: 1rem;
-  margin-top: 10px;
+.inline-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
-  box-sizing: border-box;
 }
 
-/* Button unter dem Eingabefeld mit Abstand */
-#sammelfehler-btn {
-  display: block;
-  margin-top: 8px;
-  margin-bottom: 10px;
+.inline-checkbox input[type="checkbox"] {
+  transform: scale(1.2);
 }
 
-.settings-block input[type="file"] {
-  margin-top: 18px;   /* größerer Abstand nach oben */
-  margin-bottom: 20px;
+#autoDeleteThreshold {
+  width: 60px;
+  text-align: right;
 }
 
-.settings-block input[type="file"] {
-  display: block;
-  text-align: left;
+.auto-delete-row {
+  font-weight: 600;
 }

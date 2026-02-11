@@ -12,14 +12,14 @@
 }
 
 /* =========================================
-   WORTLISTE – wieder hell & modern
+   WORTLISTE
    ========================================= */
 
 .trainer-wordlist {
   width: 260px;
-  background: white; /* hell wie vorher */
+  background: white;
   padding: 1rem;
-  border-radius: 12px; /* modern wie im Screenshot */
+  border-radius: 12px;
   overflow-y: auto;
   height: 100%;
   flex-shrink: 0;
@@ -47,8 +47,16 @@
   font-weight: bold;
 }
 
+/* Wortanzahl */
+.word-count {
+  margin-left: 8px;
+  color: #666;
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
 /* =========================================
-   Toggle-Schalter (Fehlerhäufigkeit)
+   Toggle-Schalter (Fehlerhäufigkeit/Bilanz)
    ========================================= */
 
 .sort-toggle {
@@ -124,7 +132,7 @@ input:checked + .slider:before {
 }
 
 /* =========================================
-   BUTTONS – exakt wie vorher
+   BUTTONS
    ========================================= */
 
 .trainer-buttons,
@@ -150,7 +158,6 @@ input:checked + .slider:before {
   height: 48px;
 }
 
-/* Navigation dunkler */
 .btn.nav {
   background-color: #4a4a4a;
   color: white;
@@ -166,18 +173,50 @@ input:checked + .slider:before {
   background-color: #3a3a3a;
 }
 
-.btn.nav:active {
+.btn.nav:active,
+.btn:active {
   transform: scale(0.97);
 }
 
+/* Reset-Button */
+#btn-reset,
+.btn.reset {
+  align-self: flex-end;
+  display: inline-block;
+  margin-top: 6px;
+  background-color: #e0e0e0;
+  color: #333;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+}
+
+#btn-reset:hover,
+.btn.reset:hover {
+  background-color: #d4d4d4;
+}
+
 /* =========================================
-   STATISTIK – wieder rechts
+   STATISTIK
    ========================================= */
 
 .stats {
   margin-top: 2rem;
-  text-align: right; /* wichtig */
+  text-align: right;
   font-weight: bold;
+}
+
+#stats-diff.pos {
+  color: green;
+}
+
+#stats-diff.neg {
+  color: red;
+}
+
+#stats-diff.neutral {
+  color: black;
 }
 
 /* =========================================
@@ -190,7 +229,7 @@ input:checked + .slider:before {
 }
 
 /* =========================================
-   SESSION-INFO – fix unten rechts
+   SESSION-INFO
    ========================================= */
 
 #session-info {
@@ -229,30 +268,4 @@ input:checked + .slider:before {
 
 #session-stats > div {
   width: 100%;
-}
-
-#btn-reset,
-.btn.reset {
-  align-self: flex-end;
-  display: inline-block;
-  margin-top: 6px;
-  background-color: #e0e0e0;
-  color: #333;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  border: 1px solid #ccc;
-}
-
-#btn-reset:hover,
-.btn.reset:hover {
-  background-color: #d4d4d4;
-}
-
-/* Wortanzahl in der Wortliste */
-.word-count {
-  margin-left: 8px;
-  color: #666;
-  font-weight: normal;
-  font-size: 0.9rem;
 }
