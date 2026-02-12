@@ -1,6 +1,7 @@
 // vokabeltrainer-ui.js
 import { Vokabel } from "./vokabel.js";
 import { VokabelTrainerStorage } from "./vokabeltrainer-storage.js";
+import { VokabelLogic } from "./vokabeltrainer-logic.js";
 
 // --------------------------------------------------
 // UI-Elemente
@@ -22,22 +23,48 @@ const cancelBtn = document.getElementById("vocab-cancel-btn");
 const closePanelBtn = document.getElementById("vocab-close-panel-btn");
 
 // --------------------------------------------------
+// Training UI Elemente
+// --------------------------------------------------
+
+const trainingToggleBtn = document.getElementById("training-toggle-btn");
+const trainingPanel = document.getElementById("training-settings-panel");
+
+const trainingListContainer = document.getElementById("training-list-selection");
+const trainingSelectAllBtn = document.getElementById("training-select-all-btn");
+const trainingSelectNoneBtn = document.getElementById("training-select-none-btn");
+
+const trainingPreview = document.getElementById("training-preview");
+const trainingStartBtn = document.getElementById("training-start-btn");
+
+// --------------------------------------------------
 // UI-Modul
 // --------------------------------------------------
 
 export const VokabelUI = {
   selectedVocabId: null,
+  trainingSettings: {
+    direction: "de-en",
+    lists: [],
+    mode: "count",
+    count: 20,
+    time: 10,
+    onlyHard: false,
+    withRepeats: true
+  },
 
   init() {
     this.loadLists();
     this.bindEvents();
-    this.expandInputPanel(); // beim Start sichtbar
+    this.expandInputPanel();
     this.renderVocabList();
+
+    this.loadTrainingLists();
+    this.updateTrainingPreview();
   },
 
   // --------------------------------------------------
-  // Panel steuern (für Training etc. nutzbar)
-// --------------------------------------------------
+  // Panel steuern
+  // --------------------------------------------------
 
   expandInputPanel() {
     inputPanel.classList.remove("collapsed");
@@ -53,6 +80,18 @@ export const VokabelUI = {
     cancelBtn.style.display = "none";
     this.renderVocabList();
     togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
+  },
+
+  toggleTrainingPanel() {
+    const isHidden = trainingPanel.style.display === "none";
+
+    if (isHidden) {
+      trainingPanel.style.display = "block";
+      trainingToggleBtn.textContent = "▲ Training einstellen ▲";
+    } else {
+      trainingPanel.style.display = "none";
+      trainingToggleBtn.textContent = "▼ Training einstellen ▼";
+    }
   },
 
   // --------------------------------------------------
@@ -76,10 +115,42 @@ export const VokabelUI = {
   },
 
   // --------------------------------------------------
-  // Events binden
+  // Training: Listen laden
+  // --------------------------------------------------
+
+  loadTrainingLists() {
+    const lists = VokabelTrainerStorage.getLists();
+    const allVocab = VokabelTrainerStorage.getAllVokabeln();
+
+    trainingListContainer.innerHTML = "";
+
+    lists.forEach(list => {
+      const count = allVocab.filter(v => v.list === list.id).length;
+
+      const label = document.createElement("label");
+      label.className = "training-list-item";
+
+      label.innerHTML = `
+        <input type="checkbox" class="training-list-checkbox" value="${list.id}">
+        ${list.name} (${count})
+      `;
+
+      trainingListContainer.appendChild(label);
+    });
+
+    // Session Restore
+    this.trainingSettings.lists.forEach(id => {
+      const cb = trainingListContainer.querySelector(`input[value="${id}"]`);
+      if (cb) cb.checked = true;
+    });
+  },
+
+  // --------------------------------------------------
+  // Events
   // --------------------------------------------------
 
   bindEvents() {
+    // Eingabe
     enInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -113,28 +184,34 @@ export const VokabelUI = {
       newListInput.value = "";
 
       this.renderVocabList();
+      this.loadTrainingLists();
     });
 
     listSelect.addEventListener("change", () => {
       this.renderVocabList();
     });
 
-    // Panel einblenden (wenn zu)
+    // Panel ein/aus
     togglePanelBtn.addEventListener("click", () => {
-        const isCollapsed = inputPanel.classList.contains("collapsed");
+      const isCollapsed = inputPanel.classList.contains("collapsed");
 
-        if (isCollapsed) {
-          this.expandInputPanel();
-          togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+      if (isCollapsed) {
+        // Neue Vokabel öffnen → Training automatisch einklappen 
+        trainingPanel.style.display = "none"; 
+        trainingToggleBtn.textContent = "▼ Training einstellen ▼";
 
-          enInput.focus();
-        } else {
-          this.collapseInputPanel();
-          togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
-        }
+        this.expandInputPanel();
+        togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+        enInput.focus();
+      } else {
+        this.collapseInputPanel();
+      }
     });
 
-    // Abbrechen (Bearbeiten abbrechen)
+    closePanelBtn.addEventListener("click", () => {
+      this.collapseInputPanel();
+    });
+
     cancelBtn.addEventListener("click", () => {
       this.selectedVocabId = null;
       enInput.value = "";
@@ -145,41 +222,108 @@ export const VokabelUI = {
       this.renderVocabList();
     });
 
-    // Bereich schließen (Panel einklappen)
-    closePanelBtn.addEventListener("click", () => {
-      this.collapseInputPanel();
+    // --------------------------------------------------
+    // Training Events
+    // --------------------------------------------------
+
+    trainingToggleBtn.addEventListener("click", () => {
+        const isHidden = trainingPanel.style.display === "none";
+
+        if (isHidden) {
+            // Training wird geöffnet → Vokabelbereich einklappen
+            this.collapseInputPanel();
+        }
+
+        this.toggleTrainingPanel();
+    });
+
+    trainingSelectAllBtn.addEventListener("click", () => {
+      trainingListContainer.querySelectorAll("input").forEach(cb => cb.checked = true);
+      this.updateTrainingPreview();
+    });
+
+    trainingSelectNoneBtn.addEventListener("click", () => {
+      trainingListContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
+      this.updateTrainingPreview();
+    });
+
+    trainingListContainer.addEventListener("change", () => {
+      this.updateTrainingPreview();
+    });
+
+    document.querySelectorAll("input[name='training-direction']").forEach(r => {
+      r.addEventListener("change", () => {
+        this.trainingSettings.direction = r.value;
+      });
+    });
+
+document.querySelectorAll("input[name='training-mode']").forEach(r => {
+  r.addEventListener("change", () => {
+    const mode = r.value;
+
+    // alle Felder ausblenden
+    document.querySelectorAll(".training-mode-field").forEach(f => f.classList.remove("active"));
+
+    // aktives Feld einblenden
+    if (mode === "count") {
+      document.getElementById("training-mode-count").classList.add("active");
+    }
+    if (mode === "time") {
+      document.getElementById("training-mode-time").classList.add("active");
+    }
+    if (mode === "all") {
+      document.getElementById("training-mode-all").classList.add("active");
+    }
+
+    this.trainingSettings.mode = mode;
+    this.updateTrainingPreview();
+  });
+});
+
+    document.getElementById("training-count-input").addEventListener("input", () => {
+      this.trainingSettings.count = Number(event.target.value);
+      this.updateTrainingPreview();
+    });
+
+    document.getElementById("training-time-input").addEventListener("input", () => {
+      this.trainingSettings.time = Number(event.target.value);
+    });
+
+    document.getElementById("training-only-hard").addEventListener("change", (e) => {
+      this.trainingSettings.onlyHard = e.target.checked;
+      this.updateTrainingPreview();
+    });
+
+    document.getElementById("training-with-repeats").addEventListener("change", (e) => {
+      this.trainingSettings.withRepeats = e.target.checked;
+    });
+
+    trainingStartBtn.addEventListener("click", () => {
+      VokabelLogic.startTraining(this.trainingSettings);
     });
   },
 
   // --------------------------------------------------
-  // Vokabel auswählen
+  // Vorschau
   // --------------------------------------------------
 
-  selectVocab(v) {
-    this.selectedVocabId = v.id;
+  updateTrainingPreview() {
+    const selectedLists = [...trainingListContainer.querySelectorAll("input:checked")]
+      .map(cb => cb.value);
 
-    this.expandInputPanel();
-    togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+    this.trainingSettings.lists = selectedLists;
 
-    enInput.value = v.word;
-    deInput.value = v.translation.join(", ");
-    listSelect.value = v.list;
+    const all = VokabelTrainerStorage.getAllVokabeln();
 
-    saveBtn.textContent = "Vokabel ändern";
-    cancelBtn.style.display = "inline-block";
+    let filtered = all.filter(v => selectedLists.includes(v.list));
 
-    this.renderVocabList();
-  },
-
-  // --------------------------------------------------
-  // Gesamtanzahl aktualisieren
-  // --------------------------------------------------
-
-  updateTotalCount() {
-    const total = VokabelTrainerStorage.getAllVokabeln().length;
-    if (totalCountBox) {
-      totalCountBox.textContent = `Gesamt: ${total} Vokabeln`;
+    if (this.trainingSettings.onlyHard) {
+      filtered = filtered.filter(v => v.errors && v.errors > 0);
     }
+
+    const count = filtered.length;
+
+    trainingPreview.textContent = `Es werden ${count} Vokabeln trainiert.`;
   },
 
   // --------------------------------------------------
@@ -239,6 +383,13 @@ export const VokabelUI = {
     });
 
     this.updateTotalCount();
+  },
+
+  updateTotalCount() {
+    const total = VokabelTrainerStorage.getAllVokabeln().length;
+    if (totalCountBox) {
+      totalCountBox.textContent = `Gesamt: ${total} Vokabeln`;
+    }
   }
 };
 
@@ -325,3 +476,28 @@ function showStatus(msg) {
     statusBox.style.display = "none";
   }, 1500);
 }
+
+// TRAINING BUTTONS
+document.getElementById("training-check-btn").addEventListener("click", () => {
+  const answer = document.getElementById("training-answer").value.trim();
+  VokabelLogic.checkAnswer(answer);
+});
+
+const trainingAnswerInput = document.getElementById("training-answer");
+if (trainingAnswerInput) {
+  trainingAnswerInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const answer = trainingAnswerInput.value.trim();
+      VokabelLogic.checkAnswer(answer);
+    }
+  });
+}
+
+document.getElementById("training-skip-btn").addEventListener("click", () => {
+  VokabelLogic.skip();
+});
+
+document.getElementById("training-stop-btn").addEventListener("click", () => {
+  VokabelLogic.stopTraining();
+});

@@ -44,18 +44,18 @@
             <div id="vocab-list-display"></div>
           </div>
 
-          <!-- Rechte Spalte: Eingabebereich -->
+          <!-- Rechte Spalte: Panels -->
           <div class="trainer-main">
 
-            <!-- Toggle-Button (immer sichtbar) -->
+            <!-- Toggle: Neue Vokabel hinzufügen -->
             <div class="vocab-actions">
               <button type="button" id="vocab-toggle-btn">
                 ▲ Neue Vokabel hinzufügen ▲
               </button>
             </div>
 
-            <!-- Eingabepanel (ein-/ausklappbar) -->
-            <div id="vocab-input-panel" class="vocab-input-container">
+            <!-- Eingabepanel -->
+            <div id="vocab-input-panel" class="vocab-input-container panel-box">
 
               <h2>Neue Vokabel hinzufügen</h2>
 
@@ -90,7 +90,6 @@
                 <button type="button" id="vocab-new-list-btn">Neue Liste anlegen</button>
               </div>
 
-              <!-- Sekundäre Buttons: Abbrechen (links) + Bereich schließen (rechts) -->
               <div class="vocab-actions-secondary">
                 <button type="button" id="vocab-cancel-btn" class="vocab-secondary-btn" style="display:none;">
                   Abbrechen
@@ -99,13 +98,123 @@
                 <button type="button" id="vocab-close-panel-btn" class="vocab-secondary-btn vocab-close-right">
                   Bereich schließen
                 </button>
-            </div>
-
+              </div>
 
               <div id="vocab-status" class="vocab-status" style="display:none;"></div>
             </div>
 
-          </div>
+            <!-- Toggle: Training einstellen -->
+            <div class="vocab-actions">
+              <button type="button" id="training-toggle-btn">
+                ▼ Training einstellen ▼
+              </button>
+            </div>
+
+            <!-- Trainings-Einstellungsbereich -->
+            <div id="training-settings-panel" class="training-settings-container panel-box" style="display:none;">
+
+              <h2>Training einstellen</h2>
+
+              <!-- A) Sprachrichtung -->
+              <div class="training-section">
+                <h3>Sprachrichtung</h3>
+                <label><input type="radio" name="training-direction" value="de-en" checked> Deutsch → Englisch</label>
+                <label><input type="radio" name="training-direction" value="en-de"> Englisch → Deutsch</label>
+                <label><input type="radio" name="training-direction" value="mixed"> Gemischt</label>
+              </div>
+
+              <!-- B) Listen auswählen -->
+              <div class="training-section">
+                <h3>Listen auswählen</h3>
+
+                <div id="training-list-selection"></div>
+
+                <div class="training-list-actions">
+                  <button type="button" id="training-select-all-btn">Alle auswählen</button>
+                  <button type="button" id="training-select-none-btn">Keine auswählen</button>
+                </div>
+              </div>
+
+<!-- C) Trainingsmodus -->
+<div class="training-section">
+  <h3>Trainingsmodus</h3>
+
+  <!-- Radiobuttons oben -->
+  <div class="training-mode-options">
+    <label><input type="radio" name="training-mode" value="count" checked> Nach Anzahl Vokabeln</label>
+    <label><input type="radio" name="training-mode" value="time"> Zeitbasiert</label>
+    <label><input type="radio" name="training-mode" value="all"> Alle Vokabeln</label>
+  </div>
+
+  <!-- Eingabefelder darunter, stabil -->
+  <div class="training-mode-fields">
+
+    <div id="training-mode-count" class="training-mode-field active">
+      <label for="training-count-input">Anzahl Vokabeln</label>
+      <input type="number" id="training-count-input" min="1" max="500" value="20">
+    </div>
+
+    <div id="training-mode-time" class="training-mode-field">
+      <label for="training-time-input">Dauer in Minuten</label>
+      <input type="number" id="training-time-input" min="1" max="60" value="10">
+    </div>
+
+    <div id="training-mode-all" class="training-mode-field">
+      <!-- kein Eingabefeld nötig -->
+      <p>Alle Vokabeln aus den ausgewählten Listen werden trainiert.</p>
+    </div>
+
+  </div>
+</div>
+
+              <!-- D) Optionen -->
+              <div class="training-section">
+                <h3>Optionen</h3>
+
+                <label><input type="checkbox" id="training-only-hard"> Nur schwierige Vokabeln</label>
+                <label><input type="checkbox" id="training-with-repeats" checked> Wiederholungen aktivieren</label>
+
+                <p class="training-info">Die Reihenfolge der Vokabeln ist immer zufällig.</p>
+              </div>
+
+              <!-- Vorschau + Start -->
+              <div class="training-section training-footer">
+                <div id="training-preview" class="training-preview">
+                  Es werden 0 Vokabeln trainiert.
+                </div>
+
+                <button type="button" id="training-start-btn" class="training-start-btn">
+                  Training starten
+                </button>
+              </div>
+            </div>
+
+            <!-- TRAININGSMODUS -->
+            <div id="training-mode" class="training-mode-container panel-box" style="display:none;">
+
+              <h2>Training</h2>
+
+              <div id="training-progress" class="training-progress">
+                <span id="training-progress-text">0 / 0</span>
+              </div>
+
+              <div id="training-word" class="training-word"></div>
+
+              <div class="training-input-area">
+                <label for="training-answer">Übersetzung eingeben</label>
+                <input type="text" id="training-answer" autocomplete="off">
+              </div>
+
+              <div class="training-buttons">
+                <button type="button" id="training-check-btn">Prüfen</button>
+                <button type="button" id="training-skip-btn">Überspringen</button>
+                <button type="button" id="training-stop-btn" class="training-stop-btn">Training abbrechen</button>
+              </div>
+
+              <div id="training-feedback" class="training-feedback"></div>
+            </div>
+
+          </div> <!-- Ende trainer-main -->
         </div>
       </div>
     </div>
