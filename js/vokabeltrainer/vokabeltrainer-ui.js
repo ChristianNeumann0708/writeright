@@ -393,6 +393,20 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
   }
 };
 
+    // Dropdown öffnen/schließen
+    const dropdownToggle = document.getElementById("list-dropdown-toggle");
+    const dropdownPanel = document.getElementById("list-dropdown-panel");
+
+    dropdownToggle.addEventListener("click", () => {
+    const isOpen = dropdownPanel.classList.toggle("open"); 
+    if (isOpen) { 
+        dropdownToggle.textContent = "▲ Listen auswählen ▲"; 
+    } else { 
+        dropdownToggle.textContent = "▼ Listen auswählen ▼";    
+    }
+    });
+
+
 // --------------------------------------------------
 // Vokabel speichern / aktualisieren
 // --------------------------------------------------

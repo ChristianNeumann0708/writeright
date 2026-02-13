@@ -399,3 +399,50 @@
 .training-start-btn {
   margin-top: 1rem; /* zusätzlicher Abstand direkt über dem Button */
 }
+
+/* Dropdown-Container */
+.list-dropdown {
+  margin-top: 1rem;
+  position: relative;
+}
+
+/* Toggle-Button */
+.list-dropdown-toggle {
+  width: 100%;
+  background: #1e88e5;
+  color: white;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;   /* jetzt wirklich zentriert */
+}
+
+/* Dropdown-Panel */
+.list-dropdown-panel {
+  display: none;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  animation: dropdownFade 0.15s ease-out;
+}
+
+/* Sichtbar */
+.list-dropdown-panel.open {
+  display: block;
+}
+
+/* Sanfte Animation */
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Listen untereinander */
+#training-list-selection label {
+  display: block;
+  margin-bottom: 0.4rem;
+}

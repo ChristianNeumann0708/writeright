@@ -124,15 +124,23 @@
               </div>
 
               <!-- B) Listen auswählen -->
-              <div class="training-section">
-                <h3>Listen auswählen</h3>
+              <!-- Listen auswählen (Dropdown) -->
+              <div class="list-dropdown">
 
-                <div id="training-list-selection"></div>
+                <button type="button" id="list-dropdown-toggle" class="list-dropdown-toggle">
+                  ▼ Listen auswählen ▼
+                </button>
 
-                <div class="training-list-actions">
-                  <button type="button" id="training-select-all-btn">Alle auswählen</button>
-                  <button type="button" id="training-select-none-btn">Keine auswählen</button>
+                <div id="list-dropdown-panel" class="list-dropdown-panel">
+                  <div id="training-list-selection"></div>
                 </div>
+
+              </div>
+
+              <!-- Buttons bleiben außerhalb -->
+              <div class="training-list-actions">
+                <button type="button" id="training-select-all-btn">Alle auswählen</button>
+                <button type="button" id="training-select-none-btn">Keine auswählen</button>
               </div>
 
 <!-- C) Trainingsmodus -->
