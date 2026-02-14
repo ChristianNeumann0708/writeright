@@ -4,7 +4,8 @@
 const BASE_PATH = '/writeright';
 
 // Optionale Versionsnummer für bessere Nachvollziehbarkeit
-const VERSION = 'v1.0.0';
+// Optionale Versionsnummer für bessere Nachvollziehbarkeit
+const VERSION = 'v2.0.0';
 
 // Cache-Name: Version + Datum
 const CURRENT_CACHE_NAME = `cache-${VERSION}-${new Date().toISOString().slice(0, 10)}`;
@@ -13,16 +14,43 @@ const CURRENT_CACHE_NAME = `cache-${VERSION}-${new Date().toISOString().slice(0,
 const PRECACHE_URLS = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/index.html`,
-  `${BASE_PATH}/css/styles.css`,
-  `${BASE_PATH}/js/app.js`,
-  `${BASE_PATH}/js/indexedBackup.js`,
-  `${BASE_PATH}/js/timer.js`,
-  `${BASE_PATH}/js/menu.js`,
+  `${BASE_PATH}/worttrainer.html`,
+  `${BASE_PATH}/vokabeltrainer.html`,
+  `${BASE_PATH}/settings.html`,
+  `${BASE_PATH}/import.html`,
+  `${BASE_PATH}/info.html`,
+  
+  `${BASE_PATH}/css/base.css`,
+  `${BASE_PATH}/css/layout.css`,
+  `${BASE_PATH}/css/menu.css`,
+  `${BASE_PATH}/css/start.css`,
+  `${BASE_PATH}/css/worttrainer.css`,
+  `${BASE_PATH}/css/vokabeltrainer.css`,
+  `${BASE_PATH}/css/settings.css`,
+
+  `${BASE_PATH}/js/core/StorageService.js`,
+  `${BASE_PATH}/js/models/Wort.js`,
+  `${BASE_PATH}/js/models/Vokabel.js`,
+
+  `${BASE_PATH}/js/common/settings.js`,
+  `${BASE_PATH}/js/common/import.js`,
+  `${BASE_PATH}/js/common/indexedBackup.js`,
+  `${BASE_PATH}/js/common/menu.js`,
+
+  `${BASE_PATH}/js/worttrainer/timer.js`,
+  `${BASE_PATH}/js/worttrainer/worttrainer.js`,
+  `${BASE_PATH}/js/worttrainer/worttrainer-storage.js`,
+  `${BASE_PATH}/js/worttrainer/worttrainer-logic.js`,
+  `${BASE_PATH}/js/worttrainer/worttrainer-ui.js`,
+
+  `${BASE_PATH}/js/vokabeltrainer/vokabeltrainer.js`,
+  `${BASE_PATH}/js/vokabeltrainer/vokabeltrainer-storage.js`,
+  `${BASE_PATH}/js/vokabeltrainer/vokabeltrainer-logic.js`,
+  `${BASE_PATH}/js/vokabeltrainer/vokabeltrainer-ui.js`,
+
   `${BASE_PATH}/manifest.webmanifest`,
   `${BASE_PATH}/icons/icon-192.png`,
-  `${BASE_PATH}/icons/icon-512.png`,
-  // Optional: Favicon, falls vorhanden
-  //`${BASE_PATH}/favicon.ico`
+  `${BASE_PATH}/icons/icon-512.png`
 ];
 
 // INSTALL: neuen Cache anlegen und Dateien precachen

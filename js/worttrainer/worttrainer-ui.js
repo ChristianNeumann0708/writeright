@@ -1,6 +1,6 @@
 import { WortLogic } from "./worttrainer-logic.js";
 import { WortStorage } from "./worttrainer-storage.js";
-import { Wort } from "./wort.js";
+import { Wort } from "../models/Wort.js";
 import { addCorrect, addWrong, resetTimer } from "./timer.js";
 
 export const WortUI = {

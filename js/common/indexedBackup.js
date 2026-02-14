@@ -1,7 +1,7 @@
 // indexedBackup.js – neue, modulare Version
 
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
-import { Wort } from "../worttrainer/wort.js";
+import { Wort } from "../models/Wort.js";
 
 // ------------------------------------------------------
 // Status anzeigen
@@ -21,8 +21,8 @@ function showStatus(msg) {
 // ------------------------------------------------------
 // Backup herunterladen
 // ------------------------------------------------------
-export function downloadBackup() {
-  const words = WortStorage.loadWords();
+export async function downloadBackup() {
+  const words = await WortStorage.loadWords();
 
   if (!words || words.length === 0) {
     showStatus("Keine Wörter vorhanden.");
@@ -60,7 +60,7 @@ export function restoreBackup(file) {
 
   const reader = new FileReader();
 
-  reader.onload = () => {
+  reader.onload = async () => {
     try {
       const clean = reader.result.replace(/^\uFEFF/, "").trim();
       let raw = JSON.parse(clean);
@@ -107,7 +107,7 @@ export function restoreBackup(file) {
         })
         .filter(Boolean);
 
-      WortStorage.saveWords(newList);
+      await WortStorage.saveWords(newList);
       showStatus(`Backup wiederhergestellt. (${newList.length} Wörter)`);
     } catch (err) {
       console.error("Fehler beim Restore:", err);

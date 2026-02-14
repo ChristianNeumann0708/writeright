@@ -1,5 +1,5 @@
 // vokabeltrainer-ui.js
-import { Vokabel } from "./vokabel.js";
+import { Vokabel } from "../models/Vokabel.js";
 import { VokabelTrainerStorage } from "./vokabeltrainer-storage.js";
 import { VokabelLogic } from "./vokabeltrainer-logic.js";
 
@@ -390,6 +390,28 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     if (totalCountBox) {
       totalCountBox.textContent = `Gesamt: ${total} Vokabeln`;
     }
+  },
+
+  selectVocab(v) {
+    this.selectedVocabId = v.id;
+    enInput.value = v.word;
+    deInput.value = v.translation.join(", ");
+
+    if (listSelect.querySelector(`option[value="${v.list}"]`)) {
+      listSelect.value = v.list;
+    } else {
+      listSelect.value = "default";
+    }
+
+    saveBtn.textContent = "Vokabel aktualisieren";
+    cancelBtn.style.display = "inline-block";
+
+    this.expandInputPanel();
+    togglePanelBtn.textContent = "▲ Vokabel bearbeiten ▲";
+    
+    enInput.focus();
+
+    this.renderVocabList();
   }
 };
 

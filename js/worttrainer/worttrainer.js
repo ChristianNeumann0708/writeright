@@ -1,11 +1,15 @@
+import { AppStorage } from "../core/StorageService.js";
 import { WortStorage } from "./worttrainer-storage.js";
 import { WortLogic } from "./worttrainer-logic.js";
 import { WortUI } from "./worttrainer-ui.js";
 
 async function initWorttrainer() {
   try {
+    // 0) Storage initialisieren
+    await AppStorage.init();
+
     // 1) Wörter laden
-    const words = WortStorage.loadWords();
+    const words = await WortStorage.loadWords();
     WortLogic.init(words);
 
     // 2) Einstellungen laden

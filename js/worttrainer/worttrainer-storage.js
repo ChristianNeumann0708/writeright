@@ -1,27 +1,17 @@
-import { StorageCore } from "../common/storage.js";
-import { Wort } from "./wort.js";
-import { indexedBackup } from "../common/indexedBackup-global.js";
+import { AppStorage } from "../core/StorageService.js";
+import { Wort } from "../models/Wort.js";
 
 const STORAGE_KEY = "words";
 const SETTINGS_KEY = "wt_settings";
 
 export const WortStorage = {
-  loadWords() {
-    const raw = StorageCore.getItem(STORAGE_KEY) || [];
+  async loadWords() {
+    const raw = await AppStorage.getItem(STORAGE_KEY) || [];
     return raw.map(obj => Wort.fromJSON(obj));
   },
 
-  saveWords(words) {
-    // 1. localStorage speichern
-    StorageCore.setItem(STORAGE_KEY, words.map(w => w.toJSON()));
-
-    // 2. IndexedDB speichern (zweite Sicherung)
-    indexedBackup.save("WriteRightDB", "BackupStore", JSON.stringify(words));
-  },
-
-  saveWordsToIndexedDB(words) {
-    // bleibt für Kompatibilität bestehen
-    indexedBackup.save("WriteRightDB", "BackupStore", JSON.stringify(words));
+  async saveWords(words) {
+    await AppStorage.setItem(STORAGE_KEY, words.map(w => w.toJSON()));
   },
 
   loadSettings() {
@@ -32,37 +22,35 @@ export const WortStorage = {
       autoDeleteThreshold: 10,
       tabletMode: false
     };
-    const settings = StorageCore.getItem(SETTINGS_KEY);
+    const settings = AppStorage.getItemSync(SETTINGS_KEY);
     return { ...defaults, ...(settings || {}) };
   },
 
   saveSettings(obj) {
-    StorageCore.setItem(SETTINGS_KEY, obj);
+    AppStorage.setItem(SETTINGS_KEY, obj);
   },
 
   clearAll() {
-    StorageCore.removeItem(STORAGE_KEY);
-    StorageCore.removeItem(SETTINGS_KEY);
+    AppStorage.removeItem(STORAGE_KEY);
+    AppStorage.removeItem(SETTINGS_KEY);
   },
 
   clearWordsEverywhere() {
-    StorageCore.removeItem(STORAGE_KEY);
-    return indexedBackup.clear("WriteRightDB", "BackupStore");
+    return AppStorage.removeItem(STORAGE_KEY);
   },
 
-  resetWordStats() {
-  const words = this.loadWords();
+  async resetWordStats() {
+    const words = await this.loadWords();
 
-  const updated = words.map(w => {
-    return new Wort(
-      w.text,
-      0, // anzRichtig
-      0, // anzFalsch
-      {} // falscheVarianten
-    );
-  });
+    const updated = words.map(w => {
+      return new Wort(
+        w.text,
+        0, // anzRichtig
+        0, // anzFalsch
+        {} // falscheVarianten
+      );
+    });
 
-  this.saveWords(updated);
-}
-
+    this.saveWords(updated);
+  }
 };

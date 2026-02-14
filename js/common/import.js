@@ -1,5 +1,5 @@
-import { StorageCore as Storage } from "./storage.js";
-import { Wort } from "../worttrainer/wort.js";
+
+import { Wort } from "../models/Wort.js";
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 
 // ------------------------------------------------------
@@ -47,7 +47,7 @@ fileInput.addEventListener("change", async (e) => {
 
   const uniqueLines = [...new Set(lines)];
 
-  const existing = Storage.load();
+  const existing = await WortStorage.loadWords();
   const existingTexts = new Set(existing.map((w) => w.text.toLowerCase()));
 
   const newWords = uniqueLines
@@ -55,7 +55,7 @@ fileInput.addEventListener("change", async (e) => {
     .map((l) => new Wort(l));
 
   if (newWords.length > 0) {
-    Storage.save([...existing, ...newWords]);
+    await WortStorage.saveWords([...existing, ...newWords]);
   }
 
   statusEl.textContent =
@@ -66,7 +66,7 @@ fileInput.addEventListener("change", async (e) => {
 // ------------------------------------------------------
 // Sammelfehler-Import
 // ------------------------------------------------------
-sammelBtn.addEventListener("click", () => {
+sammelBtn.addEventListener("click", async () => {
   const raw = sammelInput.value.trim();
 
   if (!raw) {
@@ -84,7 +84,7 @@ sammelBtn.addEventListener("click", () => {
     return;
   }
 
-  const list = WortStorage.loadWords();
+  const list = await WortStorage.loadWords();
   let added = 0;
   let updated = 0;
 
@@ -104,7 +104,7 @@ sammelBtn.addEventListener("click", () => {
     }
   }
 
-  WortStorage.saveWords(list);
+  await WortStorage.saveWords(list);
 
   sammelStatus.textContent =
     `Aktualisiert: ${updated}, neu hinzugefügt: ${added}`;

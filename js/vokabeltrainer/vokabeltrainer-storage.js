@@ -1,10 +1,7 @@
-// vokabeltrainer-storage.js
-import { Vokabel } from "./vokabel.js";
+import { Vokabel } from "../models/Vokabel.js";
+import { AppStorage } from "../core/StorageService.js";
 
-const LOCAL_STORAGE_KEY = "vokabeltrainer-data";
-const IDB_DB_NAME = "vokabeltrainer-db";
-const IDB_STORE_NAME = "data";
-const IDB_KEY = "vokabeltrainer";
+const STORAGE_KEY = "vokabeltrainer-data";
 
 class VokabelTrainerStorageClass {
   constructor() {
@@ -13,66 +10,22 @@ class VokabelTrainerStorageClass {
       listOrder: ["default"],
       vokabeln: []
     };
-    this._idb = null;
   }
 
   // ---------------------------------------
   // Initialisierung
   // ---------------------------------------
   async init() {
-    try {
-      this._idb = await this._openIndexedDB();
-    } catch (e) {
-      console.error("IndexedDB konnte nicht geöffnet werden:", e);
-    }
-
+    // AppStorage is initialized globally usually, but we can ensure it here or in main
+    // We just load data here
     await this.load();
-  }
-
-  _openIndexedDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(IDB_DB_NAME, 1);
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
-          db.createObjectStore(IDB_STORE_NAME);
-        }
-      };
-
-      request.onsuccess = (event) => resolve(event.target.result);
-      request.onerror = (event) => reject(event.target.error);
-    });
   }
 
   // ---------------------------------------
   // Laden (modern, robust)
   // ---------------------------------------
   async load() {
-    let parsed = null;
-
-    // 1. Versuch: localStorage
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) {
-        parsed = JSON.parse(raw);
-      }
-    } catch (e) {
-      console.error("Fehler beim Laden aus localStorage:", e);
-    }
-
-    // 2. Versuch: IndexedDB
-    if (!parsed && this._idb) {
-      try {
-        const tx = this._idb.transaction(IDB_STORE_NAME, "readonly");
-        const stored = await tx.objectStore(IDB_STORE_NAME).get(IDB_KEY);
-        if (stored) {
-          parsed = stored;
-        }
-      } catch (e) {
-        console.error("Fehler beim Laden aus IndexedDB:", e);
-      }
-    }
+    let parsed = await AppStorage.getItem(STORAGE_KEY);
 
     // Falls nichts geladen wurde → Default-Struktur
     if (!parsed) {
@@ -89,7 +42,7 @@ class VokabelTrainerStorageClass {
     // Daten übernehmen
     this.data = parsed;
 
-    // Konsistenz sichern
+    // Konsistenz sichern (falls Default erstellt wurde oder Migration lief)
     this._saveAndBackup();
   }
 
@@ -317,21 +270,7 @@ class VokabelTrainerStorageClass {
   // Gemeinsames Speichern
   // ---------------------------------------
   _saveAndBackup() {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.data));
-    } catch (e) {
-      console.error("Fehler beim Speichern in localStorage:", e);
-    }
-
-    if (this._idb) {
-      try {
-        const tx = this._idb.transaction(IDB_STORE_NAME, "readwrite");
-        tx.objectStore(IDB_STORE_NAME).put(this.data, IDB_KEY);
-        tx.commit?.();
-      } catch (e) {
-        console.error("Fehler beim Speichern in IndexedDB:", e);
-      }
-    }
+    AppStorage.setItem(STORAGE_KEY, this.data);
 
     if (typeof this._autoBackup === "function") {
       try {

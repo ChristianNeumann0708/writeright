@@ -1,9 +1,13 @@
+import { AppStorage } from "../core/StorageService.js";
 import { VokabelTrainerStorage } from "./vokabeltrainer-storage.js";
 import { VokabelUI } from "./vokabeltrainer-ui.js";
 import { VokabelLogic } from "./vokabeltrainer-logic.js";
 
 async function initVokabeltrainer() {
   try {
+    // 0) AppStorage initialisieren
+    await AppStorage.init();
+
     // 1) Storage initialisieren (lädt localStorage + Backup)
     await VokabelTrainerStorage.init();
 
