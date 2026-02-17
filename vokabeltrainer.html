@@ -180,6 +180,7 @@
                 <h3>Optionen</h3>
 
                 <label><input type="checkbox" id="training-only-hard"> Nur schwierige Vokabeln</label>
+                <label><input type="checkbox" id="training-suggest-words"> Wörter vorschlagen (Multiple Choice)</label>
                 <label><input type="checkbox" id="training-with-repeats" checked> Wiederholungen aktivieren</label>
 
                 <p class="training-info">Die Reihenfolge der Vokabeln ist immer zufällig.</p>
@@ -208,10 +209,13 @@
 
               <div id="training-word" class="training-word"></div>
 
-              <div class="training-input-area">
+              <div class="training-input-area" id="training-input-group">
                 <label for="training-answer">Übersetzung eingeben</label>
                 <input type="text" id="training-answer" autocomplete="off">
               </div>
+
+              <!-- NEW: Multiple Choice Container -->
+              <div id="training-multiple-choice-container" class="training-multiple-choice" style="display:none;"></div>
 
               <div class="training-buttons">
                 <button type="button" id="training-check-btn">Prüfen</button>

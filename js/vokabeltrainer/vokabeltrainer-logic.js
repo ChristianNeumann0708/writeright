@@ -61,6 +61,29 @@ export const VokabelLogic = {
     const v = this.trainingList[this.currentIndex];
     progress.textContent = `${this.currentIndex + 1} / ${this.trainingList.length}`;
 
+    // --- Mode Check ---
+    const isMultipleChoice = this.settings.suggestWords;
+
+    const inputGroup = document.getElementById("training-input-group");
+    const mcContainer = document.getElementById("training-multiple-choice-container");
+    const checkBtn = document.getElementById("training-check-btn");
+
+    if (isMultipleChoice) {
+      // Multiple Choice Mode
+      inputGroup.style.display = "none";
+      mcContainer.style.display = "grid"; // or flex
+      checkBtn.style.display = "none"; // Hide "Check" button as clicking option checks immediately
+
+      this.renderMultipleChoiceOptions(v, mcContainer);
+    } else {
+      // Standard Text Mode
+      inputGroup.style.display = "block";
+      mcContainer.style.display = "none";
+      checkBtn.style.display = "inline-block";
+    }
+
+    // Sprachrichtung
+
     // Sprachrichtung
     if (this.settings.direction === "de-en") {
       wordBox.textContent = v.translation.join(", ");
@@ -111,5 +134,86 @@ export const VokabelLogic = {
     if (wordlist) wordlist.style.display = "block";
 
     // NICHT: vocab-input-panel öffnen!
+  },
+
+  // --------------------------------------------------
+  // Multiple Choice Helpers
+  // --------------------------------------------------
+
+  renderMultipleChoiceOptions(currentVokabel, container) {
+    container.innerHTML = "";
+
+    // 1. Richtige Antwort(en) bestimmen
+    let correctAnswer = "";
+    if (this.settings.direction === "de-en") {
+      correctAnswer = currentVokabel.word; // Englisches Wort gesucht
+    } else {
+      // Deutsches Wort gesucht (oder eins davon)
+      correctAnswer = currentVokabel.translation[0]; 
+    }
+
+    // 2. Distraktoren (Falsche Antworten) suchen
+    const distractors = this.getDistractors(currentVokabel, 4);
+
+    // 3. Mischen (Richtige Antwort + Distraktoren)
+    const options = [correctAnswer, ...distractors].sort(() => Math.random() - 0.5);
+
+    // 4. Buttons erstellen
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "mc-option-btn";
+      btn.textContent = opt;
+      
+      btn.onclick = () => {
+        // Sofort prüfen
+        this.checkAnswer(opt);
+      };
+
+      container.appendChild(btn);
+    });
+  },
+
+  getDistractors(currentVokabel, count) {
+    const all = VokabelTrainerStorage.getAllVokabeln();
+    const direction = this.settings.direction;
+    
+    // Potentielle Kandidaten filtern
+    const candidates = all.filter(v => v.id !== currentVokabel.id);
+
+    // Zufällig auswählen
+    const selected = [];
+    const maxTries = 50; // Schutz vor Endlosschleife
+    let tries = 0;
+
+    while (selected.length < count && tries < maxTries) {
+      if (candidates.length === 0) break;
+
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      const randomVocab = candidates[randomIndex];
+      
+      // Wort holen passend zur Richtung
+      let word = "";
+      if (direction === "de-en") {
+        word = randomVocab.word; // Englisch
+      } else {
+        // Deutsch (zufällige Übersetzung nehmen)
+        if (randomVocab.translation.length > 0) {
+           word = randomVocab.translation[Math.floor(Math.random() * randomVocab.translation.length)];
+        }
+      }
+
+      if (word && !selected.includes(word)) {
+        selected.push(word);
+      }
+      
+      tries++;
+    }
+
+    // Fallback: Falls nicht genug Wörter da sind, fülle mit Platzhaltern (sollte bei >5 Vokabeln nicht passieren)
+    while (selected.length < count) {
+        selected.push("???"); 
+    }
+
+    return selected;
   }
 };

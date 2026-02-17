@@ -11,6 +11,38 @@
   max-width: 900px;
 }
 
+/* --- Dynamic styling for open panels --- */
+.toggled-open {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* --------------------------------------------------
+   LAYOUT FIXES (Double Scrollbar)
+-------------------------------------------------- */
+.content {
+  overflow-y: hidden;
+}
+
+.trainer-layout {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Ensure trainer main area handles scrolling */
+.trainer-main {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Box sizing safety */
+.training-settings-container,
+.vocab-input-container {
+  box-sizing: border-box;
+}
+
 .vocab-input-container h2 {
   margin-top: 0;
   margin-bottom: 1.5rem;

@@ -48,7 +48,10 @@ export const VokabelUI = {
     mode: "count",
     count: 20,
     time: 10,
+    count: 20,
+    time: 10,
     onlyHard: false,
+    suggestWords: false,
     withRepeats: true
   },
 
@@ -292,6 +295,10 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     document.getElementById("training-only-hard").addEventListener("change", (e) => {
       this.trainingSettings.onlyHard = e.target.checked;
       this.updateTrainingPreview();
+    });
+
+    document.getElementById("training-suggest-words").addEventListener("change", (e) => {
+      this.trainingSettings.suggestWords = e.target.checked;
     });
 
     document.getElementById("training-with-repeats").addEventListener("change", (e) => {

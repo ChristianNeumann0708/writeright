@@ -148,7 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   const vtDownloadBtn = document.getElementById("vt-downloadBackup");
   if (vtDownloadBtn) {
-    vtDownloadBtn.addEventListener("click", () => {
+    vtDownloadBtn.addEventListener("click", async () => {
+      // WICHTIG: Speicher erst laden, falls noch nicht geschehen
+      await VokabelTrainerStorage.init();
+      
       VokabelTrainerStorage.downloadBackup();
       showStatus("Vokabeltrainer-Backup wurde heruntergeladen.");
     });
