@@ -63,6 +63,14 @@ export const VokabelUI = {
 
     this.loadTrainingLists();
     this.updateTrainingPreview();
+
+    // Standardmäßig Listen-Dropdown ausklappen
+    const dropdownToggle = document.getElementById("list-dropdown-toggle");
+    const dropdownPanel = document.getElementById("list-dropdown-panel");
+    if (dropdownToggle && dropdownPanel) {
+      dropdownPanel.classList.add("open");
+      dropdownToggle.textContent = "▲ Listen auswählen ▲";
+    }
   },
 
   // --------------------------------------------------
@@ -319,6 +327,22 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       .map(cb => cb.value);
 
     this.trainingSettings.lists = selectedLists;
+
+    // Start-Button Validierung
+    const startBtn = document.getElementById("training-start-btn");
+    if (selectedLists.length === 0) {
+      startBtn.disabled = true;
+      startBtn.textContent = "Bitte mindestens eine Liste auswählen";
+      startBtn.style.opacity = "0.6";
+      startBtn.style.cursor = "not-allowed";
+      trainingPreview.textContent = "";
+      return;
+    } else {
+      startBtn.disabled = false;
+      startBtn.textContent = "Training starten";
+      startBtn.style.opacity = "1";
+      startBtn.style.cursor = "pointer";
+    }
 
     const all = VokabelTrainerStorage.getAllVokabeln();
 

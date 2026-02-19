@@ -39,6 +39,17 @@ export const VokabelLogic = {
 
     // Trainingsmodus anzeigen
     document.getElementById("training-mode").style.display = "block";
+    
+    // Toggle Button für Einstellungen ausblenden
+    const toggleBtn = document.getElementById("training-toggle-btn");
+    if (toggleBtn) toggleBtn.style.display = "none";
+
+    const stopBtn = document.getElementById("training-stop-btn");
+    if (stopBtn) {
+        stopBtn.textContent = "Training abbrechen";
+        stopBtn.style.backgroundColor = ""; // Reset Style (Rot aus CSS)
+        stopBtn.style.borderColor = "";
+    }
 
     // 3) erstes Wort anzeigen
     this.showCurrentWord();
@@ -55,6 +66,14 @@ export const VokabelLogic = {
     if (this.currentIndex >= this.trainingList.length) {
       wordBox.textContent = "Training abgeschlossen!";
       progress.textContent = `${this.trainingList.length} / ${this.trainingList.length}`;
+      
+      const stopBtn = document.getElementById("training-stop-btn");
+      if (stopBtn) {
+        stopBtn.textContent = "Training beenden";
+        stopBtn.style.backgroundColor = "#28a745"; // Grün
+        stopBtn.style.borderColor = "#28a745";
+      }
+      
       return;
     }
 
@@ -71,7 +90,7 @@ export const VokabelLogic = {
     if (isMultipleChoice) {
       // Multiple Choice Mode
       inputGroup.style.display = "none";
-      mcContainer.style.display = "grid"; // or flex
+      mcContainer.style.display = "flex"; // Flex für Zentrierung (Align-Items im CSS greift)
       checkBtn.style.display = "none"; // Hide "Check" button as clicking option checks immediately
 
       this.renderMultipleChoiceOptions(v, mcContainer);
@@ -128,6 +147,10 @@ export const VokabelLogic = {
 
     // Trainingseinstellungen wieder anzeigen
     document.getElementById("training-settings-panel").style.display = "block";
+
+    // Toggle Button wieder anzeigen
+    const toggleBtn = document.getElementById("training-toggle-btn");
+    if (toggleBtn) toggleBtn.style.display = "";
 
     // Vokabelliste wieder einblenden
     const wordlist = document.querySelector(".trainer-wordlist");

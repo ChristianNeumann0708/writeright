@@ -478,3 +478,89 @@
   display: block;
   margin-bottom: 0.4rem;
 }
+
+/* Multiple Choice Buttons: zentriert, begrenzte Breite, GRÜN */
+.training-multiple-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Zentriert die Buttons horizontal */
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Style und Farbe für Multiple Choice Buttons */
+/* Spezifischer Selektor (Klasse im Container), um allgemeine Button-Styles zu überschreiben */
+.training-mode-container .mc-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: none;
+  
+  /* User Wunsch: Grün zur optischen Unterscheidung */
+  background: #28a745; 
+  color: white;
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  width: 100%;
+  max-width: 450px; /* Breite */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+.training-mode-container .mc-option-btn:hover,
+.training-mode-container .mc-option-btn:focus {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  outline: none;
+}
+
+.training-mode-container .mc-option-btn:active {
+  transform: translateY(0);
+  background: #1e7e34;
+}
+
+/* Abstand zur Eingabe/anderen Controls */
+#training-input-group {
+  margin-bottom: 0.6rem;
+}
+
+/* Buttons im Trainingsbereich (Prüfen/Skip/Stop): kleiner und mehr Abstand nach oben */
+.training-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3rem; /* Deutlich mehr Abstand nach oben */
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0; /* Subtile Trennlinie */
+}
+
+/* Die Steuerungs-Buttons sollen kleiner sein */
+.training-mode-container .training-buttons button {
+  padding: 0.5rem 1rem; /* Kleineres Padding */
+  font-size: 0.9rem;    /* Kleinere Schrift */
+  border-radius: 6px;
+  width: auto;          /* Automatische Breite, nicht 100% */
+  min-width: 100px;
+}
+
+.training-stop-btn {
+  margin-left: auto;
+  background: #c0392b; /* Rot (wird durch specificity evtl überschrieben, daher unten confirm) */
+  color: white;
+}
+
+/* Sicherstellen, dass Stop-Button rot bleibt */
+.training-mode-container button.training-stop-btn {
+  background: #dc3545;
+}
+.training-mode-container button.training-stop-btn:hover {
+  background: #b02a37;
+}
