@@ -4,11 +4,23 @@ export const VokabelLogic = {
   trainingList: [],
   currentIndex: 0,
   settings: null,
+  timerId: null,
+  timerInterval: null,
+  remainingSeconds: 0,
 
   init() {},
 
   startTraining(settings) {
     this.settings = settings;
+
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
 
     // 1) Vokabeln filtern
     const all = VokabelTrainerStorage.getAllVokabeln();
@@ -28,6 +40,30 @@ export const VokabelLogic = {
 
     this.trainingList = selected;
     this.currentIndex = 0;
+
+    const timerText = document.getElementById("training-timer-text");
+    if (timerText) timerText.style.display = "none";
+
+    if (settings.mode === "time") {
+      this.remainingSeconds = settings.time * 60;
+      this.timerId = setTimeout(() => {
+        this.endTrainingByTime();
+      }, this.remainingSeconds * 1000);
+
+      if (timerText) {
+        timerText.style.display = "inline-block";
+        this.updateTimerUI(timerText, this.remainingSeconds);
+        this.timerInterval = setInterval(() => {
+          this.remainingSeconds--;
+          if (this.remainingSeconds <= 0) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+          } else {
+            this.updateTimerUI(timerText, this.remainingSeconds);
+          }
+        }, 1000);
+      }
+    }
 
     // 2) UI umschalten
     // Vokabelliste ausblenden
@@ -51,12 +87,21 @@ export const VokabelLogic = {
         stopBtn.style.borderColor = "";
     }
 
+    const skipBtn = document.getElementById("training-skip-btn");
+    if (skipBtn) skipBtn.style.display = "inline-block";
+    
+    const feedback = document.getElementById("training-feedback");
+    if (feedback) feedback.textContent = "";
+
     // 3) erstes Wort anzeigen
     this.showCurrentWord();
 
     // Eingabefeld fokussieren
     const answerInput = document.getElementById("training-answer");
-    if (answerInput) answerInput.focus();
+    if (answerInput) {
+      answerInput.value = "";
+      answerInput.focus();
+    }
   },
 
   showCurrentWord() {
@@ -64,16 +109,7 @@ export const VokabelLogic = {
     const progress = document.getElementById("training-progress-text");
 
     if (this.currentIndex >= this.trainingList.length) {
-      wordBox.textContent = "Training abgeschlossen!";
-      progress.textContent = `${this.trainingList.length} / ${this.trainingList.length}`;
-      
-      const stopBtn = document.getElementById("training-stop-btn");
-      if (stopBtn) {
-        stopBtn.textContent = "Training beenden";
-        stopBtn.style.backgroundColor = "#28a745"; // Grün
-        stopBtn.style.borderColor = "#28a745";
-      }
-      
+      this.finishTraining("Training abgeschlossen!");
       return;
     }
 
@@ -87,30 +123,30 @@ export const VokabelLogic = {
     const mcContainer = document.getElementById("training-multiple-choice-container");
     const checkBtn = document.getElementById("training-check-btn");
 
+    // Sprachrichtung bestimmen
+    let currentDirection = this.settings.direction;
+    if (currentDirection === "mixed") {
+      currentDirection = Math.random() < 0.5 ? "de-en" : "en-de";
+    }
+
+    if (currentDirection === "de-en") {
+      wordBox.textContent = v.translation.join(", ");
+    } else {
+      wordBox.textContent = v.word;
+    }
+
     if (isMultipleChoice) {
       // Multiple Choice Mode
       inputGroup.style.display = "none";
       mcContainer.style.display = "flex"; // Flex für Zentrierung (Align-Items im CSS greift)
       checkBtn.style.display = "none"; // Hide "Check" button as clicking option checks immediately
 
-      this.renderMultipleChoiceOptions(v, mcContainer);
+      this.renderMultipleChoiceOptions(v, mcContainer, currentDirection);
     } else {
       // Standard Text Mode
       inputGroup.style.display = "block";
       mcContainer.style.display = "none";
       checkBtn.style.display = "inline-block";
-    }
-
-    // Sprachrichtung
-
-    // Sprachrichtung
-    if (this.settings.direction === "de-en") {
-      wordBox.textContent = v.translation.join(", ");
-    } else if (this.settings.direction === "en-de") {
-      wordBox.textContent = v.word;
-    } else {
-      const random = Math.random() < 0.5;
-      wordBox.textContent = random ? v.word : v.translation.join(", ");
     }
   },
 
@@ -141,7 +177,60 @@ export const VokabelLogic = {
     this.showCurrentWord();
   },
 
+  finishTraining(message) {
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+
+    const wordBox = document.getElementById("training-word");
+    const progress = document.getElementById("training-progress-text");
+
+    if (wordBox) wordBox.textContent = message;
+    if (progress) progress.textContent = `${Math.min(this.currentIndex, this.trainingList.length)} / ${this.trainingList.length}`;
+    
+    const stopBtn = document.getElementById("training-stop-btn");
+    if (stopBtn) {
+      stopBtn.textContent = "Training beenden";
+      stopBtn.style.backgroundColor = "#28a745"; // Grün
+      stopBtn.style.borderColor = "#28a745";
+    }
+
+    document.getElementById("training-input-group").style.display = "none";
+    document.getElementById("training-multiple-choice-container").style.display = "none";
+    document.getElementById("training-check-btn").style.display = "none";
+    document.getElementById("training-skip-btn").style.display = "none";
+    
+    const feedback = document.getElementById("training-feedback");
+    if (feedback) feedback.textContent = "";
+  },
+
+  endTrainingByTime() {
+    this.currentIndex = this.trainingList.length; // Force progress end
+    this.finishTraining("Zeit abgelaufen! Training beendet.");
+  },
+
+  updateTimerUI(element, seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    const formatted = `${m}:${s.toString().padStart(2, "0")}`;
+    element.textContent = `⏱ ${formatted}`;
+  },
+
   stopTraining() {
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+
     // Trainingsmodus ausblenden
     document.getElementById("training-mode").style.display = "none";
 
@@ -163,23 +252,27 @@ export const VokabelLogic = {
   // Multiple Choice Helpers
   // --------------------------------------------------
 
-  renderMultipleChoiceOptions(currentVokabel, container) {
+  renderMultipleChoiceOptions(currentVokabel, container, currentDirection) {
     container.innerHTML = "";
 
     // 1. Richtige Antwort(en) bestimmen
     let correctAnswer = "";
-    if (this.settings.direction === "de-en") {
+    let correctAnswersAll = [];
+    if (currentDirection === "de-en") {
       correctAnswer = currentVokabel.word; // Englisches Wort gesucht
+      correctAnswersAll = [currentVokabel.word];
     } else {
-      // Deutsches Wort gesucht (oder eins davon)
-      correctAnswer = currentVokabel.translation[0]; 
+      // Deutsches Wort gesucht (oder eins davon) - Hier fügen wir alle Übersetzungen zusammen zu einer Antwortoption!
+      correctAnswer = currentVokabel.translation.join(", "); 
+      correctAnswersAll = [correctAnswer, ...currentVokabel.translation]; // Alle Variationen zum Herausfiltern beibehalten
     }
 
     // 2. Distraktoren (Falsche Antworten) suchen
-    const distractors = this.getDistractors(currentVokabel, 4);
+    const distractors = this.getDistractors(currentVokabel, 4, currentDirection, correctAnswersAll);
 
     // 3. Mischen (Richtige Antwort + Distraktoren)
-    const options = [correctAnswer, ...distractors].sort(() => Math.random() - 0.5);
+    let options = [correctAnswer, ...distractors];
+    options = [...new Set(options)].sort(() => Math.random() - 0.5);
 
     // 4. Buttons erstellen
     options.forEach(opt => {
@@ -196,9 +289,8 @@ export const VokabelLogic = {
     });
   },
 
-  getDistractors(currentVokabel, count) {
+  getDistractors(currentVokabel, count, currentDirection, correctAnswersAll) {
     const all = VokabelTrainerStorage.getAllVokabeln();
-    const direction = this.settings.direction;
     
     // Potentielle Kandidaten filtern
     const candidates = all.filter(v => v.id !== currentVokabel.id);
@@ -216,16 +308,16 @@ export const VokabelLogic = {
       
       // Wort holen passend zur Richtung
       let word = "";
-      if (direction === "de-en") {
+      if (currentDirection === "de-en") {
         word = randomVocab.word; // Englisch
       } else {
-        // Deutsch (zufällige Übersetzung nehmen)
+        // Deutsch (Alle Übersetzungen zusammenfassen)
         if (randomVocab.translation.length > 0) {
-           word = randomVocab.translation[Math.floor(Math.random() * randomVocab.translation.length)];
+           word = randomVocab.translation.join(", ");
         }
       }
 
-      if (word && !selected.includes(word)) {
+      if (word && !selected.includes(word) && !correctAnswersAll.includes(word)) {
         selected.push(word);
       }
       
@@ -233,8 +325,9 @@ export const VokabelLogic = {
     }
 
     // Fallback: Falls nicht genug Wörter da sind, fülle mit Platzhaltern (sollte bei >5 Vokabeln nicht passieren)
+    let placeholderCount = 1;
     while (selected.length < count) {
-        selected.push("???"); 
+        selected.push(`— ${placeholderCount++} —`); 
     }
 
     return selected;

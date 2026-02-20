@@ -11,6 +11,8 @@ const enInput = document.getElementById("vocab-en");
 const deInput = document.getElementById("vocab-de");
 const listSelect = document.getElementById("vocab-list");
 const saveBtn = document.getElementById("vocab-save-btn");
+const deleteBtn = document.getElementById("vocab-delete-btn");
+const deleteListBtn = document.getElementById("vocab-delete-list-btn");
 const newListBtn = document.getElementById("vocab-new-list-btn");
 const newListInput = document.getElementById("vocab-new-list-name");
 const statusBox = document.getElementById("vocab-status");
@@ -21,6 +23,7 @@ const inputPanel = document.getElementById("vocab-input-panel");
 const togglePanelBtn = document.getElementById("vocab-toggle-btn");
 const cancelBtn = document.getElementById("vocab-cancel-btn");
 const closePanelBtn = document.getElementById("vocab-close-panel-btn");
+const panelTitle = document.getElementById("vocab-panel-title");
 
 // --------------------------------------------------
 // Training UI Elemente
@@ -88,7 +91,11 @@ export const VokabelUI = {
     deInput.value = "";
     listSelect.value = "default";
     saveBtn.textContent = "Vokabel speichern";
+    deleteBtn.style.display = "none";
     cancelBtn.style.display = "none";
+    
+    if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+
     this.renderVocabList();
     togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
   },
@@ -122,6 +129,12 @@ export const VokabelUI = {
 
     if (!lists.some(l => l.id === listSelect.value)) {
       listSelect.value = "default";
+    }
+
+    if (listSelect.value === "default") {
+      deleteListBtn.style.display = "none";
+    } else {
+      deleteListBtn.style.display = "inline-block";
     }
   },
 
@@ -178,6 +191,31 @@ export const VokabelUI = {
 
     saveBtn.addEventListener("click", saveVocab);
 
+    deleteBtn.addEventListener("click", () => {
+      if (this.selectedVocabId) {
+        const confirmDelete = confirm("Möchtest du diese Vokabel wirklich löschen?");
+        if (confirmDelete) {
+          VokabelTrainerStorage.deleteVokabel(this.selectedVocabId);
+          showStatus("Vokabel gelöscht");
+          this.collapseInputPanel(); // Reset all UI to default insert mode
+        }
+      }
+    });
+
+    deleteListBtn.addEventListener("click", () => {
+      const currentListId = listSelect.value;
+      if (currentListId === "default") return;
+
+      const confirmDelete = confirm("Möchtest du diese Liste inklusive aller Vokabeln darin wirklich löschen?");
+      if (confirmDelete) {
+        VokabelTrainerStorage.deleteList(currentListId);
+        showStatus("Liste gelöscht");
+        this.loadLists();
+        this.renderVocabList();
+        this.loadTrainingLists();
+      }
+    });
+
     newListBtn.addEventListener("click", () => {
       const name = newListInput.value.trim();
 
@@ -199,7 +237,11 @@ export const VokabelUI = {
     });
 
     listSelect.addEventListener("change", () => {
-      this.renderVocabList();
+      if (listSelect.value === "default") {
+        deleteListBtn.style.display = "none";
+      } else {
+        deleteListBtn.style.display = "inline-block";
+      }
     });
 
     // Panel ein/aus
@@ -229,7 +271,11 @@ export const VokabelUI = {
       deInput.value = "";
       listSelect.value = "default";
       saveBtn.textContent = "Vokabel speichern";
+      deleteBtn.style.display = "none";
       cancelBtn.style.display = "none";
+      
+      if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+      
       this.renderVocabList();
     });
 
@@ -433,9 +479,20 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     } else {
       listSelect.value = "default";
     }
+    
+    // Trigger change check for list delete btn
+    const event = new Event('change');
+    listSelect.dispatchEvent(event);
 
     saveBtn.textContent = "Vokabel aktualisieren";
+    deleteBtn.style.display = "inline-block";
     cancelBtn.style.display = "inline-block";
+
+    // Training-Einstellungen einklappen, damit der Fokus auf der Bearbeitung liegt
+    trainingPanel.style.display = "none";
+    trainingToggleBtn.textContent = "▼ Training einstellen ▼";
+
+    if (panelTitle) panelTitle.textContent = "Vokabel aktualisieren";
 
     this.expandInputPanel();
     togglePanelBtn.textContent = "▲ Vokabel bearbeiten ▲";
@@ -502,7 +559,10 @@ function saveVocab() {
     listSelect.value = "default";
 
     saveBtn.textContent = "Vokabel speichern";
+    deleteBtn.style.display = "none";
     cancelBtn.style.display = "none";
+    
+    if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
 
     VokabelUI.renderVocabList();
     return;

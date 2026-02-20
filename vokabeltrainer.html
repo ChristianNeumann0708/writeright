@@ -57,7 +57,7 @@
             <!-- Eingabepanel -->
             <div id="vocab-input-panel" class="vocab-input-container panel-box">
 
-              <h2>Neue Vokabel hinzufügen</h2>
+              <h2 id="vocab-panel-title">Neue Vokabel hinzufügen</h2>
 
               <div class="vocab-row">
                 <div class="vocab-field">
@@ -71,36 +71,53 @@
                 </div>
               </div>
 
-              <div class="vocab-list-row">
-                <div class="vocab-list-select">
-                  <label for="vocab-list">Liste</label>
-                  <select id="vocab-list">
+              <!-- Ausgewählte Liste direkt unter den Eingabefeldern -->
+              <div class="vocab-field" style="margin-bottom: 1.5rem;">
+                <label for="vocab-list">Ausgewählte Liste</label>
+                <div style="display: flex; gap: 10px;">
+                  <select id="vocab-list" style="flex: 1; padding: 0.7rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;">
                     <option value="default">Allgemeine Liste</option>
                   </select>
                 </div>
-
-                <div class="vocab-list-new">
-                  <label for="vocab-new-list-name">Neue Liste</label>
-                  <input type="text" id="vocab-new-list-name" placeholder="Name der neuen Liste">
-                </div>
               </div>
 
-              <div class="vocab-actions">
+              <!-- Primäre Buttons nebeneinander unterhalb der Eingabefelder -->
+              <div class="vocab-actions" id="vocab-main-actions">
                 <button type="button" id="vocab-save-btn">Vokabel speichern</button>
-                <button type="button" id="vocab-new-list-btn">Neue Liste anlegen</button>
-              </div>
-
-              <div class="vocab-actions-secondary">
-                <button type="button" id="vocab-cancel-btn" class="vocab-secondary-btn" style="display:none;">
-                  Abbrechen
-                </button>
-
-                <button type="button" id="vocab-close-panel-btn" class="vocab-secondary-btn vocab-close-right">
-                  Bereich schließen
-                </button>
+                <button type="button" id="vocab-delete-btn" class="vocab-delete-btn" style="display:none;" title="Vokabel löschen">Vokabel löschen</button>
+                <button type="button" id="vocab-cancel-btn" class="vocab-secondary-btn" style="display:none;">Abbrechen</button>
               </div>
 
               <div id="vocab-status" class="vocab-status" style="display:none;"></div>
+
+              <hr class="vocab-divider">
+
+              <!-- Listen-Verwaltung unten -->
+              <div class="vocab-list-management">
+                <h3>Listen-Verwaltung</h3>
+
+                <div class="vocab-list-row" style="align-items: center;">
+                  <div class="vocab-list-new" style="flex: 2;">
+                    <label for="vocab-new-list-name">Neue Liste erstellen</label>
+                    <input type="text" id="vocab-new-list-name" placeholder="Name der neuen Liste">
+                  </div>
+                  <div class="vocab-list-actions" style="flex: 1; margin-top: 1.5rem;">
+                    <button type="button" id="vocab-new-list-btn" style="width: 100%;">Liste anlegen</button>
+                  </div>
+                </div>
+                
+                <div class="vocab-list-row" style="margin-top: 1rem;">
+                  <div class="vocab-list-actions" style="margin-left: auto;">
+                     <button type="button" id="vocab-delete-list-btn" class="vocab-delete-btn" title="Die oben im Dropdown ausgewählte Liste löschen">Ausgewählte Liste löschen</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vocab-actions-secondary" style="margin-top: 1.5rem; justify-content: center;">
+                <button type="button" id="vocab-close-panel-btn" class="vocab-secondary-btn" style="width: auto; padding-left: 2rem; padding-right: 2rem;">
+                  Bereich schließen ▲
+                </button>
+              </div>
             </div>
 
             <!-- Toggle: Training einstellen -->
@@ -133,14 +150,14 @@
 
                 <div id="list-dropdown-panel" class="list-dropdown-panel">
                   <div id="training-list-selection"></div>
+                  
+                  <!-- Buttons jetzt innerhalb des Panels -->
+                  <div class="training-list-actions">
+                    <button type="button" id="training-select-all-btn">Alle auswählen</button>
+                    <button type="button" id="training-select-none-btn">Keine auswählen</button>
+                  </div>
                 </div>
 
-              </div>
-
-              <!-- Buttons bleiben außerhalb -->
-              <div class="training-list-actions">
-                <button type="button" id="training-select-all-btn">Alle auswählen</button>
-                <button type="button" id="training-select-none-btn">Keine auswählen</button>
               </div>
 
 <!-- C) Trainingsmodus -->
@@ -205,6 +222,7 @@
 
               <div id="training-progress" class="training-progress">
                 <span id="training-progress-text">0 / 0</span>
+                <span id="training-timer-text" class="training-timer-text" style="display:none;"></span>
               </div>
 
               <div id="training-word" class="training-word"></div>
