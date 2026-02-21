@@ -39,7 +39,16 @@
 
           <!-- Linke Spalte: Gruppierte Vokabelliste -->
           <div class="trainer-wordlist">
-            <h4>Vokabelliste</h4>
+            <div class="vocab-list-header">
+              <h4>Vokabelliste</h4>
+              <div class="vocab-sort-control">
+                <select id="vocab-sort-select">
+                  <option value="alpha">A-Z</option>
+                  <option value="errors-desc">Meiste Fehler</option>
+                  <option value="balance-asc">Schlechteste Bilanz</option>
+                </select>
+              </div>
+            </div>
             <div id="vocab-total-count" class="vocab-total-count"></div>
             <div id="vocab-list-display"></div>
           </div>
@@ -230,6 +239,7 @@
               </div>
 
               <div id="training-word" class="training-word"></div>
+              <div id="training-word-stats" class="training-word-stats"></div>
 
               <div class="training-input-area" id="training-input-group">
                 <label for="training-answer">Übersetzung eingeben</label>

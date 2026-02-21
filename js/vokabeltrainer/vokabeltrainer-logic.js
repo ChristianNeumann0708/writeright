@@ -1,4 +1,5 @@
 import { VokabelTrainerStorage } from "./vokabeltrainer-storage.js";
+import { Vokabel } from "../models/Vokabel.js";
 
 export const VokabelLogic = {
   trainingList: [],
@@ -7,6 +8,8 @@ export const VokabelLogic = {
   timerId: null,
   timerInterval: null,
   remainingSeconds: 0,
+  currentWordDirection: "de-en",
+  sessionStats: { correct: 0, wrong: 0 },
 
   init() {},
 
@@ -21,6 +24,8 @@ export const VokabelLogic = {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
     }
+
+    this.sessionStats = { correct: 0, wrong: 0 };
 
     // 1) Vokabeln filtern
     const all = VokabelTrainerStorage.getAllVokabeln();
@@ -128,6 +133,7 @@ export const VokabelLogic = {
     if (currentDirection === "mixed") {
       currentDirection = Math.random() < 0.5 ? "de-en" : "en-de";
     }
+    this.currentWordDirection = currentDirection;
 
     if (currentDirection === "de-en") {
       wordBox.textContent = v.translation.join(", ");
@@ -148,6 +154,18 @@ export const VokabelLogic = {
       mcContainer.style.display = "none";
       checkBtn.style.display = "inline-block";
     }
+
+    // Statistiken der Vokabel anzeigen
+    const statsContainer = document.getElementById("training-word-stats");
+    if (statsContainer) {
+      const stats = currentDirection === "de-en" ? v.statsDEtoEN : v.statsENtoDE;
+      const balance = stats.correct - stats.wrong;
+      statsContainer.innerHTML = `
+        <span class="vocab-stat-badge stat-green">🟢 ${stats.correct}</span>
+        <span class="vocab-stat-badge stat-red">🔴 ${stats.wrong}</span>
+        <span class="vocab-stat-badge stat-blue">⚖️ ${balance > 0 ? '+'+balance : balance}</span>
+      `;
+    }
   },
 
   checkAnswer(answer) {
@@ -159,17 +177,41 @@ export const VokabelLogic = {
       ...v.translation.map(t => t.toLowerCase())
     ];
 
+    // Das Model Vokabel bringt Methoden wie `markCorrect` / `markWrong` mit.
+    // Falls das Objekt im Array nur das pure JSON war, bauen wir hier eine echte Klasse:
+    const vocabInstanz = typeof v.markCorrect === 'function' ? v : new Vokabel(v);
+    
+    // Richtige Logik-Richtung für Model ("ENtoDE" / "DEtoEN")
+    const statDirection = this.currentWordDirection === "de-en" ? "DEtoEN" : "ENtoDE";
+    const isRepetition = !!v._isRepetition;
+
     if (correctAnswers.includes(answer.toLowerCase())) {
-      feedback.textContent = "Richtig!";
+      feedback.textContent = isRepetition ? "Richtig! (Wiederholung)" : "Richtig!";
       feedback.style.color = "green";
+      
+      if (vocabInstanz && typeof vocabInstanz.markCorrect === 'function' && !isRepetition) {
+         vocabInstanz.markCorrect(statDirection);
+      }
+      if (!isRepetition) this.sessionStats.correct++;
     } else {
       feedback.textContent = `Falsch! Richtig wäre: ${v.word} – ${v.translation.join(", ")}`;
       feedback.style.color = "red";
       
+      if (vocabInstanz && typeof vocabInstanz.markWrong === 'function' && !isRepetition) {
+         vocabInstanz.markWrong(statDirection, answer);
+      }
+      if (!isRepetition) this.sessionStats.wrong++;
+      
       // Fehlerhafte Vokabel wiederholen (ans Ende der Liste hängen)
       if (this.settings && this.settings.withRepeats) {
+        v._isRepetition = true;
         this.trainingList.push(v);
       }
+    }
+    
+    // Speichern (wir übergeben die aktualisierte oder neu erstellte Vokabel nur beim ersten Versuch)
+    if (vocabInstanz && !isRepetition) {
+      VokabelTrainerStorage.updateVokabel(vocabInstanz);
     }
 
     this.currentIndex++;
@@ -198,6 +240,16 @@ export const VokabelLogic = {
     if (wordBox) wordBox.textContent = message;
     if (progress) progress.textContent = `${Math.min(this.currentIndex, this.trainingList.length)} / ${this.trainingList.length}`;
     
+    const statsContainer = document.getElementById("training-word-stats");
+    if (statsContainer) {
+      const totalAttempted = this.sessionStats.correct + this.sessionStats.wrong;
+      statsContainer.innerHTML = `
+        <span class="vocab-stat-badge stat-blue">📚 ${totalAttempted} Vokabeln</span>
+        <span class="vocab-stat-badge stat-green">🟢 ${this.sessionStats.correct} Richtig</span>
+        <span class="vocab-stat-badge stat-red">🔴 ${this.sessionStats.wrong} Falsch</span>
+      `;
+    }
+
     const stopBtn = document.getElementById("training-stop-btn");
     if (stopBtn) {
       stopBtn.textContent = "Training beenden";

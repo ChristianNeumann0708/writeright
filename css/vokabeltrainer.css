@@ -177,10 +177,11 @@
   padding: 10px 12px;
   margin-bottom: 10px;
   border-radius: 6px;
+  border: 1px solid #e3effa; /* Sehr zarter, bläulicher Rahmen */
 }
 
 .vocab-list-group:nth-child(odd) {
-  background: #f5f5f5;
+  background: #f4f9ff; /* Sehr helles, freundliches Wolkenblau */
 }
 
 .vocab-list-group:nth-child(even) {
@@ -193,21 +194,59 @@
   font-size: 15px;
 }
 
+.vocab-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.vocab-list-header h4 {
+  margin: 0;
+}
+.vocab-sort-control select {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+  outline: none;
+}
+
 .vocab-list-inner {
   list-style: none;
-  padding-left: 10px;
+  padding-left: 0;
   margin: 0;
 }
 
 .vocab-list-inner li {
-  padding: 2px 0;
+  padding: 6px 8px;
   font-size: 14px;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-radius: 6px;
+}
+
+.vocab-item-text {
+  flex: 1;
+  word-break: break-word;
+  padding-right: 10px;
+}
+
+.vocab-item-stats {
+  white-space: nowrap;
+  font-size: 0.8rem;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
 }
 
 .vocab-empty {
   font-style: italic;
   opacity: 0.6;
+  padding-left: 10px !important;
 }
 
 /* --------------------------------------------------
@@ -380,9 +419,28 @@
 .training-word {
   font-size: 2rem;
   font-weight: 600;
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0.5rem 0;
   text-align: center;
 }
+
+.training-word-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.vocab-stat-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.stat-green { color: #155724; background-color: #d4edda; }
+.stat-red   { color: #721c24; background-color: #f8d7da; }
+.stat-blue  { color: #004085; background-color: #cce5ff; }
 
 .training-input-area {
   margin-bottom: 1rem;

@@ -45,6 +45,7 @@ const trainingStartBtn = document.getElementById("training-start-btn");
 
 export const VokabelUI = {
   selectedVocabId: null,
+  currentSort: "alpha",
   trainingSettings: {
     direction: "de-en",
     lists: [],
@@ -61,7 +62,10 @@ export const VokabelUI = {
   init() {
     this.loadLists();
     this.bindEvents();
-    this.expandInputPanel();
+    this.collapseInputPanel();
+    trainingPanel.style.display = "block";
+    trainingToggleBtn.textContent = "▲ Training einstellen ▲";
+
     this.renderVocabList();
 
     this.loadTrainingLists();
@@ -244,6 +248,14 @@ export const VokabelUI = {
       }
     });
 
+    const sortSelect = document.getElementById("vocab-sort-select");
+    if (sortSelect) {
+      sortSelect.addEventListener("change", (e) => {
+        this.currentSort = e.target.value;
+        this.renderVocabList();
+      });
+    }
+
     // Panel ein/aus
     togglePanelBtn.addEventListener("click", () => {
       const isCollapsed = inputPanel.classList.contains("collapsed");
@@ -422,9 +434,22 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       const ul = document.createElement("ul");
       ul.className = "vocab-list-inner";
 
-      const vocabOfList = allVocab
-        .filter(v => v.list === list.id)
-        .sort((a, b) => a.word.localeCompare(b.word));
+      let vocabOfList = allVocab.filter(v => v.list === list.id);
+
+      vocabOfList.sort((a, b) => {
+        if (this.currentSort === "alpha") {
+          return a.word.localeCompare(b.word);
+        } else if (this.currentSort === "errors-desc") {
+          const errorsA = (a.statsENtoDE?.wrong || 0) + (a.statsDEtoEN?.wrong || 0);
+          const errorsB = (b.statsENtoDE?.wrong || 0) + (b.statsDEtoEN?.wrong || 0);
+          return errorsB - errorsA; // Höchste Zahl zuerst
+        } else if (this.currentSort === "balance-asc") {
+          const balA = ((a.statsENtoDE?.correct || 0) + (a.statsDEtoEN?.correct || 0)) - ((a.statsENtoDE?.wrong || 0) + (a.statsDEtoEN?.wrong || 0));
+          const balB = ((b.statsENtoDE?.correct || 0) + (b.statsDEtoEN?.correct || 0)) - ((b.statsENtoDE?.wrong || 0) + (b.statsDEtoEN?.wrong || 0));
+          return balA - balB; // Niedrigste/stärkst negative Bilanz zuerst
+        }
+        return 0;
+      });
 
       const count = vocabOfList.length;
 
@@ -441,8 +466,30 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       } else {
         vocabOfList.forEach(v => {
           const li = document.createElement("li");
-          li.textContent = `${v.word} – ${v.translation.join(", ")}`;
-          li.style.cursor = "pointer";
+          
+          const textSpan = document.createElement("span");
+          textSpan.className = "vocab-item-text";
+          textSpan.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 2px;">${v.word}</div>
+            <div style="font-size: 0.9em; opacity: 0.8;">${v.translation.join(", ")}</div>
+          `;
+          
+          const statsSpan = document.createElement("span");
+          statsSpan.className = "vocab-item-stats";
+          
+          const getStatsHtml = (stats, label) => {
+             if (!stats) return `<div><span style="opacity: 0.6;">${label}</span> -</div>`;
+             if (stats.correct === 0 && stats.wrong === 0) return `<div style="opacity:0.4;"><span>${label}</span> 🟢 0 🔴 0</div>`;
+             return `<div><span>${label}</span> 🟢 ${stats.correct} 🔴 ${stats.wrong}</div>`;
+          };
+          
+          statsSpan.innerHTML = `
+            ${getStatsHtml(v.statsDEtoEN, 'DE➝EN')}
+            ${getStatsHtml(v.statsENtoDE, 'EN➝DE')}
+          `;
+
+          li.appendChild(textSpan);
+          li.appendChild(statsSpan);
 
           li.addEventListener("click", () => {
             VokabelUI.selectVocab(v);
@@ -629,4 +676,5 @@ document.getElementById("training-skip-btn").addEventListener("click", () => {
 
 document.getElementById("training-stop-btn").addEventListener("click", () => {
   VokabelLogic.stopTraining();
+  VokabelUI.renderVocabList();
 });
