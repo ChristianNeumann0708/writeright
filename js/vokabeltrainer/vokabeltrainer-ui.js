@@ -275,6 +275,7 @@ export const VokabelUI = {
       cancelBtn.style.display = "none";
       
       if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+      togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
       
       this.renderVocabList();
     });
@@ -492,7 +493,7 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     trainingPanel.style.display = "none";
     trainingToggleBtn.textContent = "▼ Training einstellen ▼";
 
-    if (panelTitle) panelTitle.textContent = "Vokabel aktualisieren";
+    if (panelTitle) panelTitle.textContent = "Vokabel bearbeiten";
 
     this.expandInputPanel();
     togglePanelBtn.textContent = "▲ Vokabel bearbeiten ▲";
@@ -563,6 +564,7 @@ function saveVocab() {
     cancelBtn.style.display = "none";
     
     if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+    togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
 
     VokabelUI.renderVocabList();
     return;

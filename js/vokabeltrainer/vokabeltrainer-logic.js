@@ -165,6 +165,11 @@ export const VokabelLogic = {
     } else {
       feedback.textContent = `Falsch! Richtig wäre: ${v.word} – ${v.translation.join(", ")}`;
       feedback.style.color = "red";
+      
+      // Fehlerhafte Vokabel wiederholen (ans Ende der Liste hängen)
+      if (this.settings && this.settings.withRepeats) {
+        this.trainingList.push(v);
+      }
     }
 
     this.currentIndex++;
