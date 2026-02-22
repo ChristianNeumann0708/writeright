@@ -24,6 +24,10 @@ const togglePanelBtn = document.getElementById("vocab-toggle-btn");
 const cancelBtn = document.getElementById("vocab-cancel-btn");
 const closePanelBtn = document.getElementById("vocab-close-panel-btn");
 const panelTitle = document.getElementById("vocab-panel-title");
+const importFile = document.getElementById("vocab-import-file");
+const importBtn = document.getElementById("vocab-import-btn");
+const searchInput = document.getElementById("vocab-search-input");
+const searchClear = document.getElementById("vocab-search-clear");
 
 // --------------------------------------------------
 // Training UI Elemente
@@ -46,6 +50,7 @@ const trainingStartBtn = document.getElementById("training-start-btn");
 export const VokabelUI = {
   selectedVocabId: null,
   currentSort: "alpha",
+  currentSearch: "",
   trainingSettings: {
     direction: "de-en",
     lists: [],
@@ -240,6 +245,74 @@ export const VokabelUI = {
       this.loadTrainingLists();
     });
 
+    importBtn.addEventListener("click", () => {
+      if (!importFile.files || importFile.files.length === 0) {
+        showStatus("Bitte wähle zuerst eine Textdatei aus!");
+        return;
+      }
+
+      const file = importFile.files[0];
+      const reader = new FileReader();
+      const targetListId = listSelect.value;
+
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/);
+        let imported = 0;
+        let duplicates = 0;
+
+        for (let line of lines) {
+          line = line.trim();
+          if (!line) continue;
+          
+          // Wir suchen nach dem _ersten_ gültigen Trennzeichen zwischen Englisch und Deutsch
+          // Erlaubt ist ab jetzt nur noch das Komma
+          const delimiterRegex = / , |,/ ;
+          const match = line.match(delimiterRegex);
+          
+          if (!match) continue; 
+          
+          const splitIndex = match.index;
+          const delimiterLength = match[0].length;
+          
+          const enWord = line.substring(0, splitIndex).trim();
+          const deWordsText = line.substring(splitIndex + delimiterLength).trim();
+          
+          if (!enWord || !deWordsText) continue;
+          
+          // Im deutschen Teil können mehrere Übersetzungen weiterhin durch Kommas getrennt sein
+          const deTranslations = deWordsText.split(',').map(t => t.trim()).filter(t => t.length > 0);
+          
+          const vokabel = new Vokabel({
+            word: enWord,
+            translation: deTranslations,
+            list: targetListId
+          });
+          
+          const result = VokabelTrainerStorage.addVokabel(vokabel);
+          if (result.success) {
+            imported++;
+          } else {
+            duplicates++;
+          }
+        }
+        
+        importFile.value = "";
+        
+        if (imported > 0) {
+          showStatus(`${imported} Vokabeln importiert! ${duplicates > 0 ? '(' + duplicates + ' Duplikate übersprungen)' : ''}`);
+          this.renderVocabList();
+          this.loadTrainingLists();
+        } else if (duplicates > 0) {
+          showStatus(`Import fertig: Alle Vokabeln existierten bereits (${duplicates}).`);
+        } else {
+          showStatus("Fehler: Keine gültigen Vokabel-Paare (Trennzeichen?) in der Datei.");
+        }
+      };
+
+      reader.readAsText(file);
+    });
+
     listSelect.addEventListener("change", () => {
       if (listSelect.value === "default") {
         deleteListBtn.style.display = "none";
@@ -253,6 +326,26 @@ export const VokabelUI = {
       sortSelect.addEventListener("change", (e) => {
         this.currentSort = e.target.value;
         this.renderVocabList();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        this.currentSearch = e.target.value.toLowerCase().trim();
+        if (searchClear) {
+          searchClear.style.display = this.currentSearch ? "block" : "none";
+        }
+        this.renderVocabList();
+      });
+    }
+
+    if (searchClear) {
+      searchClear.addEventListener("click", () => {
+        searchInput.value = "";
+        this.currentSearch = "";
+        searchClear.style.display = "none";
+        this.renderVocabList();
+        searchInput.focus();
       });
     }
 
@@ -428,13 +521,24 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     const allVocab = VokabelTrainerStorage.getAllVokabeln();
 
     lists.forEach(list => {
+      let vocabOfList = allVocab.filter(v => v.list === list.id);
+
+      if (this.currentSearch) {
+        vocabOfList = vocabOfList.filter(v => 
+          v.word.toLowerCase().includes(this.currentSearch) ||
+          v.translation.join(" ").toLowerCase().includes(this.currentSearch)
+        );
+      }
+
+      if (vocabOfList.length === 0 && this.currentSearch) {
+        return; // Verstecke die Liste, wenn sie durch Suche leer ist
+      }
+
       const group = document.createElement("div");
       group.className = "vocab-list-group";
 
       const ul = document.createElement("ul");
       ul.className = "vocab-list-inner";
-
-      let vocabOfList = allVocab.filter(v => v.list === list.id);
 
       vocabOfList.sort((a, b) => {
         if (this.currentSort === "alpha") {
@@ -479,6 +583,12 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
           
           const getStatsHtml = (stats, label) => {
              if (!stats) return `<div><span style="opacity: 0.6;">${label}</span> -</div>`;
+             
+             if (this.currentSort === "balance-asc") {
+               const bal = stats.correct - stats.wrong;
+               return `<div><span>${label}</span> ⚖️ ${bal > 0 ? '+'+bal : bal}</div>`;
+             }
+
              if (stats.correct === 0 && stats.wrong === 0) return `<div style="opacity:0.4;"><span>${label}</span> 🟢 0 🔴 0</div>`;
              return `<div><span>${label}</span> 🟢 ${stats.correct} 🔴 ${stats.wrong}</div>`;
           };

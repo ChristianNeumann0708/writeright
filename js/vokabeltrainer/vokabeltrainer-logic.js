@@ -8,6 +8,7 @@ export const VokabelLogic = {
   timerId: null,
   timerInterval: null,
   remainingSeconds: 0,
+  elapsedSeconds: 0,
   currentWordDirection: "de-en",
   sessionStats: { correct: 0, wrong: 0 },
 
@@ -45,9 +46,17 @@ export const VokabelLogic = {
 
     this.trainingList = selected;
     this.currentIndex = 0;
+    this.elapsedSeconds = 0;
 
     const timerText = document.getElementById("training-timer-text");
     if (timerText) timerText.style.display = "none";
+    
+    // Reset session UI immediately
+    const sessionInfo = document.getElementById("session-info");
+    if (sessionInfo) {
+      sessionInfo.style.display = "flex";
+      this.updateSessionStatsUI();
+    }
 
     if (settings.mode === "time") {
       this.remainingSeconds = settings.time * 60;
@@ -58,17 +67,24 @@ export const VokabelLogic = {
       if (timerText) {
         timerText.style.display = "inline-block";
         this.updateTimerUI(timerText, this.remainingSeconds);
-        this.timerInterval = setInterval(() => {
-          this.remainingSeconds--;
-          if (this.remainingSeconds <= 0) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-          } else {
-            this.updateTimerUI(timerText, this.remainingSeconds);
-          }
-        }, 1000);
       }
     }
+    
+    // Always start interval to count elapsed seconds
+    this.timerInterval = setInterval(() => {
+      this.elapsedSeconds++;
+      this.updateSessionStatsUI();
+      
+      if (settings.mode === "time") {
+        this.remainingSeconds--;
+        if (timerText) this.updateTimerUI(timerText, this.remainingSeconds);
+        
+        if (this.remainingSeconds <= 0 && this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      }
+    }, 1000);
 
     // 2) UI umschalten
     // Vokabelliste ausblenden
@@ -214,6 +230,8 @@ export const VokabelLogic = {
       VokabelTrainerStorage.updateVokabel(vocabInstanz);
     }
 
+    this.updateSessionStatsUI();
+
     this.currentIndex++;
     document.getElementById("training-answer").value = "";
     this.showCurrentWord();
@@ -275,7 +293,26 @@ export const VokabelLogic = {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     const formatted = `${m}:${s.toString().padStart(2, "0")}`;
-    element.textContent = `⏱ ${formatted}`;
+    element.textContent = `⏱ ${formatted} noch`;
+  },
+
+  updateSessionStatsUI() {
+    const min = Math.floor(this.elapsedSeconds / 60);
+    const sec = this.elapsedSeconds % 60;
+    const timeStr = `${min}:${sec.toString().padStart(2, "0")}`;
+    
+    const timeEl = document.getElementById("session-timer");
+    if (timeEl) timeEl.textContent = `⏱ ${timeStr}`;
+    
+    const correctEl = document.getElementById("session-correct");
+    if (correctEl) correctEl.textContent = `🟢 ${this.sessionStats.correct}`;
+    
+    const wrongEl = document.getElementById("session-wrong");
+    if (wrongEl) wrongEl.textContent = `🔴 ${this.sessionStats.wrong}`;
+    
+    const totalEl = document.getElementById("session-total");
+    const total = this.sessionStats.correct + this.sessionStats.wrong;
+    if (totalEl) totalEl.textContent = `📚 ${total}`;
   },
 
   stopTraining() {
@@ -290,6 +327,10 @@ export const VokabelLogic = {
 
     // Trainingsmodus ausblenden
     document.getElementById("training-mode").style.display = "none";
+    
+    // Session Info verstecken
+    const sessionInfo = document.getElementById("session-info");
+    if (sessionInfo) sessionInfo.style.display = "none";
 
     // Trainingseinstellungen wieder anzeigen
     document.getElementById("training-settings-panel").style.display = "block";

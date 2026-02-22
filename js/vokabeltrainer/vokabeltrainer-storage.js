@@ -138,8 +138,7 @@ class VokabelTrainerStorageClass {
 
     const duplicate = this.data.vokabeln.find(
       existing =>
-        existing.word.toLowerCase() === v.word.toLowerCase() &&
-        existing.list === v.list
+        existing.word.toLowerCase() === v.word.toLowerCase()
     );
 
     if (duplicate) {
@@ -208,7 +207,6 @@ class VokabelTrainerStorageClass {
 
     const found = this.data.vokabeln.find(
       v =>
-        v.list === listId &&
         v.word.trim().toLowerCase() === w
     );
 
