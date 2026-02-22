@@ -11,6 +11,7 @@ export const VokabelLogic = {
   elapsedSeconds: 0,
   currentWordDirection: "de-en",
   sessionStats: { correct: 0, wrong: 0 },
+  sessionHistory: [],
 
   init() {},
 
@@ -27,6 +28,7 @@ export const VokabelLogic = {
     }
 
     this.sessionStats = { correct: 0, wrong: 0 };
+    this.sessionHistory = [];
 
     // 1) Vokabeln filtern
     const all = VokabelTrainerStorage.getAllVokabeln();
@@ -54,7 +56,7 @@ export const VokabelLogic = {
     // Reset session UI immediately
     const sessionInfo = document.getElementById("session-info");
     if (sessionInfo) {
-      sessionInfo.style.display = "flex";
+      sessionInfo.style.display = settings.hideStats ? "none" : "flex";
       this.updateSessionStatsUI();
     }
 
@@ -174,13 +176,18 @@ export const VokabelLogic = {
     // Statistiken der Vokabel anzeigen
     const statsContainer = document.getElementById("training-word-stats");
     if (statsContainer) {
-      const stats = currentDirection === "de-en" ? v.statsDEtoEN : v.statsENtoDE;
-      const balance = stats.correct - stats.wrong;
-      statsContainer.innerHTML = `
-        <span class="vocab-stat-badge stat-green">🟢 ${stats.correct}</span>
-        <span class="vocab-stat-badge stat-red">🔴 ${stats.wrong}</span>
-        <span class="vocab-stat-badge stat-blue">⚖️ ${balance > 0 ? '+'+balance : balance}</span>
-      `;
+      if (this.settings.hideStats) {
+        statsContainer.style.display = "none";
+      } else {
+        statsContainer.style.display = "flex";
+        const stats = currentDirection === "de-en" ? v.statsDEtoEN : v.statsENtoDE;
+        const balance = stats.correct - stats.wrong;
+        statsContainer.innerHTML = `
+          <span class="vocab-stat-badge stat-green">🟢 ${stats.correct}</span>
+          <span class="vocab-stat-badge stat-red">🔴 ${stats.wrong}</span>
+          <span class="vocab-stat-badge stat-blue">⚖️ ${balance > 0 ? '+'+balance : balance}</span>
+        `;
+      }
     }
   },
 
@@ -201,17 +208,36 @@ export const VokabelLogic = {
     const statDirection = this.currentWordDirection === "de-en" ? "DEtoEN" : "ENtoDE";
     const isRepetition = !!v._isRepetition;
 
-    if (correctAnswers.includes(answer.toLowerCase())) {
-      feedback.textContent = isRepetition ? "Richtig! (Wiederholung)" : "Richtig!";
-      feedback.style.color = "green";
+    const isCorrect = correctAnswers.includes(answer.toLowerCase());
+
+    if (!isRepetition) {
+      this.sessionHistory.push({
+        vokabel: v,
+        direction: this.currentWordDirection,
+        answer: answer,
+        isCorrect: isCorrect
+      });
+    }
+
+    if (isCorrect) {
+      if (!this.settings.hideStats) {
+        feedback.textContent = isRepetition ? "Richtig! (Wiederholung)" : "Richtig!";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "";
+      }
       
       if (vocabInstanz && typeof vocabInstanz.markCorrect === 'function' && !isRepetition) {
          vocabInstanz.markCorrect(statDirection);
       }
       if (!isRepetition) this.sessionStats.correct++;
     } else {
-      feedback.textContent = `Falsch! Richtig wäre: ${v.word} – ${v.translation.join(", ")}`;
-      feedback.style.color = "red";
+      if (!this.settings.hideStats) {
+        feedback.textContent = `Falsch! Richtig wäre: ${v.word} – ${v.translation.join(", ")}`;
+        feedback.style.color = "red";
+      } else {
+        feedback.textContent = "";
+      }
       
       if (vocabInstanz && typeof vocabInstanz.markWrong === 'function' && !isRepetition) {
          vocabInstanz.markWrong(statDirection, answer);
@@ -252,6 +278,9 @@ export const VokabelLogic = {
       this.timerInterval = null;
     }
 
+    const sessionInfo = document.getElementById("session-info");
+    if (sessionInfo) sessionInfo.style.display = "none";
+
     const wordBox = document.getElementById("training-word");
     const progress = document.getElementById("training-progress-text");
 
@@ -282,6 +311,61 @@ export const VokabelLogic = {
     
     const feedback = document.getElementById("training-feedback");
     if (feedback) feedback.textContent = "";
+
+    const summaryContainer = document.getElementById("training-summary-container");
+    if (summaryContainer) {
+      if (this.sessionHistory.length === 0) {
+        summaryContainer.style.display = "none";
+      } else {
+        summaryContainer.style.display = "block";
+        
+        const min = Math.floor(this.elapsedSeconds / 60);
+        const sec = this.elapsedSeconds % 60;
+        const timeStr = `${min}:${sec.toString().padStart(2, "0")}`;
+        const total = this.sessionStats.correct + this.sessionStats.wrong;
+
+        let html = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <h3 style="margin: 0;">Zusammenfassung</h3>
+            <div style="display: flex; gap: 8px; font-size: 0.9em; flex-wrap: wrap;">
+              <span class="vocab-stat-badge" style="background: #f0f0f0; border: 1px solid #ddd; color: #333;">⏱ ${timeStr}</span>
+              <span class="vocab-stat-badge stat-blue">📚 ${total}</span>
+              <span class="vocab-stat-badge stat-green">🟢 ${this.sessionStats.correct}</span>
+              <span class="vocab-stat-badge stat-red">🔴 ${this.sessionStats.wrong}</span>
+            </div>
+          </div>
+          <ul class="vocab-list-inner" style="background:#fff; border:1px solid #eee; border-radius:8px; padding:0; max-height: 400px; overflow-y: auto;">
+        `;
+        
+        this.sessionHistory.forEach(item => {
+          const v = item.vokabel;
+          const q = item.direction === "de-en" ? v.translation.join(", ") : v.word;
+          const correctAns = item.direction === "de-en" ? v.word : v.translation.join(", ");
+          
+          const icon = item.isCorrect ? "🟢" : "🔴";
+          const colorClass = item.isCorrect ? "stat-green" : "stat-red";
+          
+          let rightSideText = item.isCorrect ? "Richtig" : `Falsch: ${item.answer || "-"}`;
+          if (item.answer && item.answer.trim().length === 0) {
+              rightSideText = item.isCorrect ? "Richtig" : `Falsch (übersprungen)`;
+          }
+
+          html += `
+            <li style="border-bottom: 1px solid #f0f0f0; padding: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+              <div style="flex: 1;">
+                <div style="font-weight: bold;">${q}</div>
+                <div style="font-size: 0.9em; opacity: 0.8;">${correctAns}</div>
+              </div>
+              <div class="vocab-stat-badge ${colorClass}" style="flex-shrink: 0; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                 ${icon} ${rightSideText}
+              </div>
+            </li>
+          `;
+        });
+        html += `</ul>`;
+        summaryContainer.innerHTML = html;
+      }
+    }
   },
 
   endTrainingByTime() {
@@ -305,14 +389,14 @@ export const VokabelLogic = {
     if (timeEl) timeEl.textContent = `⏱ ${timeStr}`;
     
     const correctEl = document.getElementById("session-correct");
-    if (correctEl) correctEl.textContent = `🟢 ${this.sessionStats.correct}`;
+    if (correctEl) correctEl.textContent = `Richtig 🟢 ${this.sessionStats.correct}`;
     
     const wrongEl = document.getElementById("session-wrong");
-    if (wrongEl) wrongEl.textContent = `🔴 ${this.sessionStats.wrong}`;
+    if (wrongEl) wrongEl.textContent = `Falsch 🔴 ${this.sessionStats.wrong}`;
     
     const totalEl = document.getElementById("session-total");
     const total = this.sessionStats.correct + this.sessionStats.wrong;
-    if (totalEl) totalEl.textContent = `📚 ${total}`;
+    if (totalEl) totalEl.textContent = `Gesamt 📚 ${total}`;
   },
 
   stopTraining() {
@@ -331,6 +415,15 @@ export const VokabelLogic = {
     // Session Info verstecken
     const sessionInfo = document.getElementById("session-info");
     if (sessionInfo) sessionInfo.style.display = "none";
+
+    const feedback = document.getElementById("training-feedback");
+    if (feedback) feedback.textContent = "";
+
+    const summaryContainer = document.getElementById("training-summary-container");
+    if (summaryContainer) {
+       summaryContainer.style.display = "none";
+       summaryContainer.innerHTML = "";
+    }
 
     // Trainingseinstellungen wieder anzeigen
     document.getElementById("training-settings-panel").style.display = "block";

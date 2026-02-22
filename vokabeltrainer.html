@@ -225,6 +225,7 @@
 
                 <label><input type="checkbox" id="training-only-hard"> Nur schwierige Vokabeln</label>
                 <label><input type="checkbox" id="training-suggest-words"> Wörter vorschlagen (Multiple Choice)</label>
+                <label><input type="checkbox" id="training-hide-stats"> Fokus-Modus (Feedback & Live-Statistik ausblenden)</label>
                 
                 <div style="margin-bottom: 1rem;">
                   <label style="margin-bottom: 0.2rem;"><input type="checkbox" id="training-with-repeats" checked> Wiederholungen aktivieren</label>
@@ -247,7 +248,17 @@
             </div>
 
             <!-- TRAININGSMODUS -->
-            <div id="training-mode" class="training-mode-container panel-box" style="display:none;">
+            <div id="training-mode" class="training-mode-container panel-box" style="display:none; position: relative;">
+
+              <!-- Session-Info (jetzt oben rechts) -->
+              <div id="session-info" style="display:none; position: absolute; top: 1.5rem; right: 2rem; bottom: auto; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: auto; min-width: 130px; padding: 10px; border-radius: 8px;">
+                <div id="session-timer" style="text-align: right; font-weight: bold; margin-bottom: 8px;">⏱ 00:00</div>
+                <div id="session-stats" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; font-size: 0.95em;">
+                  <div id="session-correct">Richtig 🟢 0</div>
+                  <div id="session-wrong">Falsch 🔴 0</div>
+                  <div id="session-total">Gesamt 📚 0</div>
+                </div>
+              </div>
 
               <h2>Training</h2>
 
@@ -267,26 +278,20 @@
               <!-- NEW: Multiple Choice Container -->
               <div id="training-multiple-choice-container" class="training-multiple-choice" style="display:none;"></div>
 
+              <div id="training-feedback" class="training-feedback"></div>
+
               <div class="training-buttons">
                 <button type="button" id="training-check-btn">Prüfen</button>
                 <button type="button" id="training-skip-btn">Überspringen</button>
                 <button type="button" id="training-stop-btn" class="training-stop-btn">Training abbrechen</button>
               </div>
 
-              <div id="training-feedback" class="training-feedback"></div>
+              <div id="training-summary-container" style="display:none; margin-top: 2rem;"></div>
             </div>
 
           </div> <!-- Ende trainer-main -->
 
-          <!-- Session-Info (wie im Worttrainer) -->
-          <div id="session-info" style="display:none;">
-            <div id="session-timer">⏱ 00:00</div>
-            <div id="session-stats">
-              <div id="session-correct">🟢 0</div>
-              <div id="session-wrong">🔴 0</div>
-              <div id="session-total">📚 0</div>
-            </div>
-          </div>
+          </div> <!-- Ende trainer-main -->
 
         </div>
       </div>

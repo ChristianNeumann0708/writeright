@@ -57,11 +57,10 @@ export const VokabelUI = {
     mode: "count",
     count: 20,
     time: 10,
-    count: 20,
-    time: 10,
     onlyHard: false,
     suggestWords: false,
-    withRepeats: true
+    withRepeats: true,
+    hideStats: false
   },
 
   init() {
@@ -464,6 +463,14 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     document.getElementById("training-with-repeats").addEventListener("change", (e) => {
       this.trainingSettings.withRepeats = e.target.checked;
     });
+
+    const hideStatsCb = document.getElementById("training-hide-stats");
+    if (hideStatsCb) {
+      this.trainingSettings.hideStats = hideStatsCb.checked;
+      hideStatsCb.addEventListener("change", (e) => {
+        this.trainingSettings.hideStats = e.target.checked;
+      });
+    }
 
     trainingStartBtn.addEventListener("click", () => {
       VokabelLogic.startTraining(this.trainingSettings);
