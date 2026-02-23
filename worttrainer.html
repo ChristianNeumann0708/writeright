@@ -42,12 +42,16 @@
               <span id="wordCount" class="word-count"></span>
             </h4>
 
-            <div class="sort-toggle">
-              <label class="switch">
-                <input type="checkbox" id="sortByMistakes">
-                <span class="slider"></span>
-              </label>
-              <span id="sort-label">Fehlerhäufigkeit</span>
+            <div class="custom-select-wrapper" style="margin-bottom: 20px" id="wort-sort-wrapper">
+              <div class="custom-select-trigger" id="wort-sort-trigger">
+                <span id="wort-sort-label">A-Z</span>
+                <span class="custom-select-arrow">▼</span>
+              </div>
+              <ul class="custom-select-options" id="wort-sort-options">
+                <li data-value="alpha">A-Z</li>
+                <li data-value="errors-desc">Meiste Fehler</li>
+                <li data-value="balance-asc">Schlechteste Bilanz</li>
+              </ul>
             </div>
 
             <ul id="word-list"></ul>

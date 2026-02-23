@@ -3,20 +3,25 @@ import { WortStorage } from "./worttrainer-storage.js";
 export const WortLogic = {
 
   // NEU HIER EINSETZEN
-  getScoreForWord(w, settings) {
-    if (settings.useFehlerbilanz) {
+  getScoreForWord(w, currentSort) {
+    if (currentSort === "balance-asc") {
       return w.anzFalsch - w.anzRichtig;
     }
     return w.anzFalsch;
   },
 
-  getListLabel(w, settings) {
-    if (settings.useFehlerbilanz) {
+  getListLabel(w, currentSort) {
+    if (currentSort === "balance-asc") {
       const diff = w.anzFalsch - w.anzRichtig;
       const sign = diff > 0 ? "+" : "";
-      return `${w.text} (Δ ${sign}${diff})`;
+      const opacity = (w.anzFalsch === 0 && w.anzRichtig === 0) ? "0.4" : "1";
+      return `<span style="font-size:0.8em;opacity:${opacity};">(⚖️ ${sign}${diff})</span>`;
     }
-    return `${w.text} (${w.anzFalsch}× falsch)`;
+    if (currentSort === "errors-desc") {
+      const opacity = w.anzFalsch === 0 ? "0.4" : "1";
+      return `<span style="font-size:0.8em;opacity:${opacity};">(<span style="font-size: 0.9em;">❌</span> ${w.anzFalsch})</span>`;
+    }
+    return "";
   },
   // ENDE NEU
 
@@ -152,7 +157,7 @@ export const WortLogic = {
     const settings = WortStorage.loadSettings();
 
     const weighted = list.flatMap(w => {
-      const score = this.getScoreForWord(w, settings);
+      const score = this.getScoreForWord(w, settings.currentSort || "alpha");
       const weight = Math.max(1, 1 + score);
       return Array(weight).fill(w);
     });

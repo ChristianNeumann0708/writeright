@@ -183,8 +183,8 @@ export const VokabelLogic = {
         const stats = currentDirection === "de-en" ? v.statsDEtoEN : v.statsENtoDE;
         const balance = stats.correct - stats.wrong;
         statsContainer.innerHTML = `
-          <span class="vocab-stat-badge stat-green">🟢 ${stats.correct}</span>
-          <span class="vocab-stat-badge stat-red">🔴 ${stats.wrong}</span>
+          <span class="vocab-stat-badge stat-green">✅ ${stats.correct}</span>
+          <span class="vocab-stat-badge stat-red"><span style="font-size: 0.9em;">❌</span> ${stats.wrong}</span>
           <span class="vocab-stat-badge stat-blue">⚖️ ${balance > 0 ? '+'+balance : balance}</span>
         `;
       }
@@ -292,8 +292,8 @@ export const VokabelLogic = {
       const totalAttempted = this.sessionStats.correct + this.sessionStats.wrong;
       statsContainer.innerHTML = `
         <span class="vocab-stat-badge stat-blue">📚 ${totalAttempted} Vokabeln</span>
-        <span class="vocab-stat-badge stat-green">🟢 ${this.sessionStats.correct} Richtig</span>
-        <span class="vocab-stat-badge stat-red">🔴 ${this.sessionStats.wrong} Falsch</span>
+        <span class="vocab-stat-badge stat-green">✅ ${this.sessionStats.correct} Richtig</span>
+        <span class="vocab-stat-badge stat-red"><span style="font-size: 0.9em;">❌</span> ${this.sessionStats.wrong} Falsch</span>
       `;
     }
 
@@ -330,8 +330,8 @@ export const VokabelLogic = {
             <div style="display: flex; gap: 8px; font-size: 0.9em; flex-wrap: wrap;">
               <span class="vocab-stat-badge" style="background: #f0f0f0; border: 1px solid #ddd; color: #333;">⏱ ${timeStr}</span>
               <span class="vocab-stat-badge stat-blue">📚 ${total}</span>
-              <span class="vocab-stat-badge stat-green">🟢 ${this.sessionStats.correct}</span>
-              <span class="vocab-stat-badge stat-red">🔴 ${this.sessionStats.wrong}</span>
+              <span class="vocab-stat-badge stat-green">✅ ${this.sessionStats.correct}</span>
+              <span class="vocab-stat-badge stat-red"><span style="font-size: 0.9em;">❌</span> ${this.sessionStats.wrong}</span>
             </div>
           </div>
           <ul class="vocab-list-inner" style="background:#fff; border:1px solid #eee; border-radius:8px; padding:0; max-height: 400px; overflow-y: auto;">
@@ -342,7 +342,7 @@ export const VokabelLogic = {
           const q = item.direction === "de-en" ? v.translation.join(", ") : v.word;
           const correctAns = item.direction === "de-en" ? v.word : v.translation.join(", ");
           
-          const icon = item.isCorrect ? "🟢" : "🔴";
+          const icon = item.isCorrect ? "✅" : '<span style="font-size: 0.9em;">❌</span>';
           const colorClass = item.isCorrect ? "stat-green" : "stat-red";
           
           let rightSideText = item.isCorrect ? "Richtig" : `Falsch: ${item.answer || "-"}`;
@@ -389,10 +389,10 @@ export const VokabelLogic = {
     if (timeEl) timeEl.textContent = `⏱ ${timeStr}`;
     
     const correctEl = document.getElementById("session-correct");
-    if (correctEl) correctEl.textContent = `Richtig 🟢 ${this.sessionStats.correct}`;
+    if (correctEl) correctEl.textContent = `Richtig ✅ ${this.sessionStats.correct}`;
     
     const wrongEl = document.getElementById("session-wrong");
-    if (wrongEl) wrongEl.textContent = `Falsch 🔴 ${this.sessionStats.wrong}`;
+    if (wrongEl) wrongEl.innerHTML = `Falsch <span style="font-size: 0.9em;">❌</span> ${this.sessionStats.wrong}`;
     
     const totalEl = document.getElementById("session-total");
     const total = this.sessionStats.correct + this.sessionStats.wrong;

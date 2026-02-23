@@ -34,19 +34,7 @@ function showStatus(msg) {
 document.addEventListener("DOMContentLoaded", () => {
   const settings = loadSettings();
 
-  // ------------------------------------------------------
-  // Fehlerbilanz
-  // ------------------------------------------------------
-  const fehlerbilanzToggle = document.getElementById("useFehlerbilanz");
-  if (fehlerbilanzToggle) {
-    fehlerbilanzToggle.checked = settings.useFehlerbilanz;
-    fehlerbilanzToggle.addEventListener("change", () => {
-      saveSettings({
-        ...settings,
-        useFehlerbilanz: fehlerbilanzToggle.checked
-      });
-    });
-  }
+
 
   // ------------------------------------------------------
   // Auto Delete

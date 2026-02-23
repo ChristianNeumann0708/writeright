@@ -8,7 +8,7 @@ export const WortUI = {
     this.cacheDom();
 
     const settings = WortStorage.loadSettings();
-    this.sortToggle.checked = !!settings.sortByMistakes;
+    this.currentSort = settings.currentSort || "alpha";
 
     this.registerEvents();
     this.renderAll();
@@ -29,7 +29,10 @@ export const WortUI = {
     this.btnNext = document.getElementById("btn-next");
     this.btnReset = document.getElementById("btn-reset");
 
-    this.sortToggle = document.getElementById("sortByMistakes");
+    this.sortWrapper = document.getElementById("wort-sort-wrapper");
+    this.sortTrigger = document.getElementById("wort-sort-trigger");
+    this.sortLabel = document.getElementById("wort-sort-label");
+    this.sortOptionsList = document.querySelectorAll("#wort-sort-options li");
   },
 
   registerEvents() {
@@ -68,14 +71,34 @@ export const WortUI = {
       if (e.key === "Enter") this.handleFalsch();
     });
 
-    this.sortToggle.addEventListener("change", () => {
-      const settings = WortStorage.loadSettings();
-      WortStorage.saveSettings({
-        ...settings,
-        sortByMistakes: this.sortToggle.checked
+    if (this.sortWrapper && this.sortOptionsList.length > 0) {
+      const activeOption = Array.from(this.sortOptionsList).find(o => o.dataset.value === this.currentSort) || this.sortOptionsList[0];
+      this.sortLabel.textContent = activeOption.textContent;
+
+      this.sortTrigger.addEventListener("click", (e) => {
+        this.sortWrapper.classList.toggle("open");
+        e.stopPropagation();
       });
-      this.renderList();
-    });
+
+      document.addEventListener("click", () => {
+        this.sortWrapper.classList.remove("open");
+      });
+
+      this.sortOptionsList.forEach(opt => {
+        opt.addEventListener("click", (e) => {
+          this.currentSort = opt.dataset.value;
+          this.sortLabel.textContent = opt.textContent;
+          const settings = WortStorage.loadSettings();
+          WortStorage.saveSettings({
+            ...settings,
+            currentSort: this.currentSort
+          });
+          this.renderList();
+          this.sortWrapper.classList.remove("open");
+          e.stopPropagation();
+        });
+      });
+    }
 
     this.btnReset.addEventListener("click", () => {
       resetTimer();
@@ -138,28 +161,26 @@ export const WortUI = {
     const list = WortLogic.wortListe;
     const settings = WortStorage.loadSettings();
 
-    const modeLabel = settings.useFehlerbilanz ? "Fehlerbilanz" : "Fehlerhäufigkeit";
-    const labelEl = document.getElementById("sort-label");
-    if (labelEl) labelEl.textContent = modeLabel;
-
     this.listEl.innerHTML = "";
+
+    const currentSort = this.currentSort || "alpha";
 
     list
       .sort((a, b) => {
-        if (settings.sortByMistakes) {
-          return WortLogic.getScoreForWord(b, settings) -
-                 WortLogic.getScoreForWord(a, settings);
+        if (currentSort !== "alpha") {
+          return WortLogic.getScoreForWord(b, currentSort) -
+                 WortLogic.getScoreForWord(a, currentSort);
         }
         return a.text.localeCompare(b.text);
       })
       .forEach(w => {
         const li = document.createElement("li");
 
-        const label = settings.sortByMistakes
-          ? WortLogic.getListLabel(w, settings)
-          : w.text;
+        const extraHtml = currentSort !== "alpha"
+          ? WortLogic.getListLabel(w, currentSort)
+          : "";
 
-        li.innerHTML = this.colorizeWord(label, w, settings);
+        li.innerHTML = this.colorizeWord(w.text, w, currentSort) + " " + extraHtml;
 
         li.className =
           "wordlist-item" + (w === WortLogic.currentWord ? " active" : "");
@@ -191,7 +212,7 @@ export const WortUI = {
 
     const settings = WortStorage.loadSettings();
 
-    this.display.innerHTML = this.colorizeWord(w.text, w, settings);
+    this.display.innerHTML = this.colorizeWord(w.text, w, this.currentSort || "alpha");
 
     this.renderStats(w);
 
@@ -233,8 +254,8 @@ export const WortUI = {
     el.textContent = `– ${WortLogic.wortListe.length} Wörter`;
   },
 
-  colorizeWord(text, w, settings) {
-    const value = settings.useFehlerbilanz
+  colorizeWord(text, w, currentSort) {
+    const value = currentSort === "balance-asc"
       ? w.fehlerbilanz
       : w.anzFalsch;
 

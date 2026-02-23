@@ -49,7 +49,7 @@ const trainingStartBtn = document.getElementById("training-start-btn");
 
 export const VokabelUI = {
   selectedVocabId: null,
-  currentSort: "alpha",
+  currentSort: localStorage.getItem("vokabeltrainer_sort") || "alpha",
   currentSearch: "",
   trainingSettings: {
     direction: "de-en",
@@ -320,11 +320,34 @@ export const VokabelUI = {
       }
     });
 
-    const sortSelect = document.getElementById("vocab-sort-select");
-    if (sortSelect) {
-      sortSelect.addEventListener("change", (e) => {
-        this.currentSort = e.target.value;
-        this.renderVocabList();
+    const sortWrapper = document.getElementById("vokabel-sort-wrapper");
+    const sortTrigger = document.getElementById("vokabel-sort-trigger");
+    const sortLabel = document.getElementById("vokabel-sort-label");
+    const sortOptions = document.querySelectorAll("#vokabel-sort-options li");
+
+    if (sortWrapper && sortOptions.length > 0) {
+      // Init label based on currentSort
+      const activeOption = Array.from(sortOptions).find(o => o.dataset.value === this.currentSort) || sortOptions[0];
+      sortLabel.textContent = activeOption.textContent;
+
+      sortTrigger.addEventListener("click", (e) => {
+        sortWrapper.classList.toggle("open");
+        e.stopPropagation();
+      });
+
+      document.addEventListener("click", () => {
+        sortWrapper.classList.remove("open");
+      });
+
+      sortOptions.forEach(opt => {
+        opt.addEventListener("click", (e) => {
+          this.currentSort = opt.dataset.value;
+          sortLabel.textContent = opt.textContent;
+          localStorage.setItem("vokabeltrainer_sort", this.currentSort);
+          this.renderVocabList();
+          sortWrapper.classList.remove("open");
+          e.stopPropagation();
+        });
       });
     }
 
@@ -555,9 +578,9 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
           const errorsB = (b.statsENtoDE?.wrong || 0) + (b.statsDEtoEN?.wrong || 0);
           return errorsB - errorsA; // Höchste Zahl zuerst
         } else if (this.currentSort === "balance-asc") {
-          const balA = ((a.statsENtoDE?.correct || 0) + (a.statsDEtoEN?.correct || 0)) - ((a.statsENtoDE?.wrong || 0) + (a.statsDEtoEN?.wrong || 0));
-          const balB = ((b.statsENtoDE?.correct || 0) + (b.statsDEtoEN?.correct || 0)) - ((b.statsENtoDE?.wrong || 0) + (b.statsDEtoEN?.wrong || 0));
-          return balA - balB; // Niedrigste/stärkst negative Bilanz zuerst
+          const balA = ((a.statsENtoDE?.wrong || 0) + (a.statsDEtoEN?.wrong || 0)) - ((a.statsENtoDE?.correct || 0) + (a.statsDEtoEN?.correct || 0));
+          const balB = ((b.statsENtoDE?.wrong || 0) + (b.statsDEtoEN?.wrong || 0)) - ((b.statsENtoDE?.correct || 0) + (b.statsDEtoEN?.correct || 0));
+          return balB - balA; // Stärkst negative Performance (größte Fehlerzahl) zuerst
         }
         return 0;
       });
@@ -592,12 +615,12 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
              if (!stats) return `<div><span style="opacity: 0.6;">${label}</span> -</div>`;
              
              if (this.currentSort === "balance-asc") {
-               const bal = stats.correct - stats.wrong;
+               const bal = stats.wrong - stats.correct;
                return `<div><span>${label}</span> ⚖️ ${bal > 0 ? '+'+bal : bal}</div>`;
              }
 
-             if (stats.correct === 0 && stats.wrong === 0) return `<div style="opacity:0.4;"><span>${label}</span> 🟢 0 🔴 0</div>`;
-             return `<div><span>${label}</span> 🟢 ${stats.correct} 🔴 ${stats.wrong}</div>`;
+             if (stats.correct === 0 && stats.wrong === 0) return `<div style="opacity:0.4;"><span>${label}</span> ✅ 0 <span style="font-size: 0.9em;">❌</span> 0</div>`;
+             return `<div><span>${label}</span> ✅ ${stats.correct} <span style="font-size: 0.9em;">❌</span> ${stats.wrong}</div>`;
           };
           
           statsSpan.innerHTML = `

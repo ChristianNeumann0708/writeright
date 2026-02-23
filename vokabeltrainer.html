@@ -41,12 +41,16 @@
           <div class="trainer-wordlist">
             <div class="vocab-list-header">
               <h4>Vokabelliste</h4>
-              <div class="vocab-sort-control">
-                <select id="vocab-sort-select">
-                  <option value="alpha">A-Z</option>
-                  <option value="errors-desc">Meiste Fehler</option>
-                  <option value="balance-asc">Schlechteste Bilanz</option>
-                </select>
+              <div class="custom-select-wrapper" id="vokabel-sort-wrapper">
+                <div class="custom-select-trigger" id="vokabel-sort-trigger">
+                  <span id="vokabel-sort-label">A-Z</span>
+                  <span class="custom-select-arrow">▼</span>
+                </div>
+                <ul class="custom-select-options" id="vokabel-sort-options">
+                  <li data-value="alpha">A-Z</li>
+                  <li data-value="errors-desc">Meiste Fehler</li>
+                  <li data-value="balance-asc">Schlechteste Bilanz</li>
+                </ul>
               </div>
             </div>
             <div style="margin-bottom: 10px; position: relative;">
