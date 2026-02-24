@@ -426,11 +426,11 @@
 .vocab-list-actions {
   display: flex;
   align-items: flex-end;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0px;
 }
 
 .vocab-list-actions button {
-  padding: 0.7rem 1rem;
+  padding: 0 1rem;
   border-radius: 8px;
   border: none;
   background: var(--accent);
@@ -438,6 +438,9 @@
   font-size: 1rem;
   cursor: pointer;
   white-space: nowrap;
+  height: 42px; /* Set exact height to match input fields */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* --------------------------------------------------

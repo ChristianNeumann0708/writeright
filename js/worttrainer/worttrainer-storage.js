@@ -43,12 +43,11 @@ export const WortStorage = {
     const words = await this.loadWords();
 
     const updated = words.map(w => {
-      return new Wort(
-        w.text,
-        0, // anzRichtig
-        0, // anzFalsch
-        {} // falscheVarianten
-      );
+      const newWort = new Wort(w.text);
+      newWort.anzRichtig = 0;
+      newWort.anzFalsch = 0;
+      newWort.falscheVarianten = {};
+      return newWort;
     });
 
     this.saveWords(updated);

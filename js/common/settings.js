@@ -172,9 +172,9 @@ document.addEventListener("DOMContentLoaded", () => {
     vtResetStatsBtn.addEventListener("click", () => {
       if (confirm("Möchtest du wirklich alle Statistikwerte zurücksetzen?")) {
         VokabelTrainerStorage.data.vokabeln.forEach(v => {
-          v.correct = 0;
-          v.wrong = 0;
-          v.variants = {};
+          v.statsENtoDE = { correct: 0, wrong: 0, streak: 0, lastAsked: null };
+          v.statsDEtoEN = { correct: 0, wrong: 0, streak: 0, lastAsked: null };
+          v.variantsWrong = {};
         });
         VokabelTrainerStorage._saveAndBackup();
         showStatus("Vokabeltrainer-Statistik wurde zurückgesetzt.");
@@ -183,15 +183,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------
-  // Vokabeltrainer – Wortliste löschen
+  // Vokabeltrainer – Komplett löschen (Listen & Vokabeln)
   // ------------------------------------------------------
-  const vtDeleteWordsBtn = document.getElementById("vt-deleteWordsBtn");
-  if (vtDeleteWordsBtn) {
-    vtDeleteWordsBtn.addEventListener("click", () => {
-      if (confirm("Möchtest du wirklich alle Vokabeln löschen?")) {
-        VokabelTrainerStorage.data.vokabeln = [];
+  const vtDeleteAllBtn = document.getElementById("vt-deleteAllBtn");
+  if (vtDeleteAllBtn) {
+    vtDeleteAllBtn.addEventListener("click", () => {
+      if (confirm("⚠️ ACHTUNG ⚠️\n\nMöchtest du wirklich ALLE Vokabeln UND ALLE Listen aus dem Vokabeltrainer komplett löschen?\n\nDieser Vorgang kann NICHT rückgängig gemacht werden!")) {
+        VokabelTrainerStorage.data = {
+          lists: [{ id: "default", name: "Allgemeine Liste" }],
+          listOrder: ["default"],
+          vokabeln: []
+        };
         VokabelTrainerStorage._saveAndBackup();
-        showStatus("Alle Vokabeln wurden gelöscht.");
+        showStatus("Der Vokabeltrainer wurde komplett zurückgesetzt.");
       }
     });
   }

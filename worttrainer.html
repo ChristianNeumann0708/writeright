@@ -78,10 +78,17 @@
               <button id="btn-next" class="btn nav" type="button">Weiter →</button>
             </div>
 
-            <div class="stats" id="stats">
-              Richtig: <span id="stats-correct">0</span> |
-              Falsch: <span id="stats-wrong">0</span> |
-              Fehlerbilanz: <span id="stats-diff">0</span>
+            <div class="stats" id="stats" style="display: flex; flex-direction: column; gap: 10px;">
+              <div>
+                Richtig: <span id="stats-correct">0</span> |
+                Falsch: <span id="stats-wrong">0</span> |
+                Fehlerbilanz: <span id="stats-diff">0</span>
+              </div>
+              <div id="wt-edit-stats" style="display: flex; gap: 10px; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9em;">
+                <label style="display: flex; align-items: center; gap: 5px;">Richtig ✅ <input type="number" id="wt-edit-correct" min="0" style="width: 50px; padding: 3px; box-sizing: border-box;"></label>
+                <label style="display: flex; align-items: center; gap: 5px;">Falsch ❌ <input type="number" id="wt-edit-wrong" min="0" style="width: 50px; padding: 3px; box-sizing: border-box;"></label>
+                <button type="button" id="wt-save-stats" style="padding: 3px 10px; font-size: 0.9em; border-radius: 4px; border: none; background: #1e88e5; color: white; cursor: pointer; box-sizing: border-box;">Speichern</button>
+              </div>
             </div>
 
             <div class="wrong-variants" id="wrong-variants"></div>

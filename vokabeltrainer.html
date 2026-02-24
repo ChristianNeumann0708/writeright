@@ -98,6 +98,33 @@
                 </div>
               </div>
 
+              <!-- Edit Stats Panel -->
+              <div id="vocab-edit-stats" style="display: none; margin-bottom: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee;">
+                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 0.9rem; color: #555;">Statistik anpassen</h4>
+                
+                <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                  <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">EN➝DE <span style="color:#2da44e">Richtig (✅)</span></label>
+                    <input type="number" id="stats-en-de-correct" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">EN➝DE <span style="color:#d93025">Falsch (❌)</span></label>
+                    <input type="number" id="stats-en-de-wrong" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                  <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">DE➝EN <span style="color:#2da44e">Richtig (✅)</span></label>
+                    <input type="number" id="stats-de-en-correct" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">DE➝EN <span style="color:#d93025">Falsch (❌)</span></label>
+                    <input type="number" id="stats-de-en-wrong" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+                  </div>
+                </div>
+              </div>
+
               <!-- Primäre Buttons nebeneinander unterhalb der Eingabefelder -->
               <div class="vocab-actions" id="vocab-main-actions">
                 <button type="button" id="vocab-save-btn">Vokabel speichern</button>
@@ -124,21 +151,32 @@
               <hr class="vocab-divider">
 
               <!-- Listen-Verwaltung unten -->
-              <div class="vocab-list-management">
+              <div class="vocab-list-management" id="listenverwaltung">
                 <h3>Listen-Verwaltung</h3>
 
-                <div class="vocab-list-row" style="align-items: center;">
+                <div class="vocab-list-row" style="align-items: flex-end; gap: 1rem;">
                   <div class="vocab-list-new" style="flex: 2;">
-                    <label for="vocab-new-list-name">Neue Liste erstellen</label>
-                    <input type="text" id="vocab-new-list-name" placeholder="Name der neuen Liste">
+                    <label for="vocab-new-list-name" style="margin-bottom: 0.4rem;">Neue Liste erstellen</label>
+                    <input type="text" id="vocab-new-list-name" placeholder="Name der neuen Liste" style="height: 42px; box-sizing: border-box; margin: 0;">
                   </div>
-                  <div class="vocab-list-actions" style="flex: 1; margin-top: 1.5rem;">
-                    <button type="button" id="vocab-new-list-btn" style="width: 100%;">Liste anlegen</button>
+                  <div class="vocab-list-actions" style="flex: 1; margin: 0;">
+                    <button type="button" id="vocab-new-list-btn" style="width: 100%; height: 42px; box-sizing: border-box; margin: 0;">Liste anlegen</button>
+                  </div>
+                </div>
+
+                <div class="vocab-list-row" style="align-items: flex-end; gap: 1rem; margin-top: 1rem; border-top: 1px dashed #ccc; padding-top: 1rem;" id="vocab-rename-list-section">
+                  <div class="vocab-list-new" style="flex: 2;">
+                    <label for="vocab-rename-list-input" style="margin-bottom: 0.4rem;">Ausgewählte Liste umbenennen</label>
+                    <input type="text" id="vocab-rename-list-input" placeholder="Neuer Name" style="height: 42px; box-sizing: border-box; margin: 0;">
+                  </div>
+                  <div class="vocab-list-actions" style="flex: 1; margin: 0;">
+                    <button type="button" id="vocab-rename-list-btn" style="width: 100%; height: 42px; box-sizing: border-box; margin: 0;">Umbenennen</button>
                   </div>
                 </div>
                 
                 <div class="vocab-list-row" style="margin-top: 1rem;">
-                  <div class="vocab-list-actions" style="margin-left: auto;">
+                  <div class="vocab-list-actions" style="margin-left: auto; display: flex; align-items: center; gap: 1rem;">
+                     <span id="selected-list-name-bottom" style="font-weight: bold; color: #555;"></span>
                      <button type="button" id="vocab-delete-list-btn" class="vocab-delete-btn" title="Die oben im Dropdown ausgewählte Liste löschen">Ausgewählte Liste löschen</button>
                   </div>
                 </div>

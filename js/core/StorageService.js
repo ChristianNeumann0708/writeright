@@ -75,7 +75,18 @@ export class StorageService {
         return new Promise((resolve) => {
           const tx = this._db.transaction(this.storeName, "readonly");
           const req = tx.objectStore(this.storeName).get(key);
-          req.onsuccess = () => resolve(req.result || null);
+          req.onsuccess = () => {
+            const result = req.result || null;
+            // Restore missing LocalStorage if we found it in DB
+            if (result) {
+              try {
+                localStorage.setItem(key, JSON.stringify(result));
+              } catch (err) {
+                console.warn("StorageService: Could not restore to LocalStorage", err);
+              }
+            }
+            resolve(result);
+          };
           req.onerror = () => resolve(null);
         });
       } catch (e) {

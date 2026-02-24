@@ -15,6 +15,12 @@ const deleteBtn = document.getElementById("vocab-delete-btn");
 const deleteListBtn = document.getElementById("vocab-delete-list-btn");
 const newListBtn = document.getElementById("vocab-new-list-btn");
 const newListInput = document.getElementById("vocab-new-list-name");
+
+const renameListBtn = document.getElementById("vocab-rename-list-btn");
+const renameListInput = document.getElementById("vocab-rename-list-input");
+const renameListSection = document.getElementById("vocab-rename-list-section");
+const selectedListNameBottom = document.getElementById("selected-list-name-bottom");
+
 const statusBox = document.getElementById("vocab-status");
 const vocabListDisplay = document.getElementById("vocab-list-display");
 const totalCountBox = document.getElementById("vocab-total-count");
@@ -28,6 +34,12 @@ const importFile = document.getElementById("vocab-import-file");
 const importBtn = document.getElementById("vocab-import-btn");
 const searchInput = document.getElementById("vocab-search-input");
 const searchClear = document.getElementById("vocab-search-clear");
+
+const editStatsPanel = document.getElementById("vocab-edit-stats");
+const statsEnDeCorrect = document.getElementById("stats-en-de-correct");
+const statsEnDeWrong = document.getElementById("stats-en-de-wrong");
+const statsDeEnCorrect = document.getElementById("stats-de-en-correct");
+const statsDeEnWrong = document.getElementById("stats-de-en-wrong");
 
 // --------------------------------------------------
 // Training UI Elemente
@@ -104,6 +116,8 @@ export const VokabelUI = {
     
     if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
 
+    if (editStatsPanel) editStatsPanel.style.display = "none";
+
     this.renderVocabList();
     togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
   },
@@ -141,8 +155,16 @@ export const VokabelUI = {
 
     if (listSelect.value === "default") {
       deleteListBtn.style.display = "none";
+      if (renameListSection) renameListSection.style.display = "none";
+      if (selectedListNameBottom) selectedListNameBottom.textContent = "";
     } else {
       deleteListBtn.style.display = "inline-block";
+      if (renameListSection) renameListSection.style.display = "flex";
+      const selectedOption = listSelect.options[listSelect.selectedIndex];
+      if (selectedOption) {
+         if (selectedListNameBottom) selectedListNameBottom.textContent = selectedOption.textContent;
+         if (renameListInput) renameListInput.value = selectedOption.textContent;
+      }
     }
   },
 
@@ -242,7 +264,38 @@ export const VokabelUI = {
 
       this.renderVocabList();
       this.loadTrainingLists();
+      
+      const event = new Event('change');
+      listSelect.dispatchEvent(event);
     });
+
+    if (renameListBtn) {
+      renameListBtn.addEventListener("click", () => {
+        const currentListId = listSelect.value;
+        const newName = renameListInput.value.trim();
+        if (currentListId === "default") return;
+        if (!newName) {
+           showStatus("Bitte einen neuen Namen eingeben");
+           return;
+        }
+        
+        const success = VokabelTrainerStorage.renameList(currentListId, newName);
+        if (success) {
+           showStatus("Liste erfolgreich umbenannt");
+           renameListInput.value = "";
+           this.loadLists();
+           listSelect.value = currentListId;
+           
+           const event = new Event('change');
+           listSelect.dispatchEvent(event);
+           
+           this.renderVocabList();
+           this.loadTrainingLists();
+        } else {
+           showStatus("Fehler beim Umbenennen der Liste");
+        }
+      });
+    }
 
     importBtn.addEventListener("click", () => {
       if (!importFile.files || importFile.files.length === 0) {
@@ -315,8 +368,17 @@ export const VokabelUI = {
     listSelect.addEventListener("change", () => {
       if (listSelect.value === "default") {
         deleteListBtn.style.display = "none";
+        if (renameListSection) renameListSection.style.display = "none";
+        if (selectedListNameBottom) selectedListNameBottom.textContent = "";
       } else {
         deleteListBtn.style.display = "inline-block";
+        if (renameListSection) renameListSection.style.display = "flex";
+        
+        const selectedOption = listSelect.options[listSelect.selectedIndex];
+        if (selectedOption) {
+           if (selectedListNameBottom) selectedListNameBottom.textContent = selectedOption.textContent;
+           if (renameListInput) renameListInput.value = selectedOption.textContent;
+        }
       }
     });
 
@@ -590,6 +652,11 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       const title = document.createElement("h5");
       title.className = "vocab-list-title";
       title.textContent = `${list.name} (${count})`;
+      title.style.cursor = "pointer";
+      title.title = "Klicken, um die Liste auszuwählen";
+      title.addEventListener("click", () => {
+        VokabelUI.selectList(list);
+      });
       group.appendChild(title);
 
       if (vocabOfList.length === 0) {
@@ -624,8 +691,8 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
           };
           
           statsSpan.innerHTML = `
-            ${getStatsHtml(v.statsDEtoEN, 'DE➝EN')}
             ${getStatsHtml(v.statsENtoDE, 'EN➝DE')}
+            ${getStatsHtml(v.statsDEtoEN, 'DE➝EN')}
           `;
 
           li.appendChild(textSpan);
@@ -657,10 +724,61 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     }
   },
 
+  selectList(list) {
+    this.selectedVocabId = null;
+    enInput.value = "";
+    deInput.value = "";
+    
+    if (listSelect.querySelector(`option[value="${list.id}"]`)) {
+      listSelect.value = list.id;
+    } else {
+      listSelect.value = "default";
+    }
+    
+    const event = new Event('change');
+    listSelect.dispatchEvent(event);
+    
+    saveBtn.textContent = "Vokabel speichern";
+    deleteBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+    if (editStatsPanel) editStatsPanel.style.display = "none";
+    if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+    
+    this.expandInputPanel();
+    togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+    trainingPanel.style.display = "none"; 
+    trainingToggleBtn.textContent = "▼ Training einstellen ▼";
+
+    const managementSection = document.getElementById("listenverwaltung");
+    if (managementSection) {
+       const trainerMain = document.querySelector('.trainer-main');
+       if (trainerMain) {
+          // Scrollt explizit nur den rechten Scrollbereich,
+          // um zu verhindern, dass Eltern-Container mit overflow:hidden verschoben werden.
+          trainerMain.scrollTo({
+             top: trainerMain.scrollHeight,
+             behavior: 'smooth'
+          });
+       } else {
+          managementSection.scrollIntoView({ behavior: 'smooth' });
+       }
+    }
+    
+    this.renderVocabList();
+  },
+
   selectVocab(v) {
     this.selectedVocabId = v.id;
     enInput.value = v.word;
     deInput.value = v.translation.join(", ");
+
+    if (editStatsPanel) {
+      editStatsPanel.style.display = "block";
+      statsEnDeCorrect.value = v.statsENtoDE ? v.statsENtoDE.correct : 0;
+      statsEnDeWrong.value = v.statsENtoDE ? v.statsENtoDE.wrong : 0;
+      statsDeEnCorrect.value = v.statsDEtoEN ? v.statsDEtoEN.correct : 0;
+      statsDeEnWrong.value = v.statsDEtoEN ? v.statsDEtoEN.wrong : 0;
+    }
 
     if (listSelect.querySelector(`option[value="${v.list}"]`)) {
       listSelect.value = v.list;
@@ -733,6 +851,13 @@ function saveVocab() {
       list
     });
 
+    if (editStatsPanel) {
+      vokabel.statsENtoDE.correct = parseInt(statsEnDeCorrect.value, 10) || 0;
+      vokabel.statsENtoDE.wrong = parseInt(statsEnDeWrong.value, 10) || 0;
+      vokabel.statsDEtoEN.correct = parseInt(statsDeEnCorrect.value, 10) || 0;
+      vokabel.statsDEtoEN.wrong = parseInt(statsDeEnWrong.value, 10) || 0;
+    }
+
     const ok = VokabelTrainerStorage.updateVokabel(vokabel);
 
     if (ok) {
@@ -749,6 +874,7 @@ function saveVocab() {
     saveBtn.textContent = "Vokabel speichern";
     deleteBtn.style.display = "none";
     cancelBtn.style.display = "none";
+    if (editStatsPanel) editStatsPanel.style.display = "none";
     
     if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
     togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";

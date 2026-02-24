@@ -29,6 +29,10 @@ export const WortUI = {
     this.btnNext = document.getElementById("btn-next");
     this.btnReset = document.getElementById("btn-reset");
 
+    this.editCorrectInput = document.getElementById("wt-edit-correct");
+    this.editWrongInput = document.getElementById("wt-edit-wrong");
+    this.btnSaveStats = document.getElementById("wt-save-stats");
+
     this.sortWrapper = document.getElementById("wort-sort-wrapper");
     this.sortTrigger = document.getElementById("wort-sort-trigger");
     this.sortLabel = document.getElementById("wort-sort-label");
@@ -106,6 +110,16 @@ export const WortUI = {
       WortLogic.disableButtons = false;
       this.renderAll();
     });
+
+    if (this.btnSaveStats) {
+      this.btnSaveStats.addEventListener("click", () => {
+        if (!WortLogic.currentWord) return;
+        WortLogic.currentWord.anzRichtig = parseInt(this.editCorrectInput.value, 10) || 0;
+        WortLogic.currentWord.anzFalsch = parseInt(this.editWrongInput.value, 10) || 0;
+        WortStorage.saveWords(WortLogic.wortListe);
+        this.renderAll();
+      });
+    }
   },
 
   handleAdd() {
@@ -233,6 +247,9 @@ export const WortUI = {
     diffEl.classList.add(
       diff > 0 ? "neg" : diff < 0 ? "pos" : "neutral"
     );
+
+    if (this.editCorrectInput) this.editCorrectInput.value = w.anzRichtig;
+    if (this.editWrongInput) this.editWrongInput.value = w.anzFalsch;
 
     const dict = w.falscheVarianten;
     if (Object.keys(dict).length > 0) {
