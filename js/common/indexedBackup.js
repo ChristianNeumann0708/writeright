@@ -65,6 +65,23 @@ export function restoreBackup(file) {
       const clean = reader.result.replace(/^\uFEFF/, "").trim();
       let raw = JSON.parse(clean);
 
+      // Verhindern, dass Vokabeltrainer-Backups hier importiert werden
+      if (raw && typeof raw === "object" && !Array.isArray(raw) && "vokabeln" in raw && "lists" in raw) {
+        throw new Error("wrong-format-vokabeltrainer");
+      }
+
+      // Verhindern, dass komplett fremde JSON-Dateien importiert werden
+      let isWorttrainerFormat = false;
+      if (Array.isArray(raw)) {
+         isWorttrainerFormat = raw.length === 0 || raw.some(item => typeof item === "object" && item !== null && ("text" in item || "Text" in item || "Name" in item));
+      } else if (typeof raw === "object" && raw !== null) {
+         isWorttrainerFormat = ("text" in raw || "Text" in raw || "Name" in raw);
+      }
+
+      if (!isWorttrainerFormat) {
+          throw new Error("invalid-format");
+      }
+
       if (!Array.isArray(raw)) {
         raw = [raw];
       }
@@ -109,9 +126,16 @@ export function restoreBackup(file) {
 
       await WortStorage.saveWords(newList);
       showStatus(`Backup wiederhergestellt. (${newList.length} Wörter)`);
+      window.dispatchEvent(new Event('worttrainer-updated'));
     } catch (err) {
       console.error("Fehler beim Restore:", err);
-      showStatus("Fehler beim Einlesen der Datei.");
+      if (err.message === "wrong-format-vokabeltrainer") {
+        showStatus("Fehler: Das ist ein Vokabeltrainer-Backup!");
+      } else if (err.message === "invalid-format") {
+        showStatus("Fehler: Unbekanntes Dateiformat!");
+      } else {
+        showStatus("Fehler beim Einlesen der Datei.");
+      }
     }
   };
 

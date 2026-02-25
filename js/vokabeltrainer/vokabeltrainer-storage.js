@@ -247,6 +247,23 @@ class VokabelTrainerStorageClass {
         try {
           const parsed = JSON.parse(reader.result);
 
+          let isWorttrainer = false;
+          if (Array.isArray(parsed)) {
+            isWorttrainer = parsed.length === 0 || parsed.some(item => typeof item === "object" && item !== null && ("text" in item || "Text" in item || "Name" in item));
+          } else if (typeof parsed === "object" && parsed !== null) {
+            isWorttrainer = ("text" in parsed || "Text" in parsed || "Name" in parsed);
+          }
+
+          if (isWorttrainer) {
+            reject(new Error("wrong-format-worttrainer"));
+            return;
+          }
+
+          if (typeof parsed !== "object" || parsed === null || (!("vokabeln" in parsed) && !("lists" in parsed))) {
+             reject(new Error("invalid-format"));
+             return;
+          }
+
           const migrated = this._migrateStructure(parsed);
 
           this.data = migrated;

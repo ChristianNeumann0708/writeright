@@ -266,6 +266,10 @@
                 <h3>Optionen</h3>
 
                 <label><input type="checkbox" id="training-only-hard"> Nur schwierige Vokabeln</label>
+                <div id="training-hard-options" style="display: none; margin-left: 2.1rem; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; margin-top: -0.5rem;">
+                   <label style="font-size: 0.95rem; margin-bottom: 0;"><input type="radio" name="hard-mode-type" value="errors" checked> Mindestens 1 Fehler</label>
+                   <label style="font-size: 0.95rem; margin-bottom: 0;"><input type="radio" name="hard-mode-type" value="balance"> Negative Fehlerbilanz (mehr Fehler als richtig)</label>
+                </div>
                 <label><input type="checkbox" id="training-suggest-words"> Wörter vorschlagen (Multiple Choice)</label>
                 <label><input type="checkbox" id="training-hide-stats"> Fokus-Modus (Feedback & Live-Statistik ausblenden)</label>
                 

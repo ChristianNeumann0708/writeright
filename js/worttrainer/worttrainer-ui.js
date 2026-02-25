@@ -120,6 +120,12 @@ export const WortUI = {
         this.renderAll();
       });
     }
+
+    window.addEventListener('worttrainer-updated', async () => {
+      const currentWords = await WortStorage.loadWords();
+      WortLogic.init(currentWords);
+      this.renderAll();
+    });
   },
 
   handleAdd() {

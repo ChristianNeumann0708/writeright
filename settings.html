@@ -60,8 +60,12 @@
                 </div>
 
                 <h4>Wiederherstellen</h4>
-                <input type="file" id="restoreFile">
-                <button id="restoreButton" style="display:none;" type="button">Backup importieren</button>
+                <div class="file-upload-wrapper">
+                    <label for="restoreFile" class="file-upload-btn">📁 Datei auswählen</label>
+                    <span id="restoreFileName" class="file-name-display">Keine Datei ausgewählt</span>
+                </div>
+                <input type="file" id="restoreFile" style="display:none;" accept=".json">
+                <button id="restoreButton" style="display:none; margin-top: 10px;" type="button">Backup importieren</button>
 
                 <hr>
 
@@ -79,9 +83,9 @@
 
                 <h4>Wortliste löschen</h4>
                 <div class="inline-checkbox">
-                    <button id="deleteWordsBtn" type="button">Wortliste löschen</button>
+                    <button id="deleteWordsBtn" type="button" style="background-color: #dc3545; color: white;">Wortliste löschen ⚠️</button>
                 </div>
-                <div class="settings-hint">
+                <div class="settings-hint" style="color: #dc3545;">
                     Löscht alle gespeicherten Wörter unwiderruflich.
                 </div>
             </div>
@@ -96,10 +100,16 @@
                 </div>
 
                 <h4>Wiederherstellen</h4>
-                <input type="file" id="vt-restoreFile">
-                <button id="vt-restoreButton" style="display:none;" type="button">Backup importieren</button>
+                <div class="file-upload-wrapper">
+                    <label for="vt-restoreFile" class="file-upload-btn">📁 Datei auswählen</label>
+                    <span id="vt-restoreFileName" class="file-name-display">Keine Datei ausgewählt</span>
+                </div>
+                <input type="file" id="vt-restoreFile" style="display:none;" accept=".json">
+                <button id="vt-restoreButton" style="display:none; margin-top: 10px;" type="button">Backup importieren</button>
 
                 <hr>
+
+                <div id="vt-status" class="status-message" style="display:none;"></div>
 
                 <h4>Statistik zurücksetzen</h4>
                 <div class="inline-checkbox">

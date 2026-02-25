@@ -25,6 +25,15 @@ function showStatus(msg) {
   if (!el) return;
   el.textContent = msg;
   el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 3500);
+}
+
+function showVtStatus(msg) {
+  const el = document.getElementById("vt-status");
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 3500);
 }
 
 // ------------------------------------------------------
@@ -91,17 +100,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   const restoreInput = document.getElementById("restoreFile");
   const restoreButton = document.getElementById("restoreButton");
+  const restoreFileName = document.getElementById("restoreFileName");
 
   if (restoreInput && restoreButton) {
     restoreInput.onchange = () => {
       const hasFile = restoreInput.files?.length > 0;
       restoreButton.style.display = hasFile ? "block" : "none";
+      if (restoreFileName) {
+        restoreFileName.textContent = hasFile ? restoreInput.files[0].name : "Keine Datei ausgewählt";
+      }
     };
 
     restoreButton.onclick = () => {
       const file = restoreInput.files[0];
       restoreBackup(file);
       showStatus("Backup wurde importiert.");
+      
+      // Zurücksetzen nach Import
+      restoreInput.value = "";
+      restoreButton.style.display = "none";
+      if (restoreFileName) restoreFileName.textContent = "Keine Datei ausgewählt";
     };
   }
 
@@ -110,10 +128,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   const resetStatsBtn = document.getElementById("resetStatsBtn");
   if (resetStatsBtn) {
-    resetStatsBtn.addEventListener("click", () => {
+    resetStatsBtn.addEventListener("click", async () => {
       if (confirm("Möchtest du wirklich alle Statistikwerte zurücksetzen?")) {
-        WortStorage.resetWordStats();
+        await WortStorage.resetWordStats();
         showStatus("Statistik wurde zurückgesetzt.");
+        window.dispatchEvent(new Event('worttrainer-updated'));
       }
     });
   }
@@ -127,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (confirm("Möchtest du wirklich die gesamte Wortliste löschen?")) {
         await WortStorage.clearWordsEverywhere();
         showStatus("Wortliste wurde gelöscht.");
+        window.dispatchEvent(new Event('worttrainer-updated'));
       }
     });
   }
@@ -141,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await VokabelTrainerStorage.init();
       
       VokabelTrainerStorage.downloadBackup();
-      showStatus("Vokabeltrainer-Backup wurde heruntergeladen.");
+      showVtStatus("Vokabeltrainer-Backup wurde heruntergeladen.");
     });
   }
 
@@ -150,17 +170,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   const vtRestoreInput = document.getElementById("vt-restoreFile");
   const vtRestoreButton = document.getElementById("vt-restoreButton");
+  const vtRestoreFileName = document.getElementById("vt-restoreFileName");
 
   if (vtRestoreInput && vtRestoreButton) {
     vtRestoreInput.onchange = () => {
       const hasFile = vtRestoreInput.files?.length > 0;
       vtRestoreButton.style.display = hasFile ? "block" : "none";
+      if (vtRestoreFileName) {
+        vtRestoreFileName.textContent = hasFile ? vtRestoreInput.files[0].name : "Keine Datei ausgewählt";
+      }
     };
 
     vtRestoreButton.onclick = async () => {
       const file = vtRestoreInput.files[0];
-      await VokabelTrainerStorage.restoreBackup(file);
-      showStatus("Vokabeltrainer-Backup wurde importiert.");
+      try {
+        await VokabelTrainerStorage.restoreBackup(file);
+        showVtStatus("Vokabeltrainer-Backup wurde importiert.");
+        window.dispatchEvent(new Event('vokabeltrainer-updated'));
+        
+        // Zurücksetzen nach Import
+        vtRestoreInput.value = "";
+        vtRestoreButton.style.display = "none";
+        if (vtRestoreFileName) vtRestoreFileName.textContent = "Keine Datei ausgewählt";
+      } catch (err) {
+        console.error("Backup Fehler:", err);
+        if (err.message === "wrong-format-worttrainer") {
+          showVtStatus("Fehler: Das ist ein Worttrainer-Backup!");
+        } else {
+          showVtStatus("Fehler: Falsches Format oder defekte Datei!");
+        }
+      }
     };
   }
 
@@ -169,15 +208,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   const vtResetStatsBtn = document.getElementById("vt-resetStatsBtn");
   if (vtResetStatsBtn) {
-    vtResetStatsBtn.addEventListener("click", () => {
+    vtResetStatsBtn.addEventListener("click", async () => {
       if (confirm("Möchtest du wirklich alle Statistikwerte zurücksetzen?")) {
+        // WICHTIG: Zuerst den Speicher laden, sonst ist data leer und wir überschreiben alles mit einem leeren Array!
+        await VokabelTrainerStorage.init();
+        
         VokabelTrainerStorage.data.vokabeln.forEach(v => {
           v.statsENtoDE = { correct: 0, wrong: 0, streak: 0, lastAsked: null };
           v.statsDEtoEN = { correct: 0, wrong: 0, streak: 0, lastAsked: null };
           v.variantsWrong = {};
         });
         VokabelTrainerStorage._saveAndBackup();
-        showStatus("Vokabeltrainer-Statistik wurde zurückgesetzt.");
+        showVtStatus("Vokabeltrainer-Statistik wurde zurückgesetzt.");
+        window.dispatchEvent(new Event('vokabeltrainer-updated'));
       }
     });
   }
@@ -195,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
           vokabeln: []
         };
         VokabelTrainerStorage._saveAndBackup();
-        showStatus("Der Vokabeltrainer wurde komplett zurückgesetzt.");
+        showVtStatus("Der Vokabeltrainer wurde komplett zurückgesetzt.");
+        window.dispatchEvent(new Event('vokabeltrainer-updated'));
       }
     });
   }

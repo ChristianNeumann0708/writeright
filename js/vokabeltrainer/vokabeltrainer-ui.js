@@ -70,6 +70,7 @@ export const VokabelUI = {
     count: 20,
     time: 10,
     onlyHard: false,
+    hardModeType: "errors",
     suggestWords: false,
     withRepeats: true,
     hideStats: false
@@ -94,6 +95,14 @@ export const VokabelUI = {
       dropdownPanel.classList.add("open");
       dropdownToggle.textContent = "▲ Listen auswählen ▲";
     }
+
+    window.addEventListener('vokabeltrainer-updated', () => {
+      this.collapseInputPanel();
+      this.loadLists();
+      this.renderVocabList();
+      this.loadTrainingLists();
+      this.updateTrainingPreview();
+    });
   },
 
   // --------------------------------------------------
@@ -538,7 +547,18 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
 
     document.getElementById("training-only-hard").addEventListener("change", (e) => {
       this.trainingSettings.onlyHard = e.target.checked;
+      const opts = document.getElementById("training-hard-options");
+      if (opts) {
+         opts.style.display = e.target.checked ? "flex" : "none";
+      }
       this.updateTrainingPreview();
+    });
+
+    document.querySelectorAll("input[name='hard-mode-type']").forEach(r => {
+      r.addEventListener("change", () => {
+        this.trainingSettings.hardModeType = r.value;
+        this.updateTrainingPreview();
+      });
     });
 
     document.getElementById("training-suggest-words").addEventListener("change", (e) => {
@@ -593,7 +613,15 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     let filtered = all.filter(v => selectedLists.includes(v.list));
 
     if (this.trainingSettings.onlyHard) {
-      filtered = filtered.filter(v => v.errors && v.errors > 0);
+      filtered = filtered.filter(v => {
+         const wrong = (v.statsENtoDE?.wrong || 0) + (v.statsDEtoEN?.wrong || 0);
+         const correct = (v.statsENtoDE?.correct || 0) + (v.statsDEtoEN?.correct || 0);
+         if (this.trainingSettings.hardModeType === "balance") {
+             return wrong > correct;
+         } else {
+             return wrong > 0;
+         }
+      });
     }
 
     const count = filtered.length;

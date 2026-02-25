@@ -35,7 +35,15 @@ export const VokabelLogic = {
     let selected = all.filter(v => settings.lists.includes(v.list));
 
     if (settings.onlyHard) {
-      selected = selected.filter(v => v.errors && v.errors > 0);
+      selected = selected.filter(v => {
+         const wrong = (v.statsENtoDE?.wrong || 0) + (v.statsDEtoEN?.wrong || 0);
+         const correct = (v.statsENtoDE?.correct || 0) + (v.statsDEtoEN?.correct || 0);
+         if (settings.hardModeType === "balance") {
+             return wrong > correct;
+         } else {
+             return wrong > 0;
+         }
+      });
     }
 
     // Zufällige Reihenfolge (immer aktiv)
