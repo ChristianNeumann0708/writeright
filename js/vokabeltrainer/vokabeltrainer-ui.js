@@ -306,6 +306,15 @@ export const VokabelUI = {
       });
     }
 
+    importFile.addEventListener("change", () => {
+      const nameLabel = document.getElementById("vocab-import-file-name");
+      const hasFile = importFile.files?.length > 0;
+      if (importBtn) importBtn.style.display = hasFile ? "block" : "none";
+      if (nameLabel) {
+         nameLabel.textContent = hasFile ? importFile.files[0].name : "Keine Datei ausgewählt";
+      }
+    });
+
     importBtn.addEventListener("click", () => {
       if (!importFile.files || importFile.files.length === 0) {
         showStatus("Bitte wähle zuerst eine Textdatei aus!");
@@ -313,12 +322,47 @@ export const VokabelUI = {
       }
 
       const file = importFile.files[0];
+
+      if (!file.name.toLowerCase().endsWith(".txt")) {
+        showStatus("Bitte wähle eine .txt-Datei aus!");
+        return;
+      }
+
       const reader = new FileReader();
       const targetListId = listSelect.value;
 
       reader.onload = (e) => {
         const text = e.target.result;
-        const lines = text.split(/\r?\n/);
+        
+        if (text.trim().startsWith("{") || text.trim().startsWith("[")) {
+          showStatus("Fehler: Falsches Format! Dies ist ein Backup, keine Text-Liste.");
+          importFile.value = "";
+          const nameLabel = document.getElementById("vocab-import-file-name");
+          if (nameLabel) nameLabel.textContent = "Keine Datei ausgewählt";
+          if (importBtn) importBtn.style.display = "none";
+          return;
+        }
+        
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        
+        if (lines.length === 0) {
+          showStatus("Die Datei ist leer oder enthält keine gültigen Zeilen.");
+          return;
+        }
+
+        // Format validation: look for commas. If no lines have commas, it's the wrong format
+        const delimiterRegex = / , |,/ ;
+        const validLines = lines.filter(l => delimiterRegex.test(l));
+        
+        if (validLines.length === 0) {
+          showStatus("Fehler: Falsches Format! Trennzeichen (Komma) fehlt. (Wort-Datei?)");
+          importFile.value = "";
+          const nameLabel = document.getElementById("vocab-import-file-name");
+          if (nameLabel) nameLabel.textContent = "Keine Datei ausgewählt";
+          if (importBtn) importBtn.style.display = "none";
+          return;
+        }
+
         let imported = 0;
         let duplicates = 0;
 
@@ -359,6 +403,9 @@ export const VokabelUI = {
         }
         
         importFile.value = "";
+        const nameLabel = document.getElementById("vocab-import-file-name");
+        if (nameLabel) nameLabel.textContent = "Keine Datei ausgewählt";
+        if (importBtn) importBtn.style.display = "none";
         
         if (imported > 0) {
           showStatus(`${imported} Vokabeln importiert! ${duplicates > 0 ? '(' + duplicates + ' Duplikate übersprungen)' : ''}`);
@@ -938,13 +985,31 @@ function saveVocab() {
 // Statusmeldung
 // --------------------------------------------------
 
-function showStatus(msg) {
+function showStatus(msg, isError = false) {
+  const isErr = isError || msg.toLowerCase().includes("fehler") || msg.toLowerCase().includes("bitte");
   statusBox.textContent = msg;
+  
+  if (isErr) {
+    statusBox.classList.add("error");
+    statusBox.classList.remove("success");
+  } else {
+    statusBox.classList.add("success");
+    statusBox.classList.remove("error");
+  }
+  
   statusBox.style.display = "block";
 
-  setTimeout(() => {
+  const timeoutMs = isErr ? 8000 : 3500;
+  
+  if (statusBox.dataset.timeoutId) {
+    clearTimeout(Number(statusBox.dataset.timeoutId));
+  }
+  
+  const timeoutId = setTimeout(() => {
     statusBox.style.display = "none";
-  }, 1500);
+  }, timeoutMs);
+  
+  statusBox.dataset.timeoutId = timeoutId;
 }
 
 // TRAINING BUTTONS

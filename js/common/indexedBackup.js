@@ -6,16 +6,24 @@ import { Wort } from "../models/Wort.js";
 // ------------------------------------------------------
 // Status anzeigen
 // ------------------------------------------------------
-function showStatus(msg) {
+function showStatus(msg, isError = false) {
   const el = document.getElementById("status");
   if (!el) return;
-
+  const isErr = isError || msg.toLowerCase().includes("fehler");
   el.textContent = msg;
+  if (isErr) {
+    el.classList.add("error");
+    el.classList.remove("success");
+  } else {
+    el.classList.add("success");
+    el.classList.remove("error");
+  }
   el.style.display = "block";
-
-  setTimeout(() => {
+  const timeoutMs = isErr ? 8000 : 3000;
+  if (el.dataset.tId) clearTimeout(Number(el.dataset.tId));
+  el.dataset.tId = setTimeout(() => {
     el.style.display = "none";
-  }, 3000);
+  }, timeoutMs);
 }
 
 // ------------------------------------------------------

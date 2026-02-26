@@ -132,19 +132,19 @@
                 <button type="button" id="vocab-cancel-btn" class="vocab-secondary-btn" style="display:none;">Abbrechen</button>
               </div>
 
-              <div id="vocab-status" class="vocab-status" style="display:none;"></div>
+              <div id="vocab-status" class="status-message"></div>
 
               <!-- Import-Bereich -->
               <div class="vocab-import" style="margin-top: 1.5rem; background: #fdfdfd; padding: 1.2rem; border-radius: 8px; border: 1px dashed #ccc;">
                 <h3 style="margin-top: 0; font-size: 1.1rem; color: #333;">Vokabeln aus Textdatei importieren</h3>
                 <p style="font-size: 0.9rem; color: #555; margin-bottom: 1rem;">Lade eine Textdatei (.txt) hoch. Auf jeder Zeile muss links das englische und rechts das deutsche Wort stehen (getrennt durch ein <b>Komma</b>, also "Wort, Bedeutung"). Die Vokabeln werden in die aktuell oben ausgewählte Liste importiert.</p>
-                <div class="vocab-row" style="margin-bottom: 0; align-items: center;">
-                  <div class="vocab-field" style="flex: 2;">
-                    <input type="file" id="vocab-import-file" accept=".txt" style="background: white; border: 1px solid #ccc; padding: 0.5rem; border-radius: 6px; width: 100%;">
-                  </div>
-                  <div class="vocab-actions" style="margin-top: 0; flex: 1;">
-                    <button type="button" id="vocab-import-btn" style="height: 42px; width: 100%;">Import starten</button>
-                  </div>
+                <div class="file-upload-wrapper">
+                    <label for="vocab-import-file" class="file-upload-btn">📁 Datei auswählen</label>
+                    <span id="vocab-import-file-name" class="file-name-display">Keine Datei ausgewählt</span>
+                </div>
+                <input type="file" id="vocab-import-file" accept=".txt" style="display:none;">
+                <div class="vocab-actions" style="margin-top: 10px;">
+                    <button type="button" id="vocab-import-btn" style="display:none; width: 100%; margin: 0;">Import starten</button>
                 </div>
               </div>
 

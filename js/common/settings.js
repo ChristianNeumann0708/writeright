@@ -3,6 +3,7 @@
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 import { downloadBackup, restoreBackup } from "./indexedBackup.js";
 import { VokabelTrainerStorage } from "../vokabeltrainer/vokabeltrainer-storage.js";
+import { AppStorage } from "../core/StorageService.js";
 
 // ------------------------------------------------------
 // Settings laden & speichern
@@ -20,20 +21,40 @@ function saveSettings(newSettings) {
 // Statusmeldung
 // ------------------------------------------------------
 
-function showStatus(msg) {
+function showStatus(msg, isError = false) {
   const el = document.getElementById("status");
   if (!el) return;
+  const isErr = isError || msg.toLowerCase().includes("fehler");
   el.textContent = msg;
+  if (isErr) {
+    el.classList.add("error");
+    el.classList.remove("success");
+  } else {
+    el.classList.add("success");
+    el.classList.remove("error");
+  }
   el.style.display = "block";
-  setTimeout(() => { el.style.display = "none"; }, 3500);
+  const timeoutMs = isErr ? 8000 : 3500;
+  if (el.dataset.tId) clearTimeout(Number(el.dataset.tId));
+  el.dataset.tId = setTimeout(() => { el.style.display = "none"; }, timeoutMs);
 }
 
-function showVtStatus(msg) {
+function showVtStatus(msg, isError = false) {
   const el = document.getElementById("vt-status");
   if (!el) return;
+  const isErr = isError || msg.toLowerCase().includes("fehler");
   el.textContent = msg;
+  if (isErr) {
+    el.classList.add("error");
+    el.classList.remove("success");
+  } else {
+    el.classList.add("success");
+    el.classList.remove("error");
+  }
   el.style.display = "block";
-  setTimeout(() => { el.style.display = "none"; }, 3500);
+  const timeoutMs = isErr ? 8000 : 3500;
+  if (el.dataset.tId) clearTimeout(Number(el.dataset.tId));
+  el.dataset.tId = setTimeout(() => { el.style.display = "none"; }, timeoutMs);
 }
 
 // ------------------------------------------------------
@@ -240,6 +261,37 @@ document.addEventListener("DOMContentLoaded", () => {
         VokabelTrainerStorage._saveAndBackup();
         showVtStatus("Der Vokabeltrainer wurde komplett zurückgesetzt.");
         window.dispatchEvent(new Event('vokabeltrainer-updated'));
+      }
+    });
+  }
+
+  // ------------------------------------------------------
+  // System – App auf Werkseinstellungen zurücksetzen
+  // ------------------------------------------------------
+  const factoryResetBtn = document.getElementById("factoryResetBtn");
+  if (factoryResetBtn) {
+    factoryResetBtn.addEventListener("click", async () => {
+      const msg = "⚠️ ACHTUNG: WERKSEINSTELLUNGEN ⚠️\n\nMöchten Sie wirklich ALLE Ihre Offline-Daten (Wörter, Vokabeln, Statistiken, Einstellungen) restlos von diesem Gerät löschen?\n\nDieser Vorgang ist ultimativ und kann NICHT rückgängig gemacht werden!";
+      if (confirm(msg)) {
+        
+        // 1. Alle App-Speicher und Datenbanken unwiderruflich leeren
+        await AppStorage.clear();
+
+        // 2. PWA Service-Worker deaktivieren, um den Offline-Cache des Browsers auszuhebeln
+        if ('serviceWorker' in navigator) {
+          try {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+              await registration.unregister();
+            }
+          } catch (e) {
+            console.error("Fehler beim Abmelden des Service Workers:", e);
+          }
+        }
+
+        // 3. Finale Statusmeldung & Seiten-Reload
+        alert("Daten gelöscht!\n\nIhre App wurde komplett auf die Werkseinstellungen zurückgesetzt.\nSie können diese Oberfläche nun schließen oder die App über Ihr Browser-Menü sicher vom Startbildschirm entfernen.");
+        window.location.reload();
       }
     });
   }

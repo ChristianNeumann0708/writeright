@@ -340,7 +340,7 @@
    Hauptbuttons (Vokabel speichern / Neue Liste)
 -------------------------------------------------- */
 
-.vocab-actions button {
+.vocab-actions button:not(.file-upload-btn) {
   flex: 1;
   padding: 0.7rem;
   border-radius: 8px;
@@ -543,8 +543,8 @@
    BUTTON-STYLING (einheitlich für beide Panels)
 -------------------------------------------------- */
 
-.training-settings-container button,
-.training-mode-container button {
+.training-settings-container button:not(.file-upload-btn),
+.training-mode-container button:not(.file-upload-btn) {
   background: #1e88e5;
   color: white;
   padding: 0.7rem 1rem;

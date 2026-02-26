@@ -42,7 +42,12 @@
             Bereits vorhandene Wörter werden übersprungen.
           </div>
 
-          <input type="file" id="file-input" accept=".txt">
+          <div class="file-upload-wrapper">
+            <label for="file-input" class="file-upload-btn">📁 Datei auswählen</label>
+            <span id="importFileName" class="file-name-display">Keine Datei ausgewählt</span>
+          </div>
+          <input type="file" id="file-input" accept=".txt" style="display:none;">
+          <button id="importFileBtn" style="display:none; margin-top: 10px;" type="button">Import starten</button>
           <div id="status" class="status-message"></div>
 
           <hr>
