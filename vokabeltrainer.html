@@ -235,9 +235,10 @@
 
   <!-- Radiobuttons oben -->
   <div class="training-mode-options">
-    <label><input type="radio" name="training-mode" value="count" checked> Nach Anzahl Vokabeln</label>
-    <label><input type="radio" name="training-mode" value="time"> Zeitbasiert</label>
-    <label><input type="radio" name="training-mode" value="all"> Alle Vokabeln</label>
+    <label><input type="radio" name="training-mode" value="count" checked> Nach Anzahl Vokabeln (Smarte Auswahl)</label>
+    <label><input type="radio" name="training-mode" value="time"> Zeitbasiert (Smarte Auswahl)</label>
+    <label><input type="radio" name="training-mode" value="once"> Einmaliger Durchlauf (Zufällige Mischung)</label>
+    <label><input type="radio" name="training-mode" value="all"> Endlos (Smarte Auswahl)</label>
   </div>
 
   <!-- Eingabefelder darunter, stabil -->
@@ -253,9 +254,13 @@
       <input type="number" id="training-time-input" min="1" max="60" value="10">
     </div>
 
+    <div id="training-mode-once" class="training-mode-field">
+      <p>Jede ausgewählte Vokabel kommt exakt ein Mal dran. Danach endet das Training.</p>
+    </div>
+
     <div id="training-mode-all" class="training-mode-field">
       <!-- kein Eingabefeld nötig -->
-      <p>Alle Vokabeln aus den ausgewählten Listen werden trainiert.</p>
+      <p>Alle Vokabeln der Liste werden endlos nach Intelligenz gemischt abgefragt.</p>
     </div>
 
   </div>
@@ -325,11 +330,11 @@
               <div id="training-multiple-choice-container" class="training-multiple-choice" style="display:none;"></div>
 
               <div id="training-feedback" class="training-feedback"></div>
-
+              
               <div class="training-buttons">
                 <button type="button" id="training-check-btn">Prüfen</button>
                 <button type="button" id="training-skip-btn">Überspringen</button>
-                <button type="button" id="training-stop-btn" class="training-stop-btn">Training abbrechen</button>
+                <button type="button" id="training-stop-btn" class="training-stop-btn" style="background-color: #6c757d; border-color: #6c757d;">Auswerten & Beenden</button>
               </div>
 
               <div id="training-summary-container" style="display:none; margin-top: 2rem;"></div>

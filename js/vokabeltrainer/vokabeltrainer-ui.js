@@ -574,8 +574,24 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     if (mode === "time") {
       document.getElementById("training-mode-time").classList.add("active");
     }
+    if (mode === "once") {
+      document.getElementById("training-mode-once").classList.add("active");
+    }
     if (mode === "all") {
       document.getElementById("training-mode-all").classList.add("active");
+    }
+
+    // Wiederholungen-Checkbox anpassen
+    const repeatCb = document.getElementById("training-with-repeats");
+    const repeatLabel = repeatCb.parentElement;
+    if (mode === "all") {
+      repeatCb.disabled = true;
+      repeatLabel.style.opacity = "0.5";
+      repeatLabel.title = "Im Endlos-Modus sind Wiederholungen durch den smarten Algorithmus ohnehin immer aktiv.";
+    } else {
+      repeatCb.disabled = false;
+      repeatLabel.style.opacity = "1";
+      repeatLabel.title = "";
     }
 
     this.trainingSettings.mode = mode;
@@ -1034,6 +1050,5 @@ document.getElementById("training-skip-btn").addEventListener("click", () => {
 });
 
 document.getElementById("training-stop-btn").addEventListener("click", () => {
-  VokabelLogic.stopTraining();
-  VokabelUI.renderVocabList();
+  VokabelLogic.handleStopClick();
 });

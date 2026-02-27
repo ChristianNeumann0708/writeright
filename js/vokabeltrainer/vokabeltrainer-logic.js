@@ -15,6 +15,67 @@ export const VokabelLogic = {
 
   init() {},
 
+  computeWeight(v, direction) {
+    let wrong = 0;
+    let correct = 0;
+    
+    // Auswertung je nach gewählter Richtung
+    if (direction === "de-en" || direction === "mixed") {
+        wrong += (v.statsDEtoEN?.wrong || 0);
+        correct += (v.statsDEtoEN?.correct || 0);
+    }
+    if (direction === "en-de" || direction === "mixed") {
+        wrong += (v.statsENtoDE?.wrong || 0);
+        correct += (v.statsENtoDE?.correct || 0);
+    }
+    
+    // Unbekannte Wörter (nie geübt): mittlere bis hohe Wichtigkeit
+    if (correct === 0 && wrong === 0) return 30;
+    
+    // Problemfälle: hohe Priorität je nach Fehler-Überschuss
+    if (wrong > correct) return 100 + (wrong - correct) * 10;
+    
+    // Noch in der Lernphase (< 3 mal richtig): leicht erhöhte Priorität
+    if (correct < 3) return 15;
+    
+    // Sitzt sehr sicher: kaum Priorität (nur noch für seltene Auffrischung)
+    return 1;
+  },
+
+  weightedSampleSequence(items, direction) {
+    let pool = items.map(item => ({ item: item, weight: this.computeWeight(item, direction) }));
+    let result = [];
+    
+    while (pool.length > 0) {
+        let totalWeight = pool.reduce((sum, el) => sum + el.weight, 0);
+        let random = Math.random() * totalWeight;
+        let current = 0;
+        
+        for (let j = 0; j < pool.length; j++) {
+            current += pool[j].weight;
+            if (current >= random) {
+                result.push(pool[j].item);
+                pool.splice(j, 1);
+                break;
+            }
+        }
+    }
+    return result;
+  },
+
+  handleStopClick() {
+    const summaryContainer = document.getElementById("training-summary-container");
+    if (summaryContainer && summaryContainer.style.display === "block") {
+        // Zusammenfassung wird gerade angezeigt -> Wir wollen jetzt endgültig ins Hauptmenü
+        this.stopTraining();
+        // VokabelUI hier sicherheitshalber asynchron oder gar nicht, aber wir updaten die Liste im Wrapper
+        if (window.VokabelUI) window.VokabelUI.renderVocabList();
+    } else {
+        // Mitten im Training abgebrochen -> Wir wollen zur Auswertung
+        this.endTrainingEarly();
+    }
+  },
+
   startTraining(settings) {
     this.settings = settings;
 
@@ -46,8 +107,17 @@ export const VokabelLogic = {
       });
     }
 
-    // Zufällige Reihenfolge (immer aktiv)
-    selected = selected.sort(() => Math.random() - 0.5);
+    // Sortierung je nach Modus
+    if (settings.mode === "once") {
+        // Einmaliger Durchlauf: Einfach gut mischen, aber jedes Wort exakt 1x!
+        selected = selected.sort(() => Math.random() - 0.5);
+    } else {
+        // count, time, all (Endlos): Smarte Sortierung (gewichtet)
+        selected = this.weightedSampleSequence(selected, settings.direction);
+        // Nach der smarten Auswahl noch einmal mischen, damit die vielen gezogenen "schweren" Wörter
+        // sich schön verteilen und man nicht am Anfang erschlagen wird:
+        selected = selected.sort(() => Math.random() - 0.5);
+    }
 
     // Modus: Anzahl
     if (settings.mode === "count") {
@@ -113,9 +183,9 @@ export const VokabelLogic = {
 
     const stopBtn = document.getElementById("training-stop-btn");
     if (stopBtn) {
-        stopBtn.textContent = "Training abbrechen";
-        stopBtn.style.backgroundColor = ""; // Reset Style (Rot aus CSS)
-        stopBtn.style.borderColor = "";
+        stopBtn.textContent = "Auswerten & Beenden";
+        stopBtn.style.backgroundColor = "#6c757d"; // Grau für Auswerten
+        stopBtn.style.borderColor = "#6c757d";
     }
 
     const skipBtn = document.getElementById("training-skip-btn");
@@ -253,7 +323,8 @@ export const VokabelLogic = {
       if (!isRepetition) this.sessionStats.wrong++;
       
       // Fehlerhafte Vokabel wiederholen (ans Ende der Liste hängen)
-      if (this.settings && this.settings.withRepeats) {
+      // Aber nur, wenn sie nicht schon eine Wiederholung IST (keine Endlosschleife)
+      if (this.settings && this.settings.withRepeats && !isRepetition && this.settings.mode !== 'all') {
         v._isRepetition = true;
         this.trainingList.push(v);
       }
@@ -379,6 +450,11 @@ export const VokabelLogic = {
   endTrainingByTime() {
     this.currentIndex = this.trainingList.length; // Force progress end
     this.finishTraining("Zeit abgelaufen! Training beendet.");
+  },
+
+  endTrainingEarly() {
+    this.currentIndex = this.trainingList.length; // Force progress end
+    this.finishTraining("Training vorzeitig beendet.");
   },
 
   updateTimerUI(element, seconds) {

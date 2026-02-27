@@ -31,6 +31,10 @@ export const WortLogic = {
   lastWord: null,
   lastIndex: -1,
 
+  // NEU: Sperr-Puffer (Cooldown) gegen Doppelungen
+  recentWords: [],
+  recentLimit: 10,
+
   // ersetzt "ersterFehler"
   firstAttempt: true,
 
@@ -42,6 +46,7 @@ export const WortLogic = {
 
   init(words) {
     this.wortListe = words;
+    this.recentWords = []; // Cooldown reset bei Neustart
 
     if (words.length > 0) {
       this.currentWord = this.getNextWord(words);
@@ -140,29 +145,70 @@ export const WortLogic = {
     this.disableButtons = false;
   },
 
+  computeWeight(w) {
+    let wrong = w.anzFalsch || 0;
+    let correct = w.anzRichtig || 0;
+    
+    // Unbekannte Wörter (nie geübt): mittlere Wichtigkeit als Kaltstart
+    if (correct === 0 && wrong === 0) return 30;
+    
+    // Problemfälle: hohe Priorität je nach Fehler-Überschuss
+    if (wrong > correct) return 100 + (wrong - correct) * 10;
+    
+    // Noch in der Lernphase (< 3 mal richtig): leicht erhöhte Priorität
+    if (correct < 3) return 15;
+    
+    // Sitzt sehr sicher: kaum Priorität (nur noch für seltene Auffrischung)
+    return 1;
+  },
+
+  weightedSampleSequence(items) {
+    let pool = items.map(item => ({ item: item, weight: this.computeWeight(item) }));
+    let result = [];
+    
+    while (pool.length > 0) {
+        let totalWeight = pool.reduce((sum, el) => sum + el.weight, 0);
+        let random = Math.random() * totalWeight;
+        let current = 0;
+        
+        for (let j = 0; j < pool.length; j++) {
+            current += pool[j].weight;
+            if (current >= random) {
+                result.push(pool[j].item);
+                pool.splice(j, 1);
+                break;
+            }
+        }
+    }
+    return result;
+  },
+
   getNextWord(list) {
     this.firstAttempt = true;
     this.disableButtons = false;
 
     if (list.length === 0) return null;
 
-    if (Math.random() < 0.5) {
-      return list[Math.floor(Math.random() * list.length)];
+    // Filter words that are currently in the cooldown list
+    let available = list.filter(w => !this.recentWords.includes(w));
+    
+    // Fallback, falls die Originalliste kleiner ist als das Cooldown-Limit (Sicherheit)
+    if (available.length === 0) {
+       // Nimm alle, außer das absolut zuletzt getestete, damit sich nichts 2x hintereinander wiederholt
+       let fallback = list.filter(w => w !== this.recentWords[this.recentWords.length - 1]);
+       available = fallback.length > 0 ? fallback : list;
     }
 
-    return this.getWeightedWord(list);
-  },
+    // Smarte Auswahl treffen
+    const shuffled = this.weightedSampleSequence(available);
+    const chosen = shuffled[0];
 
-  getWeightedWord(list) {
-    const settings = WortStorage.loadSettings();
+    // Ausgewähltes Wort in die Sperrliste legen und ggf. älteste Sperre aufheben
+    this.recentWords.push(chosen);
+    if (this.recentWords.length > this.recentLimit) {
+        this.recentWords.shift();
+    }
 
-    const weighted = list.flatMap(w => {
-      const score = this.getScoreForWord(w, settings.currentSort || "alpha");
-      const weight = Math.max(1, 1 + score);
-      return Array(weight).fill(w);
-    });
-
-    return weighted[Math.floor(Math.random() * weighted.length)];
-  },
-
+    return chosen;
+  }
 };
