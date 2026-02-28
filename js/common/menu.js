@@ -62,5 +62,14 @@ export function loadMenu() {
     if (a.getAttribute("href") === current) {
       a.classList.add("active");
     }
+
+    a.addEventListener("click", (e) => {
+      if (window.isTrainingActive) {
+        // Mache ein kleines Popup auf, falls jemand während des Trainings wegklickt
+        if (!confirm("Ein Training läuft gerade! Möchtest du wirklich abbrechen und die Seite verlassen?")) {
+          e.preventDefault(); // Verhindert, dass der Link den Browser neu lädt
+        }
+      }
+    });
   });
 }

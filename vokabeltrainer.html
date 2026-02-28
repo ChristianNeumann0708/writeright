@@ -276,10 +276,11 @@
                    <label style="font-size: 0.95rem; margin-bottom: 0;"><input type="radio" name="hard-mode-type" value="balance"> Negative Fehlerbilanz (mehr Fehler als richtig)</label>
                 </div>
                 <label><input type="checkbox" id="training-suggest-words"> Wörter vorschlagen (Multiple Choice)</label>
+                <label><input type="checkbox" id="training-parent-mode"> Eltern-Modus (Diktiermodus)</label>
                 <label><input type="checkbox" id="training-hide-stats"> Fokus-Modus (Feedback & Live-Statistik ausblenden)</label>
                 
                 <div style="margin-bottom: 1rem;">
-                  <label style="margin-bottom: 0.2rem;"><input type="checkbox" id="training-with-repeats" checked> Wiederholungen aktivieren</label>
+                  <label style="margin-bottom: 0.2rem;"><input type="checkbox" id="training-with-repeats"> Wiederholungen aktivieren</label>
                   <div style="font-size: 0.9rem; color: #666; margin-left: 2.1rem; margin-top: -0.2rem;">Falsch beantwortete Vokabeln werden am Ende des Trainings wiederholt.</div>
                 </div>
 
@@ -324,6 +325,28 @@
               <div class="training-input-area" id="training-input-group">
                 <label for="training-answer">Übersetzung eingeben</label>
                 <input type="text" id="training-answer" autocomplete="off">
+              </div>
+
+              <!-- NEW: Eltern Modus Bereich -->
+              <div id="training-parent-mode-group" style="display:none; text-align: center; margin-bottom: 1.5rem;">
+                
+                <!-- NEW: Eltern Info (Übersetzung & Fehler) -->
+                <div id="parent-info-area" style="margin-bottom: 1.5rem; padding: 1rem; background: #e9ecef; border-radius: 8px;">
+                  <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Lösung: <strong id="parent-translation" style="color: #007bff;"></strong></div>
+                  <div id="parent-historic-variants" style="font-size: 0.95rem; color: #dc3545; display: none;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                  <button type="button" id="parent-btn-correct" style="background-color: #28a745; border-color: #28a745; width: 150px; font-size: 1.2rem;">Richtig</button>
+                  <button type="button" id="parent-btn-wrong" style="background-color: #dc3545; border-color: #dc3545; width: 150px; font-size: 1.2rem;">Falsch</button>
+                </div>
+                <!-- Feld für falsche Variante(n), standardmäßig unsichtbar -->
+                <div id="parent-wrong-input-area" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; flex-direction: column;">
+                  <label for="parent-wrong-answer" style="font-weight: bold; color: #dc3545;">Falsch geschriebene Variante eintragen:</label>
+                  <input type="text" id="parent-wrong-answer" autocomplete="off" style="max-width: 300px; border-color: #dc3545;">
+                  <div style="font-size: 0.85rem; color: #666;">(Optional. Speichert die Variante bei Enter)</div>
+                  <button type="button" id="parent-btn-next" style="margin-top: 0.5rem; background-color: #007bff; border-color: #007bff; width: 200px;">Weiter zum nächsten Wort</button>
+                </div>
               </div>
 
               <!-- NEW: Multiple Choice Container -->

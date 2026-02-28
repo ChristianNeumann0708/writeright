@@ -628,9 +628,13 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       this.trainingSettings.suggestWords = e.target.checked;
     });
 
-    document.getElementById("training-with-repeats").addEventListener("change", (e) => {
-      this.trainingSettings.withRepeats = e.target.checked;
-    });
+    const parentModeCb = document.getElementById("training-parent-mode");
+    if (parentModeCb) {
+        this.trainingSettings.parentMode = parentModeCb.checked;
+        parentModeCb.addEventListener("change", (e) => {
+            this.trainingSettings.parentMode = e.target.checked;
+        });
+    }
 
     const hideStatsCb = document.getElementById("training-hide-stats");
     if (hideStatsCb) {
@@ -1052,3 +1056,91 @@ document.getElementById("training-skip-btn").addEventListener("click", () => {
 document.getElementById("training-stop-btn").addEventListener("click", () => {
   VokabelLogic.handleStopClick();
 });
+
+// PARENT MODE BUTTONS
+const btnParentCorrect = document.getElementById("parent-btn-correct");
+const btnParentWrong = document.getElementById("parent-btn-wrong");
+const parentWrongInputArea = document.getElementById("parent-wrong-input-area");
+const parentWrongInput = document.getElementById("parent-wrong-answer");
+const btnParentNext = document.getElementById("parent-btn-next");
+
+if (btnParentCorrect) {
+    btnParentCorrect.addEventListener("click", () => {
+        // Richtig gedrückt => Check Answer aufrufen mit künstlichem Erfolgs-Flag
+        VokabelLogic.checkAnswer("", true);
+    });
+}
+
+if (btnParentWrong) {
+    btnParentWrong.addEventListener("click", () => {
+        // Falsch gedrückt => Nur UI sperren und Eingabefeld anzeigen
+        btnParentCorrect.disabled = true;
+        btnParentCorrect.style.opacity = "0.5";
+        btnParentWrong.disabled = true;
+        btnParentWrong.style.opacity = "0.5";
+        
+        window.parentModeVariantAdded = false;
+
+        // Variante anzeigen, falls Englisch gefragt ist, sonst direkt abhandeln
+        if (VokabelLogic.currentWordDirection === "de-en") {
+            if (parentWrongInputArea) parentWrongInputArea.style.display = "flex";
+            if (parentWrongInput) {
+                parentWrongInput.value = "";
+                parentWrongInput.focus();
+            }
+        } else {
+            // Wenn die Zielsprache Deutsch ist, verlangen wir keine Schreibweise (wie du sagtest)
+            // also rufen wir direkt falsch auf
+            VokabelLogic.checkAnswer("", false);
+        }
+    });
+}
+
+// Falsche Variante eintragen und speichern mit ENTER
+if (parentWrongInput) {
+    parentWrongInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const variantEntry = parentWrongInput.value.trim();
+            if (variantEntry) {
+                // Wir speichern die falschen Varianten, indem wir hier direkt am Objekt rumspielen,
+                // das ist am einfachsten, bevor wir den regulären Flow aufrufen.
+                const v = VokabelLogic.trainingList[VokabelLogic.currentIndex];
+                const vocabInstanz = typeof v.markWrong === 'function' ? v : new Vokabel(v);
+                const statDirection = VokabelLogic.currentWordDirection === "de-en" ? "DEtoEN" : "ENtoDE";
+                const isRepetition = !!v._isRepetition;
+                if (!isRepetition) {
+                    // Falls noch gar nicht als falsch gewertet, jetzt erst eintragen lassen
+                    vocabInstanz.markWrong(statDirection, variantEntry);
+                    // Den Fehler-Zähler hier korrigieren, damit nicht unnötig 1x pro Variante gezählt wird
+                    if (!window.parentModeVariantAdded) {
+                        window.parentModeVariantAdded = true;
+                    } else {
+                        // Zähler wieder abziehen, da markWrong immer beides macht (Variante + Zähler)
+                        const stats = statDirection === "DEtoEN" ? vocabInstanz.statsDEtoEN : vocabInstanz.statsENtoDE;
+                        stats.wrong = Math.max(0, stats.wrong - 1);
+                    }
+                    VokabelTrainerStorage.updateVokabel(vocabInstanz);
+                    
+                    // UI Liste der Varianten updaten
+                    if (window.VokabelLogic && window.VokabelLogic.updateParentVariantsUI) {
+                        window.VokabelLogic.updateParentVariantsUI(vocabInstanz);
+                    }
+                }
+                
+                // Kurzes Feedback, dass das Wort gespeichert wurde
+                parentWrongInput.value = "";
+                parentWrongInput.placeholder = "Gespeichert! Noch eins?";
+                setTimeout(() => { if(parentWrongInput) parentWrongInput.placeholder = ""; }, 1500);
+            }
+        }
+    });
+}
+
+// Weiter zum nächsten Wort nach Falsch
+if (btnParentNext) {
+    btnParentNext.addEventListener("click", () => {
+        // Übergeben wir ein künstliches Falsch und lassen checkAnswer den Rest machen (Zähler erhöhen etc.)
+        VokabelLogic.checkAnswer("", false);
+    });
+}

@@ -12,6 +12,7 @@ export const VokabelLogic = {
   currentWordDirection: "de-en",
   sessionStats: { correct: 0, wrong: 0 },
   sessionHistory: [],
+  isWaitingForAcknowledge: false,
 
   init() {},
 
@@ -64,20 +65,22 @@ export const VokabelLogic = {
   },
 
   handleStopClick() {
-    const summaryContainer = document.getElementById("training-summary-container");
-    if (summaryContainer && summaryContainer.style.display === "block") {
-        // Zusammenfassung wird gerade angezeigt -> Wir wollen jetzt endgültig ins Hauptmenü
+    const stopBtn = document.getElementById("training-stop-btn");
+    
+    // Wenn der Button bereits grün ist ("Training beenden"), sind wir im Endscreen
+    if (stopBtn && stopBtn.textContent === "Training beenden") {
         this.stopTraining();
-        // VokabelUI hier sicherheitshalber asynchron oder gar nicht, aber wir updaten die Liste im Wrapper
         if (window.VokabelUI) window.VokabelUI.renderVocabList();
     } else {
-        // Mitten im Training abgebrochen -> Wir wollen zur Auswertung
+        // Mitten im Training abgebrochen ("Auswerten & Beenden") -> Wir wollen zur Auswertung
         this.endTrainingEarly();
     }
   },
 
   startTraining(settings) {
     this.settings = settings;
+    this.isWaitingForAcknowledge = false;
+    window.isTrainingActive = true;
 
     if (this.timerId) {
       clearTimeout(this.timerId);
@@ -237,11 +240,45 @@ export const VokabelLogic = {
       wordBox.textContent = v.word;
     }
 
-    if (isMultipleChoice) {
+    if (this.settings.parentMode) {
+      // ELTERN MODUS
+      inputGroup.style.display = "none";
+      mcContainer.style.display = "none";
+      checkBtn.style.display = "none";
+      
+      const parentGroup = document.getElementById("training-parent-mode-group");
+      if (parentGroup) parentGroup.style.display = "block";
+      
+      const btnCorrect = document.getElementById("parent-btn-correct");
+      const btnWrong = document.getElementById("parent-btn-wrong");
+      const wrongInputArea = document.getElementById("parent-wrong-input-area");
+      const wrongInput = document.getElementById("parent-wrong-answer");
+      
+      if (btnCorrect) {
+          btnCorrect.disabled = false;
+          btnCorrect.style.opacity = "1";
+      }
+      if (btnWrong) {
+          btnWrong.disabled = false;
+          btnWrong.style.opacity = "1";
+      }
+      if (wrongInputArea) wrongInputArea.style.display = "none";
+      if (wrongInput) wrongInput.value = "";
+
+      // Lösung & Fehlerhistorie anzeigen:
+      const parentTranslation = document.getElementById("parent-translation");
+      if (parentTranslation) {
+          parentTranslation.textContent = currentDirection === "de-en" ? v.word : v.translation.join(", ");
+      }
+      this.updateParentVariantsUI(v);
+
+    } else if (isMultipleChoice) {
       // Multiple Choice Mode
       inputGroup.style.display = "none";
       mcContainer.style.display = "flex"; // Flex für Zentrierung (Align-Items im CSS greift)
       checkBtn.style.display = "none"; // Hide "Check" button as clicking option checks immediately
+      const parentGroup = document.getElementById("training-parent-mode-group");
+      if (parentGroup) parentGroup.style.display = "none";
 
       this.renderMultipleChoiceOptions(v, mcContainer, currentDirection);
     } else {
@@ -249,6 +286,14 @@ export const VokabelLogic = {
       inputGroup.style.display = "block";
       mcContainer.style.display = "none";
       checkBtn.style.display = "inline-block";
+      const parentGroup = document.getElementById("training-parent-mode-group");
+      if (parentGroup) parentGroup.style.display = "none";
+      
+      // Auto-Fokus auf das Eingabefeld, damit flüssig getippt werden kann
+      const ansInput = document.getElementById("training-answer");
+      if (ansInput) {
+          ansInput.focus();
+      }
     }
 
     // Statistiken der Vokabel anzeigen
@@ -269,7 +314,39 @@ export const VokabelLogic = {
     }
   },
 
-  checkAnswer(answer) {
+  updateParentVariantsUI(v) {
+      const parentVariants = document.getElementById("parent-historic-variants");
+      if (parentVariants) {
+          if (v.variantsWrong && Object.keys(v.variantsWrong).length > 0) {
+              const variantsList = Object.entries(v.variantsWrong)
+                  .sort((a, b) => b[1] - a[1]) // Nach Häufigkeit sortieren
+                  .map(([variante, anzahl]) => `<li style="margin-bottom: 2px;">${variante} <span style="color:#888; font-size:0.9em;">(${anzahl}x)</span></li>`)
+                  .join("");
+              parentVariants.innerHTML = `<div style="font-weight:bold; margin-bottom: 5px;">Bisherige Fehler vom Kind:</div>
+                                          <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left; display: inline-block;">${variantsList}</ul>`;
+              parentVariants.style.display = "block";
+          } else {
+              parentVariants.style.display = "none";
+          }
+      }
+  },
+
+  checkAnswer(answer, isParentModeCorrect = null) {
+    if (this.isWaitingForAcknowledge) {
+      this.isWaitingForAcknowledge = false;
+      const checkBtn = document.getElementById("training-check-btn");
+      if (checkBtn) checkBtn.textContent = "Prüfen";
+      
+      const feedback = document.getElementById("training-feedback");
+      if (feedback) feedback.textContent = "";
+
+      this.currentIndex++;
+      const ansInput = document.getElementById("training-answer");
+      if (ansInput) ansInput.value = "";
+      this.showCurrentWord();
+      return;
+    }
+
     const v = this.trainingList[this.currentIndex];
     const feedback = document.getElementById("training-feedback");
 
@@ -286,7 +363,12 @@ export const VokabelLogic = {
     const statDirection = this.currentWordDirection === "de-en" ? "DEtoEN" : "ENtoDE";
     const isRepetition = !!v._isRepetition;
 
-    const isCorrect = correctAnswers.includes(answer.toLowerCase());
+    let isCorrect = false;
+    if (this.settings.parentMode && isParentModeCorrect !== null) {
+        isCorrect = isParentModeCorrect;
+    } else {
+        isCorrect = correctAnswers.includes(answer.toLowerCase());
+    }
 
     if (!isRepetition) {
       this.sessionHistory.push({
@@ -299,10 +381,7 @@ export const VokabelLogic = {
 
     if (isCorrect) {
       if (!this.settings.hideStats) {
-        feedback.textContent = isRepetition ? "Richtig! (Wiederholung)" : "Richtig!";
-        feedback.style.color = "green";
-      } else {
-        feedback.textContent = "";
+        feedback.textContent = ""; // Flüssiger Übergang ohne Text
       }
       
       if (vocabInstanz && typeof vocabInstanz.markCorrect === 'function' && !isRepetition) {
@@ -310,28 +389,61 @@ export const VokabelLogic = {
       }
       if (!isRepetition) this.sessionStats.correct++;
     } else {
-      if (!this.settings.hideStats) {
-        feedback.textContent = `Falsch! Richtig wäre: ${v.word} – ${v.translation.join(", ")}`;
-        feedback.style.color = "red";
-      } else {
+      const correctText = this.currentWordDirection === "de-en" ? v.word : v.translation.join(", ");
+      
+      if (this.settings.parentMode) {
+        // Eltern-Modus: Die UI wird vom eigenen Menü gesteuert, daher das rote 'FALSCH' verbergen
         feedback.textContent = "";
+      } else if (this.settings.hideStats) {
+        // Fokus-Modus: Kein Feedback zeigen, sofort weiter
+        feedback.textContent = "";
+      } else {
+        let deins = answer ? answer : "— (übersprungen)";
+        feedback.innerHTML = `<div style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; color: #dc3545; letter-spacing: 1px;">FALSCH!</div>
+                              <div style="font-size: 1.1rem; margin-bottom: 0.8rem; background: #fff3f3; padding: 0.5rem; border-radius: 6px; display: inline-block;">Deine Eingabe: <strong style="color: #dc3545;">${deins}</strong></div>
+                              <div style="font-size: 1.3rem; margin-top: 0.5rem; padding: 0.5rem; background: #f0fdf4; border-radius: 6px; border-left: 4px solid #28a745;">Richtig wäre: <strong style="color: #28a745;">${correctText}</strong></div>`;
+        feedback.style.color = "#333"; 
+      }
+      let shouldMarkWrong = true;
+      if (this.settings.parentMode && window.parentModeVariantAdded) {
+          // Wir haben die Falschantwort und die Stats-Erhöhung bereits über die eigene Parent-UI erledigt
+          shouldMarkWrong = false;
       }
       
-      if (vocabInstanz && typeof vocabInstanz.markWrong === 'function' && !isRepetition) {
+      if (shouldMarkWrong && vocabInstanz && typeof vocabInstanz.markWrong === 'function' && !isRepetition) {
          vocabInstanz.markWrong(statDirection, answer);
       }
-      if (!isRepetition) this.sessionStats.wrong++;
-      
-      // Fehlerhafte Vokabel wiederholen (ans Ende der Liste hängen)
-      // Aber nur, wenn sie nicht schon eine Wiederholung IST (keine Endlosschleife)
-      if (this.settings && this.settings.withRepeats && !isRepetition && this.settings.mode !== 'all') {
-        v._isRepetition = true;
-        this.trainingList.push(v);
+      if (!isRepetition && shouldMarkWrong) this.sessionStats.wrong++;
+
+      // Clean up flag for next word
+      window.parentModeVariantAdded = false;
+
+      // Speichern
+      if (vocabInstanz && !isRepetition) {
+        VokabelTrainerStorage.updateVokabel(vocabInstanz);
+      }
+      this.updateSessionStatsUI();
+
+      // Zwangspause NUR wenn wir NICHT im Fokus-Modus sind UND NICHT im Elternmodus
+      if (!this.settings.hideStats && !this.settings.parentMode) {
+          this.isWaitingForAcknowledge = true;
+          document.getElementById("training-input-group").style.display = "none";
+          if (this.settings.suggestWords) {
+              document.querySelectorAll(".mc-option-btn").forEach(btn => btn.disabled = true);
+          }
+          
+          const checkBtn = document.getElementById("training-check-btn");
+          if (checkBtn) {
+              checkBtn.style.display = "inline-block";
+              checkBtn.textContent = "Weiter (Enter)";
+              checkBtn.focus();
+          }
+          return; // Hier abbrechen -> Wir warten auf Bestätigung (nächster Klick)
       }
     }
     
-    // Speichern (wir übergeben die aktualisierte oder neu erstellte Vokabel nur beim ersten Versuch)
-    if (vocabInstanz && !isRepetition) {
+    // Speichern (korrekter Fall + Fokus-Modus Falsch-Fall laufen hierhin weiter)
+    if (isCorrect && vocabInstanz && !isRepetition) {
       VokabelTrainerStorage.updateVokabel(vocabInstanz);
     }
 
@@ -343,6 +455,11 @@ export const VokabelLogic = {
   },
 
   skip() {
+    if (this.isWaitingForAcknowledge) {
+      this.isWaitingForAcknowledge = false;
+      const checkBtn = document.getElementById("training-check-btn");
+      if (checkBtn) checkBtn.textContent = "Prüfen";
+    }
     this.currentIndex++;
     this.showCurrentWord();
   },
@@ -429,13 +546,35 @@ export const VokabelLogic = {
               rightSideText = item.isCorrect ? "Richtig" : `Falsch (übersprungen)`;
           }
 
+          // Globale Statistik für dieses Wort holen (je nach Richtung)
+          const allStats = item.direction === "de-en" ? (v.statsDEtoEN || {correct:0, wrong:0}) : (v.statsENtoDE || {correct:0, wrong:0});
+          const globalCorrect = allStats.correct;
+          const globalWrong = allStats.wrong;
+
+          // Eventuelle falsche Varianten (aus der Historie) formatieren
+          let variantsHtml = "";
+          if (v.variantsWrong && Object.keys(v.variantsWrong).length > 0) {
+              const variantsList = Object.entries(v.variantsWrong)
+                  .sort((a, b) => b[1] - a[1]) // Nach Häufigkeit sortieren
+                  .map(([variante, anzahl]) => `${variante} (${anzahl}x)`)
+                  .join(", ");
+              if (variantsList) {
+                  variantsHtml = `<div style="font-size: 0.85em; color: #888; margin-top: 4px;">Typische Fehler: ${variantsList}</div>`;
+              }
+          }
+
           html += `
-            <li style="border-bottom: 1px solid #f0f0f0; padding: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <li style="border-bottom: 1px solid #f0f0f0; padding: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
               <div style="flex: 1;">
                 <div style="font-weight: bold;">${q}</div>
-                <div style="font-size: 0.9em; opacity: 0.8;">${correctAns}</div>
+                <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 4px;">${correctAns}</div>
+                <div style="font-size: 0.8em; color: #666; display: flex; gap: 8px;">
+                  <span title="Gesamt Richtig" style="color: #28a745;">✅ ${globalCorrect}</span> 
+                  <span title="Gesamt Falsch" style="color: #dc3545;">❌ ${globalWrong}</span>
+                </div>
+                ${variantsHtml}
               </div>
-              <div class="vocab-stat-badge ${colorClass}" style="flex-shrink: 0; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <div class="vocab-stat-badge ${colorClass}" style="flex-shrink: 0; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; align-self: center;">
                  ${icon} ${rightSideText}
               </div>
             </li>
@@ -484,6 +623,8 @@ export const VokabelLogic = {
   },
 
   stopTraining() {
+    window.isTrainingActive = false;
+
     if (this.timerId) {
       clearTimeout(this.timerId);
       this.timerId = null;
