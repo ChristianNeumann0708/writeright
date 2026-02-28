@@ -100,8 +100,18 @@ export const VokabelLogic = {
 
     if (settings.onlyHard) {
       selected = selected.filter(v => {
-         const wrong = (v.statsENtoDE?.wrong || 0) + (v.statsDEtoEN?.wrong || 0);
-         const correct = (v.statsENtoDE?.correct || 0) + (v.statsDEtoEN?.correct || 0);
+         let wrong = 0;
+         let correct = 0;
+         
+         if (settings.direction === "de-en" || settings.direction === "mixed") {
+             wrong += (v.statsDEtoEN?.wrong || 0);
+             correct += (v.statsDEtoEN?.correct || 0);
+         }
+         if (settings.direction === "en-de" || settings.direction === "mixed") {
+             wrong += (v.statsENtoDE?.wrong || 0);
+             correct += (v.statsENtoDE?.correct || 0);
+         }
+
          if (settings.hardModeType === "balance") {
              return wrong > correct;
          } else {

@@ -113,7 +113,7 @@
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 1rem;">
+                <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
                   <div style="flex: 1;">
                     <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">DE➝EN <span style="color:#2da44e">Richtig (✅)</span></label>
                     <input type="number" id="stats-de-en-correct" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
@@ -122,6 +122,13 @@
                     <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 2px;">DE➝EN <span style="color:#d93025">Falsch (❌)</span></label>
                     <input type="number" id="stats-de-en-wrong" min="0" style="width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
                   </div>
+                </div>
+                
+                <!-- NEW: Liste der falschen Varianten -->
+                <div id="vocab-edit-variants-container" style="display:none; margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed #ccc;">
+                  <label style="font-size: 0.8rem; color: #777; display: block; margin-bottom: 6px;">Falsche Schreibweisen (aus Diktiermodus):</label>
+                  <ul id="vocab-edit-variants-list" style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+                  </ul>
                 </div>
               </div>
 

@@ -61,6 +61,7 @@ const trainingStartBtn = document.getElementById("training-start-btn");
 
 export const VokabelUI = {
   selectedVocabId: null,
+  selectedVocabVariantsWrong: null,
   currentSort: localStorage.getItem("vokabeltrainer_sort") || "alpha",
   currentSearch: "",
   trainingSettings: {
@@ -116,6 +117,7 @@ export const VokabelUI = {
   collapseInputPanel() {
     inputPanel.classList.add("collapsed");
     this.selectedVocabId = null;
+    this.selectedVocabVariantsWrong = null;
     enInput.value = "";
     deInput.value = "";
     listSelect.value = "default";
@@ -126,6 +128,8 @@ export const VokabelUI = {
     if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
 
     if (editStatsPanel) editStatsPanel.style.display = "none";
+    const variantsContainer = document.getElementById("vocab-edit-variants-container");
+    if (variantsContainer) variantsContainer.style.display = "none";
 
     this.renderVocabList();
     togglePanelBtn.textContent = "▼ Neue Vokabel hinzufügen ▼";
@@ -911,6 +915,7 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
 
   selectVocab(v) {
     this.selectedVocabId = v.id;
+    this.selectedVocabVariantsWrong = Object.assign({}, v.variantsWrong || {});
     enInput.value = v.word;
     deInput.value = v.translation.join(", ");
 
@@ -941,6 +946,8 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     trainingToggleBtn.textContent = "▼ Training einstellen ▼";
 
     if (panelTitle) panelTitle.textContent = "Vokabel bearbeiten";
+    
+    this.renderEditVariants();
 
     this.expandInputPanel();
     togglePanelBtn.textContent = "▲ Vokabel bearbeiten ▲";
@@ -948,6 +955,54 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
     enInput.focus();
 
     this.renderVocabList();
+  },
+
+  renderEditVariants() {
+      const container = document.getElementById("vocab-edit-variants-container");
+      const listElement = document.getElementById("vocab-edit-variants-list");
+      
+      if (!container || !listElement) return;
+
+      if (!this.selectedVocabVariantsWrong || Object.keys(this.selectedVocabVariantsWrong).length === 0) {
+          container.style.display = "none";
+          return;
+      }
+
+      container.style.display = "block";
+      listElement.innerHTML = "";
+
+      Object.entries(this.selectedVocabVariantsWrong)
+          .sort((a, b) => b[1] - a[1]) // Nach Fehlerhäufigkeit
+          .forEach(([variantName, count]) => {
+              const li = document.createElement("li");
+              li.style.display = "flex";
+              li.style.justifyContent = "space-between";
+              li.style.alignItems = "center";
+              li.style.padding = "4px 0";
+              li.style.borderBottom = "1px solid #f0f0f0";
+              
+              const textSpan = document.createElement("span");
+              textSpan.innerHTML = `${variantName} <span style="color:#888; font-size:0.85em;">(${count}x eingetippt)</span>`;
+              
+              const delBtn = document.createElement("button");
+              delBtn.type = "button";
+              delBtn.innerHTML = "🗑️";
+              delBtn.title = `Diese Schreibweise ("${variantName}") aus der Fehler-Statistik löschen`;
+              delBtn.style.background = "none";
+              delBtn.style.border = "none";
+              delBtn.style.cursor = "pointer";
+              delBtn.style.fontSize = "0.9rem";
+              delBtn.style.padding = "2px 6px";
+              
+              delBtn.addEventListener("click", () => {
+                  delete this.selectedVocabVariantsWrong[variantName];
+                  this.renderEditVariants(); // Neu rendern ohne dieses Item
+              });
+              
+              li.appendChild(textSpan);
+              li.appendChild(delBtn);
+              listElement.appendChild(li);
+          });
   }
 };
 
@@ -990,7 +1045,8 @@ function saveVocab() {
       id: VokabelUI.selectedVocabId,
       word: en,
       translation: translationArray,
-      list
+      list,
+      variantsWrong: VokabelUI.selectedVocabVariantsWrong || {}
     });
 
     if (editStatsPanel) {
@@ -1009,6 +1065,7 @@ function saveVocab() {
     }
 
     VokabelUI.selectedVocabId = null;
+    VokabelUI.selectedVocabVariantsWrong = null;
     enInput.value = "";
     deInput.value = "";
     listSelect.value = "default";
@@ -1017,6 +1074,8 @@ function saveVocab() {
     deleteBtn.style.display = "none";
     cancelBtn.style.display = "none";
     if (editStatsPanel) editStatsPanel.style.display = "none";
+    const variantsContainer = document.getElementById("vocab-edit-variants-container");
+    if (variantsContainer) variantsContainer.style.display = "none";
     
     if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
     togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
