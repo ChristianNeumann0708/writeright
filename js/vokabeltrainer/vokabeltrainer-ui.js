@@ -66,7 +66,7 @@ export const VokabelUI = {
   trainingSettings: {
     direction: "de-en",
     lists: [],
-    mode: "count",
+    mode: "once",
     count: 20,
     time: 10,
     onlyHard: false,
@@ -624,25 +624,72 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       });
     });
 
-    document.getElementById("training-suggest-words").addEventListener("change", (e) => {
-      this.trainingSettings.suggestWords = e.target.checked;
-    });
-
+    const suggestWordsCb = document.getElementById("training-suggest-words");
     const parentModeCb = document.getElementById("training-parent-mode");
+    const hideStatsCb = document.getElementById("training-hide-stats");
+    const repeatsCb = document.getElementById("training-with-repeats");
+
+    const updateCheckboxExclusions = () => {
+        if (!parentModeCb || !suggestWordsCb || !hideStatsCb || !repeatsCb) return;
+
+        if (parentModeCb.checked) {
+            // Wenn Eltern-Modus an ist => Multiple Choice & Fokus aus
+            suggestWordsCb.checked = false;
+            suggestWordsCb.disabled = true;
+            this.trainingSettings.suggestWords = false;
+
+            hideStatsCb.checked = false;
+            hideStatsCb.disabled = true;
+            this.trainingSettings.hideStats = false;
+        } else {
+            // Sonst sind Multiple Choice & Fokus wieder wählbar
+            suggestWordsCb.disabled = false;
+            hideStatsCb.disabled = false;
+
+            // Aber wenn Multiple Choice oder Fokus an ist => Eltern-Modus aus
+            if (suggestWordsCb.checked || hideStatsCb.checked) {
+                parentModeCb.checked = false;
+                parentModeCb.disabled = true;
+                this.trainingSettings.parentMode = false;
+            } else {
+                parentModeCb.disabled = false;
+            }
+        }
+    };
+
+    if (suggestWordsCb) {
+        this.trainingSettings.suggestWords = suggestWordsCb.checked;
+        suggestWordsCb.addEventListener("change", (e) => {
+            this.trainingSettings.suggestWords = e.target.checked;
+            updateCheckboxExclusions();
+        });
+    }
+
     if (parentModeCb) {
         this.trainingSettings.parentMode = parentModeCb.checked;
         parentModeCb.addEventListener("change", (e) => {
             this.trainingSettings.parentMode = e.target.checked;
+            updateCheckboxExclusions();
         });
     }
 
-    const hideStatsCb = document.getElementById("training-hide-stats");
     if (hideStatsCb) {
-      this.trainingSettings.hideStats = hideStatsCb.checked;
-      hideStatsCb.addEventListener("change", (e) => {
-        this.trainingSettings.hideStats = e.target.checked;
-      });
+        this.trainingSettings.hideStats = hideStatsCb.checked;
+        hideStatsCb.addEventListener("change", (e) => {
+            this.trainingSettings.hideStats = e.target.checked;
+            updateCheckboxExclusions();
+        });
     }
+
+    if (repeatsCb) {
+        this.trainingSettings.repeats = repeatsCb.checked;
+        repeatsCb.addEventListener("change", (e) => {
+            this.trainingSettings.repeats = e.target.checked;
+        });
+    }
+
+    // Initiale Prüfung beim Laden
+    updateCheckboxExclusions();
 
     trainingStartBtn.addEventListener("click", () => {
       VokabelLogic.startTraining(this.trainingSettings);

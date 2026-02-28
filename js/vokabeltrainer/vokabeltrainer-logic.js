@@ -415,6 +415,14 @@ export const VokabelLogic = {
       }
       if (!isRepetition && shouldMarkWrong) this.sessionStats.wrong++;
 
+      // Wiederholen am Ende, wenn Option aktiv
+      if (this.settings.repeats && !isRepetition) {
+          // Klonen, damit das Originalobjekt nicht dauerhaft markiert bleibt
+          const vocabClone = Object.assign(Object.create(Object.getPrototypeOf(vocabInstanz)), vocabInstanz);
+          vocabClone._isRepetition = true;
+          this.trainingList.push(vocabClone);
+      }
+
       // Clean up flag for next word
       window.parentModeVariantAdded = false;
 
@@ -745,7 +753,7 @@ export const VokabelLogic = {
     while (selected.length < count) {
         selected.push(`— ${placeholderCount++} —`); 
     }
-
     return selected;
   }
 };
+window.VokabelLogic = VokabelLogic;

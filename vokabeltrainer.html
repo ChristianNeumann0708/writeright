@@ -235,16 +235,20 @@
 
   <!-- Radiobuttons oben -->
   <div class="training-mode-options">
-    <label><input type="radio" name="training-mode" value="count" checked> Nach Anzahl Vokabeln (Smarte Auswahl)</label>
+    <label><input type="radio" name="training-mode" value="once" checked> Einmaliger Durchlauf (Zufällige Mischung)</label>
+    <label><input type="radio" name="training-mode" value="count"> Nach Anzahl Vokabeln (Smarte Auswahl)</label>
     <label><input type="radio" name="training-mode" value="time"> Zeitbasiert (Smarte Auswahl)</label>
-    <label><input type="radio" name="training-mode" value="once"> Einmaliger Durchlauf (Zufällige Mischung)</label>
     <label><input type="radio" name="training-mode" value="all"> Endlos (Smarte Auswahl)</label>
   </div>
 
   <!-- Eingabefelder darunter, stabil -->
   <div class="training-mode-fields">
 
-    <div id="training-mode-count" class="training-mode-field active">
+    <div id="training-mode-once" class="training-mode-field active">
+      <p style="margin: 0; padding: 10px 0; color: #555;">Jede ausgewählte Vokabel kommt exakt ein Mal dran. Danach endet das Training.</p>
+    </div>
+
+    <div id="training-mode-count" class="training-mode-field">
       <label for="training-count-input">Anzahl Vokabeln</label>
       <input type="number" id="training-count-input" min="1" max="500" value="20">
     </div>
@@ -254,13 +258,9 @@
       <input type="number" id="training-time-input" min="1" max="60" value="10">
     </div>
 
-    <div id="training-mode-once" class="training-mode-field">
-      <p>Jede ausgewählte Vokabel kommt exakt ein Mal dran. Danach endet das Training.</p>
-    </div>
-
     <div id="training-mode-all" class="training-mode-field">
       <!-- kein Eingabefeld nötig -->
-      <p>Alle Vokabeln der Liste werden endlos nach Intelligenz gemischt abgefragt.</p>
+      <p style="margin: 0; padding: 10px 0; color: #555;">Alle Vokabeln der Liste werden endlos nach Intelligenz gemischt abgefragt.</p>
     </div>
 
   </div>
