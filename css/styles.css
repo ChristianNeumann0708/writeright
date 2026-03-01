@@ -306,3 +306,79 @@ button:disabled {
 .auto-delete-row {
   font-weight: 600;
 }
+
+/* =========================================
+   INFO-SEITE (AKKORDEON)
+   ========================================= */
+
+.info-container {
+  max-width: 800px;
+  margin: 2rem 0 0 0;
+}
+
+.info-container details {
+  background: white;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.info-container summary {
+  padding: 1.2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none; /* Hide default arrow */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  background: #f8f9fa;
+  color: var(--sidebar-bg);
+}
+
+.info-container summary::-webkit-details-marker {
+  display: none; /* Safari */
+}
+
+.info-container summary::after {
+  content: '▼';
+  font-size: 0.9rem;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.info-container details[open] summary {
+  border-bottom: 1px solid #eee;
+  background: white;
+}
+
+.info-container details[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.info-container .details-content {
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+.info-container .details-content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--sidebar-bg);
+  font-size: 1.1rem;
+}
+
+.info-container .details-content h3:first-child {
+  margin-top: 0;
+}
+
+.info-container .details-content ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-container .details-content p {
+  margin-bottom: 1rem;
+}

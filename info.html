@@ -4,126 +4,123 @@
   <meta charset="UTF-8">
   <title>Anleitung – writeRight</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/menu.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
   <div class="layout">
+    <!-- Menü -->
     <div id="main-menu"></div>
 
+    <!-- Hauptinhalt -->
     <div class="content">
       <h1>Anleitung</h1>
 
-      <section>
-        <h2>1. Einführung</h2>
-        <p><strong>writeRight</strong> ist ein Worttrainer, mit dem Kinder die richtige Schreibweise von Wörtern üben können.</p>
-        <p>Das Programm richtet sich aber vor allem an Eltern: 
-        Es hilft dabei, einen Überblick zu bekommen, bei welchen Wörtern das Kind noch Schwierigkeiten hat, 
-        wie oft Fehler auftreten und wie sich die Schreibsicherheit im Laufe der Zeit entwickelt.</p>
-      </section>
+      <div class="info-container">
 
-      <section>
-        <h2>2. Installation &amp; Updates</h2>
-        <h3>Als Web‑App im Browser nutzen</h3>
-        <p>writeRight läuft in modernen Browsern wie Chrome, Edge, Firefox oder Safari. 
-        Die App kann auf Desktop‑Rechnern, Laptops und Tablets verwendet werden.</p>
+        <!-- 1. Einleitung & Allgemeines -->
+        <details>
+          <summary>1. Einleitung & Allgemeines</summary>
+          <div class="details-content">
+            <h3>Was ist writeRight?</h3>
+            <p><strong>writeRight</strong> ist ein Lernprogramm, das speziell dazu entwickelt wurde, Kindern auf spielerische und effektive Weise das Lernen zu erleichtern. Die Anwendung läuft direkt im Browser (z. B. Chrome, Edge, Safari) und kann auf Computern, Tablets und Smartphones gleichermaßen verwendet werden.</p>
+            <p>Die App verfügt über zwei Hauptfunktionen: Einen <strong>Worttrainer</strong> (zum Üben der deutschen Rechtschreibung) und einen <strong>Vokabeltrainer</strong> (zum Lernen von Fremdsprachenvokabeln, z. B. Englisch).</p>
 
-        <h3>Als App installieren (PWA)</h3>
-        <p>In vielen Browsern (z.&nbsp;B. Chrome, Edge) kann writeRight als App installiert werden. 
-        Dazu erscheint in der Adressleiste oder im Browser‑Menü ein Eintrag wie „App installieren“ oder „Zum Startbildschirm hinzufügen“.</p>
+            <h3>Installation als App (PWA)</h3>
+            <p>Obwohl writeRight eine Webseite ist, kannst du sie wie eine normale App installieren. In vielen Browsern erscheint dazu in der Adressleiste ein PC-Icon oder im Menü die Option „App installieren“ bzw. „Zum Startbildschirm hinzufügen“. Danach lässt sich das Programm starten, ohne jedes Mal den Browser öffnen zu müssen.</p>
 
-        <h3>Automatische Updates</h3>
-        <p>writeRight aktualisiert sich automatisch, sobald eine neue Version verfügbar ist. 
-        Nach einem Update erscheint ein Hinweis „App wurde aktualisiert“. 
-        Die App lädt anschließend automatisch neu, damit immer die aktuelle Version verwendet wird.</p>
-      </section>
+            <h3>Automatische Updates</h3>
+            <p>Die App aktualisiert sich im Hintergrund automatisch, sobald eine neue Version vorliegt. Nach einem Update erscheint der Hinweis „App wurde aktualisiert“ und das Programm lädt neu, um die neuesten Funktionen zu aktivieren.</p>
 
-      <section>
-        <h2>3. Grundfunktionen</h2>
-        <ul>
-          <li><strong>Wort eingeben oder suchen:</strong> 
-            Im Feld „Wort eingeben“ kann ein neues Wort hinzugefügt werden (Enter). 
-            Wenn ein Wort bereits existiert, kann es dort auch gesucht werden – beim Tippen und Bestätigen wird das vorhandene Wort automatisch ausgewählt.</li>
-          <li><strong>Wort auswählen:</strong> In der Wortliste ein Wort anklicken, um es zu trainieren.</li>
-          <li><strong>Richtig/Falsch markieren:</strong> Mit den Buttons „Richtig“ oder „Falsch“ bewerten, ob das Kind das Wort korrekt geschrieben hat.</li>
-          <li><strong>Navigation:</strong> Mit „Zurück“ und „Weiter“ durch die Wörter blättern.</li>
-        </ul>
-      </section>
+            <h3>Datenspeicherung</h3>
+            <p><strong>Alle deine Daten bleiben bei dir!</strong> writeRight speichert Wörter, Vokabeln und Lernstatistiken ausschließlich lokal auf deinem Gerät (im sogenannten LocalStorage und IndexedDB deines Browsers). Es fließen keine Daten ins Internet ab.</p>
+          </div>
+        </details>
 
-      <section>
-        <h2>4. Wortliste</h2>
-        <ul>
-          <li><strong>Alphabetische Sortierung:</strong> Standardansicht der Wortliste.</li>
-          <li><strong>Sortierung nach Fehlerhäufigkeit:</strong> Über den Schalter „Fehlerhäufigkeit“ können die Wörter nach Anzahl der Fehler sortiert werden.</li>
-          <li><strong>Wortanzahl:</strong> Neben der Überschrift „Wortliste“ wird die Anzahl der gespeicherten Wörter angezeigt.</li>
-          <li><strong>Löschen:</strong> Einzelne Wörter können über den Button „Löschen“ entfernt werden.</li>
-        </ul>
-      </section>
+        <!-- 2. Der Worttrainer (Diktat-Modus) -->
+        <details>
+          <summary>2. 📖 Der Worttrainer (Rechtschreibung)</summary>
+          <div class="details-content">
+            <h3>Ziel des Modus</h3>
+            <p>Der Worttrainer ist dafür gedacht, die korrekte deutsche Schreibweise von schwierigen Wörtern zu üben – ideal als Vorbereitung auf ein Diktat.</p>
 
-      <section>
-        <h2>5. Falsch geschriebene Varianten</h2>
-        <p>Jede falsch eingegebene Schreibweise wird gespeichert und unter dem aktuellen Wort angezeigt. 
-        So lassen sich typische Fehler des Kindes erkennen (z.&nbsp;B. Buchstabendreher oder fehlende Buchstaben) 
-        und gezielt besprechen.</p>
-      </section>
+            <h3>Bedienung & Ablauf</h3>
+            <ul>
+              <li><strong>Neues Wort anlegen:</strong> Tippe im Eingabefeld am oberen Rand ein Wort ein und drücke Enter (oder klicke auf das Plus).</li>
+              <li><strong>Wort suchen:</strong> Wenn du anfängst zu tippen, sucht das Programm automatisch, ob das Wort bereits in der Liste existiert. Wählst du es aus, springt die Liste direkt dorthin.</li>
+              <li><strong>Navigation:</strong> Auf der linken Seite (oder oben auf mobilen Geräten) findest du eine Liste aller Wörter. Klicke auf ein Wort, um es auszuwählen, oder benutze die Buttons „Zurück“ und „Weiter“.</li>
+            </ul>
 
-      <section>
-        <h2>6. Statistiken</h2>
-        <ul>
-          <li><strong>Richtig/Falsch:</strong> Zeigt, wie viele Antworten in dieser Sitzung richtig oder falsch waren.</li>
-          <li><strong>Fehlerbilanz:</strong> Differenz aus richtigen und falschen Antworten – ein Gefühl für den Lernfortschritt.</li>
-          <li><strong>Session‑Timer:</strong> Misst die aktuelle Trainingszeit.</li>
-          <li><strong>Session‑Statistik:</strong> Zeigt die Ergebnisse der laufenden Sitzung (Richtig, Falsch, Gesamt).</li>
-        </ul>
-      </section>
+            <h3>Bewertung ("Richtig" / "Falsch")</h3>
+            <p>Eltern diktieren in der Regel das Wort. Hat das Kind es aufgeschrieben (z. B. auf einem Blatt Papier), wird in der App auf <strong>Richtig</strong> oder <strong>Falsch</strong> geklickt.</p>
+            <ul>
+              <li><strong>Falsche Varianten:</strong> Hast du auf "Falsch" geklickt, öffnet sich ein Textfeld, in das du genau die falsche Schreibweise des Kindes eintippst. Das Programm merkt sich diese Varianten! So könnt ihr später gemeinsam typische Fehler (z. B. vergessene Doppel-Konsonanten oder Dehnungs-h) analysieren.</li>
+            </ul>
 
-      <section>
-        <h2>7. Backup &amp; Wiederherstellung</h2>
-        <p>writeRight speichert die Daten automatisch lokal im Browser:</p>
-        <ul>
-          <li><strong>localStorage:</strong> Schneller Zugriff beim Start der App.</li>
-          <li><strong>IndexedDB‑Backup:</strong> Zusätzliches Backup, falls die schnellen Daten einmal fehlen.</li>
-          <li><strong>Automatische Wiederherstellung:</strong> Beim Start wird zuerst aus localStorage geladen, 
-            falls dort nichts vorhanden ist, wird das Backup aus IndexedDB verwendet.</li>
-          <li><strong>Liste löschen:</strong> Über die entsprechende Funktion kann die gesamte Wortliste gelöscht werden.</li>
-        </ul>
-      </section>
+            <h3>Listen & Sortierung</h3>
+            <p>Die Liste auf der linken Seite lässt sich neben der Standard-Alphabetischen-Sortierung auch nach <strong>Fehlerhäufigkeit</strong> sortieren. So siehst du sofort, welche Wörter noch besondere Aufmerksamkeit benötigen.</p>
+          </div>
+        </details>
 
-      <section>
-        <h2>8. Einstellungen</h2>
-        <ul>
-          <li><strong>Sortiermodus:</strong> Umschalten zwischen alphabetischer Sortierung und Sortierung nach Fehlerhäufigkeit.</li>
-          <li><strong>Tabletmodus:</strong> Aktiviert den Tabletmodus für optimale Darstellung auf Tablets.</li>
-          <li><strong>Reset‑Button:</strong> Setzt die Session‑Statistik (Zeit und Zähler) zurück.</li>
-        </ul>
-      </section>
+        <!-- 3. Der Vokabeltrainer (Übersetzungen) -->
+        <details>
+          <summary>3. 🎓 Der Vokabeltrainer (Vokabeln)</summary>
+          <div class="details-content">
+            <h3>Ziel des Modus</h3>
+            <p>Der Vokabeltrainer dient zum klassischen Lernen von Übersetzungen – beispielsweise für den Englischunterricht.</p>
 
-      <section>
-        <h2>9. Tipps für effektives Lernen</h2>
-        <ul>
-          <li>Regelmäßig kurze Einheiten üben statt lange Sitzungen.</li>
-          <li>Wörter mit hoher Fehlerhäufigkeit gezielt wiederholen.</li>
-          <li>Falsch geschriebene Varianten gemeinsam anschauen und besprechen.</li>
-          <li>Fortschritte über die Statistiken im Blick behalten.</li>
-        </ul>
-      </section>
+            <h3>Lernmodi & Wortauswahl</h3>
+            <ul>
+              <li><strong>Alle Vokabeln:</strong> Die Vokabeln werden komplett zufällig aus dem gesamten Pool ausgewählt.</li>
+              <li><strong>Wiederholen:</strong> Hier kommt ein spezieller Algorithmus zum Einsatz: Das System bevorzugt Vokabeln, bei denen das Kind kürzlich Fehler gemacht hat oder deren Fehlerbilanz (Richtige Antworten minus Falsche Antworten) negativ ist. Wörter, die sitzen, fallen in den Hintergrund.</li>
+            </ul>
 
-      <section>
-        <h2>10. FAQ</h2>
-        <h3>Warum sehe ich ein altes Wort?</h3>
-        <p>Die Reihenfolge hängt vom eingestellten Sortiermodus ab. 
-        Prüfe, ob nach Alphabet oder nach Fehlerhäufigkeit sortiert wird.</p>
+            <h3>Trainingsvarianten (Frage-Typ)</h3>
+            <ul>
+              <li><strong>Texteingabe:</strong> Das Kind muss die entsprechende Übersetzung Buchstabe für Buchstabe genau eintippen.</li>
+              <li><strong>Multiple-Choice:</strong> Dem Kind werden 4 Auswahlmöglichkeiten präsentiert, wovon nur eine richtig ist. Das ist besonders gut für schnellere Wiederholungen oder für Wörter, deren passive Kenntnis (Erkennen) geübt werden soll.</li>
+            </ul>
 
-        <h3>Warum wurde die App aktualisiert?</h3>
-        <p>writeRight lädt automatisch neue Versionen, wenn sie verfügbar sind. 
-        Der Hinweis „App wurde aktualisiert“ informiert darüber, dass eine neue Version aktiv ist.</p>
+            <h3>Eltern-Modus vs. Kinder-Modus</h3>
+            <p>Im Einstellungs-Panel (oder direkt im Trainer) kann das Profil gewechselt werden:</p>
+            <ul>
+              <li><strong>Eltern-Modus:</strong> Wenn du als Elternteil das Kind mündlich abfragst, siehst du sofort die richtige Lösung sowie die falschen Antworten, die das Kind in der Vergangenheit gegeben hat.</li>
+              <li><strong>Kinder-Modus:</strong> Das Kind übt komplett eigenständig am Gerät. Die richtige Lösung wird erst nach der Eingabe (bei einem Fehler) oder Auswahl präsentiert.</li>
+            </ul>
 
-        <h3>Kann ich die Liste exportieren?</h3>
-        <p>Derzeit ist kein Export vorgesehen. Diese Funktion kann in Zukunft ergänzt werden.</p>
-      </section>
-    </div>
-  </div>
+            <h3>Sprachrichtung</h3>
+            <p>Du kannst jederzeit umstellen, in welche Richtung abgefragt wird: Englisch &rarr; Deutsch, Deutsch &rarr; Englisch, oder komplett gemischt.</p>
+          </div>
+        </details>
 
+        <!-- 4. Import, Export & Einstellungen -->
+        <details>
+          <summary>4. ⚙️ Import, Backup & Einstellungen</summary>
+          <div class="details-content">
+            <h3>Wörter & Vokabeln importieren</h3>
+            <p>Über das Menü <strong>Import</strong> kannst du ganze Listen von Wörtern auf einen Schlag einfügen. Das funktioniert über einfache <strong>.txt-Dateien</strong>, bei denen jedes Wort (oder jede Vokabel inklusive Übersetzung) in einer neuen Zeile steht.</p>
+
+            <h3>Sammelfehler eintragen</h3>
+            <p>Im Import-Bereich findest du die Funktion "Sammelfehler". Kommt dein Kind z. B. mit einem Diktatheft nach Hause, kannst du dort alle falsch geschriebenen Wörter, getrennt mit einem Komma, eintragen. Das System erhöht dann automatisch bei allen betroffenen Wörtern den Fehlerzähler um +1, die noch nicht vorhandenen Wörter werden einfach neu angelegt.</p>
+
+            <h3>Backup & Wiederherstellung</h3>
+            <p>Das System beinhaltet eine automatische Backup-Routine (IndexedDB). In den <strong>Einstellungen</strong> kannst du allerdings als Sicherheitsmaßnahme jederzeit manuell eine Sicherungsdatei deiner Wörter auf deinem Computer speichern oder sie von dort wiederherstellen. <strong>Das wird dringend empfohlen, wenn du das Gerät wechseln oder die Formulardaten deines Browsers löschen möchtest!</strong></p>
+
+            <h3>Statistiken zurücksetzen</h3>
+            <p>Über die entsprechenden Buttons kannst du jederzeit die Statistiken der aktuellen Sitzung (Timer, Richtig/Falsch) oder aber die gesamte Fehlerbilanz für alle Wörter zurücksetzen (z. B. zu Beginn eines neuen Schulhalbjahres).</p>
+          </div>
+        </details>
+
+      </div> <!-- .info-container -->
+    </div> <!-- .content -->
+  </div> <!-- .layout -->
+
+  <!-- Menü laden -->
   <script type="module">
     import { loadMenu } from "./js/common/menu.js";
     loadMenu();
