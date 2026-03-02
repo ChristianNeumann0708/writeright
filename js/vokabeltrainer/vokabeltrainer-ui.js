@@ -1027,6 +1027,8 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
   }
 };
 
+window.VokabelUI = VokabelUI;
+
     // Dropdown öffnen/schließen
     const dropdownToggle = document.getElementById("list-dropdown-toggle");
     const dropdownPanel = document.getElementById("list-dropdown-panel");

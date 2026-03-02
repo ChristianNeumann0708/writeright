@@ -602,6 +602,7 @@ export const VokabelLogic = {
         summaryContainer.innerHTML = html;
       }
     }
+    if (window.VokabelUI) window.VokabelUI.renderVocabList();
   },
 
   endTrainingByTime() {
