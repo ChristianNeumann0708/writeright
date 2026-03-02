@@ -73,3 +73,34 @@ export function loadMenu() {
     });
   });
 }
+
+// Globale PWA Registrierung & Update Notification
+// Wird ausgeführt, sobald dieses Modul geladen wird
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Registriere den Service Worker relativ zum aktuellen Pfad
+    // Da unsere HTML-Dateien im Hauptverzeichnis liegen, reicht './service-worker.js' in der Regel aus.
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker registriert. Scope:', registration.scope);
+      })
+      .catch(error => {
+        console.error('ServiceWorker Registrierung fehlgeschlagen:', error);
+      });
+
+    // Auf Update-Nachrichten vom "activate"-Event des neuen Service Workers warten
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'UPDATED') {
+        const updateToast = document.getElementById('updateToast');
+        if (updateToast) {
+          updateToast.classList.add('show');
+          setTimeout(() => {
+            updateToast.classList.remove('show');
+          }, 3500); // Popup nach 3.5 Sekunden ausblenden
+        } else {
+          console.log('App Update verfügbar! (Toast UI Element fehlt)');
+        }
+      }
+    });
+  });
+}
