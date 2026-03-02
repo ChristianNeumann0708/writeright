@@ -16,7 +16,7 @@ export class StorageService {
 
   _openDB() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, 1);
+      const request = indexedDB.open(this.dbName, 3);
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
