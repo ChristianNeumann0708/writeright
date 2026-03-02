@@ -274,8 +274,8 @@
 }
 
 .vocab-list-inner li {
-  padding: 6px 8px;
-  font-size: 14px;
+  padding: 8px 10px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -291,11 +291,11 @@
 
 .vocab-item-stats {
   white-space: nowrap;
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   opacity: 0.9;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   text-align: right;
 }
 

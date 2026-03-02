@@ -240,7 +240,24 @@ export const VokabelUI = {
         if (confirmDelete) {
           VokabelTrainerStorage.deleteVokabel(this.selectedVocabId);
           showStatus("Vokabel gelöscht");
-          this.collapseInputPanel(); // Reset all UI to default insert mode
+          
+          // Reset fields but keep panel open
+          this.selectedVocabId = null;
+          enInput.value = "";
+          deInput.value = "";
+          listSelect.value = "default";
+          saveBtn.textContent = "Vokabel speichern";
+          deleteBtn.style.display = "none";
+          cancelBtn.style.display = "none";
+          
+          if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
+          togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+
+          if (editStatsPanel) editStatsPanel.style.display = "none";
+          const variantsContainer = document.getElementById("vocab-edit-variants-container");
+          if (variantsContainer) variantsContainer.style.display = "none";
+          
+          this.renderVocabList();
         }
       }
     });
@@ -525,6 +542,10 @@ export const VokabelUI = {
       
       if (panelTitle) panelTitle.textContent = "Neue Vokabel hinzufügen";
       togglePanelBtn.textContent = "▲ Neue Vokabel hinzufügen ▲";
+
+      if (editStatsPanel) editStatsPanel.style.display = "none";
+      const variantsContainer = document.getElementById("vocab-edit-variants-container");
+      if (variantsContainer) variantsContainer.style.display = "none";
       
       this.renderVocabList();
     });
@@ -818,7 +839,7 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
           textSpan.className = "vocab-item-text";
           textSpan.innerHTML = `
             <div style="font-weight: bold; margin-bottom: 2px;">${v.word}</div>
-            <div style="font-size: 0.9em; opacity: 0.8;">${v.translation.join(", ")}</div>
+            <div style="font-size: 1.0em; opacity: 0.8;">${v.translation.join(", ")}</div>
           `;
           
           const statsSpan = document.createElement("span");
