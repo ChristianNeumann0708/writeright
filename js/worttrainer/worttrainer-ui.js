@@ -97,7 +97,7 @@ export const WortUI = {
             ...settings,
             currentSort: this.currentSort
           });
-          this.renderList();
+          this.renderAll();
           this.sortWrapper.classList.remove("open");
           e.stopPropagation();
         });
