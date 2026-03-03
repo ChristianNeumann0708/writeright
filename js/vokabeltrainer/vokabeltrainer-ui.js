@@ -19,7 +19,6 @@ const newListInput = document.getElementById("vocab-new-list-name");
 const renameListBtn = document.getElementById("vocab-rename-list-btn");
 const renameListInput = document.getElementById("vocab-rename-list-input");
 const renameListSection = document.getElementById("vocab-rename-list-section");
-const selectedListNameBottom = document.getElementById("selected-list-name-bottom");
 
 const statusBox = document.getElementById("vocab-status");
 const vocabListDisplay = document.getElementById("vocab-list-display");
@@ -453,14 +452,12 @@ export const VokabelUI = {
       if (listSelect.value === "default") {
         deleteListBtn.style.display = "none";
         if (renameListSection) renameListSection.style.display = "none";
-        if (selectedListNameBottom) selectedListNameBottom.textContent = "";
       } else {
         deleteListBtn.style.display = "inline-block";
         if (renameListSection) renameListSection.style.display = "flex";
         
         const selectedOption = listSelect.options[listSelect.selectedIndex];
         if (selectedOption) {
-           if (selectedListNameBottom) selectedListNameBottom.textContent = selectedOption.textContent;
            if (renameListInput) renameListInput.value = selectedOption.textContent;
         }
       }
