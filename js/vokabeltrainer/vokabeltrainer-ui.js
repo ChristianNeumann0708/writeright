@@ -168,13 +168,11 @@ export const VokabelUI = {
     if (listSelect.value === "default") {
       deleteListBtn.style.display = "none";
       if (renameListSection) renameListSection.style.display = "none";
-      if (selectedListNameBottom) selectedListNameBottom.textContent = "";
     } else {
       deleteListBtn.style.display = "inline-block";
       if (renameListSection) renameListSection.style.display = "flex";
       const selectedOption = listSelect.options[listSelect.selectedIndex];
       if (selectedOption) {
-         if (selectedListNameBottom) selectedListNameBottom.textContent = selectedOption.textContent;
          if (renameListInput) renameListInput.value = selectedOption.textContent;
       }
     }
