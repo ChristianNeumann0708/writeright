@@ -276,6 +276,13 @@ export const VokabelUI = {
       }
     });
 
+    newListInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        newListBtn.click();
+      }
+    });
+
     newListBtn.addEventListener("click", () => {
       const name = newListInput.value.trim();
 
