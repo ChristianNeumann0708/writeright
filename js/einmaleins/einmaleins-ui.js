@@ -63,8 +63,36 @@ export const EinmaleinsUI = {
 
   init() {
     this.setupEventListeners();
+    const divToggle = document.getElementById("global-division-toggle");
+    if (divToggle) {
+        divToggle.checked = localStorage.getItem("einmaleins-division-on") === "true";
+    }
+    this.applyDivisionToggleState();
     this.renderList();
     this.updatePreview();
+  },
+
+  applyDivisionToggleState() {
+    const divToggle = document.getElementById("global-division-toggle");
+    if (!divToggle) return;
+    
+    const isOn = divToggle.checked;
+    const divRadio = document.querySelector('input[name="training-type"][value="div"]');
+    const mixedRadio = document.querySelector('input[name="training-type"][value="mixed"]');
+    const multRadio = document.querySelector('input[name="training-type"][value="mult"]');
+    
+    if (!isOn) {
+      if (divRadio.checked || mixedRadio.checked) multRadio.checked = true;
+      divRadio.disabled = true;
+      mixedRadio.disabled = true;
+      divRadio.parentElement.style.opacity = "0.4";
+      mixedRadio.parentElement.style.opacity = "0.4";
+    } else {
+      divRadio.disabled = false;
+      mixedRadio.disabled = false;
+      divRadio.parentElement.style.opacity = "1";
+      mixedRadio.parentElement.style.opacity = "1";
+    }
   },
 
   setupEventListeners() {
@@ -92,6 +120,15 @@ export const EinmaleinsUI = {
 
     // Dropdown replaced by permanent list
 
+    const divToggle = document.getElementById("global-division-toggle");
+    if (divToggle) {
+      divToggle.addEventListener("change", () => {
+        localStorage.setItem("einmaleins-division-on", divToggle.checked);
+        this.applyDivisionToggleState();
+        this.renderList();
+        this.updatePreview();
+      });
+    }
 
     if (selectAllBtn) {
       selectAllBtn.addEventListener('click', () => {
@@ -209,8 +246,12 @@ export const EinmaleinsUI = {
 
   getAllPossibleTasks() {
     let all = [];
+    const divToggle = document.getElementById("global-division-toggle");
+    const isDivOn = divToggle ? divToggle.checked : true;
+    const type = isDivOn ? 'mixed' : 'mult';
+    
     for(let r=1; r<=10; r++) {
-      all = all.concat(EinmaleinsLogic.generateTasks([r], 'mixed'));
+      all = all.concat(EinmaleinsLogic.generateTasks([r], type));
     }
     return all;
   },

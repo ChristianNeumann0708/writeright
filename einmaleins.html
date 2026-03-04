@@ -78,6 +78,26 @@
 
               <h2>Training einstellen</h2>
 
+              <!-- Division Toggle -->
+              <div class="training-section" style="background:#f9fbff; padding:15px; border-radius:8px; border:1px solid #ddecfe; margin-bottom:1.5rem; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="margin:0; font-size:1.1rem; color:#0366d6;">Division (Geteilt) aktivieren</h3>
+                  <label style="position:relative; display:inline-block; width:46px; height:24px; margin:0;">
+                    <input type="checkbox" id="global-division-toggle" style="opacity:0; width:0; height:0; margin:0;">
+                    <span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; transition:.4s; border-radius:34px;" id="global-div-slider"></span>
+                    <style>
+                      #global-div-slider { background-color: #ccc; }
+                      #global-division-toggle:checked + #global-div-slider { background-color: var(--accent, #0969da); }
+                      #global-div-slider:before { position:absolute; content:""; height:16px; width:16px; left:4px; bottom:4px; background-color:white; transition:.4s; border-radius:50%; }
+                      #global-division-toggle:checked + #global-div-slider:before { transform: translateX(22px); }
+                    </style>
+                  </label>
+                </div>
+                <div style="font-size:0.85em; color:#586069;">
+                  Schaltet "Geteilt"-Aufgaben im gesamten Trainer frei (für den Anfang ausblenden empfohlen).
+                </div>
+              </div>
+
               <!-- A) Modus -->
               <div class="training-section">
                 <h3>Aufgabentyp</h3>
@@ -102,8 +122,8 @@
                   <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="10"> 10er Reihe</label>
                 </div>
                 <div class="training-list-actions" style="margin-top: 10px;">
-                  <button type="button" id="training-select-all-btn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer;">Alle auswählen</button>
-                  <button type="button" id="training-select-none-btn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer;">Keine</button>
+                  <button type="button" id="training-select-all-btn" style="padding: 4px 10px; font-size: 0.9em; background: var(--accent, #0969da); color: white; border: none; border-radius: 4px; cursor: pointer;">Alle auswählen</button>
+                  <button type="button" id="training-select-none-btn" style="padding: 4px 10px; font-size: 0.9em; background: var(--accent, #0969da); color: white; border: none; border-radius: 4px; cursor: pointer;">Keine</button>
                 </div>
               </div>
 

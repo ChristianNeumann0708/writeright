@@ -27,7 +27,7 @@ export const EinmaleinsLogic = {
             reihe: reihe,
             factor: factor,
             taskType: 'mult',
-            question: `${reihe} x ${factor} = ?`,
+            question: `${factor} x ${reihe} = ?`,
             answer: reihe * factor
           });
         }
