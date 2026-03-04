@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1e88e5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einmaleins-Trainer</title>
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/worttrainer.css">
+    <link rel="stylesheet" href="css/vokabeltrainer.css">
+
+    <!-- COMMON -->
+    <script type="module" src="js/common/settings.js" defer></script>
+    <script type="module" src="js/common/menu.js" defer></script>
+
+    <!-- EINMALEINS-TRAINER -->
+    <script type="module" src="js/einmaleins/einmaleins-storage.js" defer></script>
+    <script type="module" src="js/einmaleins/einmaleins-logic.js" defer></script>
+    <script type="module" src="js/einmaleins/einmaleins-ui.js" defer></script>
+    <script type="module" src="js/einmaleins/einmaleins.js" defer></script>
+  </head>
+
+  <body>
+    <div class="layout">
+      <div id="main-menu"></div>
+
+      <div class="content">
+        <h1>Einmaleins-Trainer</h1>
+
+        <div class="trainer-layout">
+
+          <!-- Linke Spalte: Aufgabenliste & Statistik -->
+          <div class="trainer-wordlist">
+            <div class="vocab-list-header">
+              <h4>Aufgabenliste</h4>
+              <div class="custom-select-wrapper" id="einmaleins-sort-wrapper">
+                <div class="custom-select-trigger" id="einmaleins-sort-trigger">
+                  <span id="einmaleins-sort-label">Aufsteigend</span>
+                  <span class="custom-select-arrow">▼</span>
+                </div>
+                <ul class="custom-select-options" id="einmaleins-sort-options">
+                  <li data-value="asc">Aufsteigend</li>
+                  <li data-value="errors-desc">Meiste Fehler</li>
+                  <li data-value="balance-asc">Schlechteste Bilanz</li>
+                  <li data-value="diff-desc">Größte Differenz</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 10px;">
+              <select id="einmaleins-list-select" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="all">Alle Reihen anzeigen</option>
+                <option value="1">1er Reihe</option>
+                <option value="2">2er Reihe</option>
+                <option value="3">3er Reihe</option>
+                <option value="4">4er Reihe</option>
+                <option value="5">5er Reihe</option>
+                <option value="6">6er Reihe</option>
+                <option value="7">7er Reihe</option>
+                <option value="8">8er Reihe</option>
+                <option value="9">9er Reihe</option>
+                <option value="10">10er Reihe</option>
+              </select>
+            </div>
+            <div id="einmaleins-total-count" class="vocab-total-count"></div>
+            <div id="einmaleins-list-display"></div>
+          </div>
+
+          <!-- Rechte Spalte: Trainingseinstellungen & Training -->
+          <div class="trainer-main">
+
+            <!-- Trainings-Einstellungsbereich -->
+            <div id="training-settings-panel" class="training-settings-container panel-box">
+
+              <h2>Training einstellen</h2>
+
+              <!-- A) Modus -->
+              <div class="training-section">
+                <h3>Aufgabentyp</h3>
+                <label><input type="radio" name="training-type" value="mult" checked> Multiplikation (z.B. 3 x 4)</label>
+                <label><input type="radio" name="training-type" value="div"> Division (z.B. 12 : 3)</label>
+                <label><input type="radio" name="training-type" value="mixed"> Gemischt</label>
+              </div>
+
+              <!-- B) Reihen auswählen (Zahlenreihen 1-10) -->
+              <div class="list-dropdown">
+                <button type="button" id="list-dropdown-toggle" class="list-dropdown-toggle">
+                  ▼ Zahlenreihen auswählen ▼
+                </button>
+                <div id="list-dropdown-panel" class="list-dropdown-panel">
+                  <div id="training-list-selection">
+                    <!-- Wird dynamisch mit Checkboxen 1-10 gefüllt -->
+                  </div>
+                  <div class="training-list-actions">
+                    <button type="button" id="training-select-all-btn">Alle auswählen</button>
+                    <button type="button" id="training-select-none-btn">Keine auswählen</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- C) Trainingsmodus -->
+              <div class="training-section">
+                <h3>Trainingsmodus</h3>
+
+                <!-- Radiobuttons oben -->
+                <div class="training-mode-options">
+                  <label><input type="radio" name="training-mode" value="once" checked> Einmaliger Durchlauf (Zufällige Mischung)</label>
+                  <label><input type="radio" name="training-mode" value="count"> Nach Anzahl Aufgaben (Smarte Auswahl)</label>
+                  <label><input type="radio" name="training-mode" value="time"> Zeitbasiert (Smarte Auswahl)</label>
+                  <label><input type="radio" name="training-mode" value="all"> Endlos (Smarte Auswahl)</label>
+                </div>
+
+                <!-- Eingabefelder darunter, stabil -->
+                <div class="training-mode-fields">
+
+                  <div id="training-mode-once" class="training-mode-field active">
+                    <p style="margin: 0; padding: 10px 0; color: #555;">Jede ausgewählte Aufgabe kommt exakt ein Mal dran. Danach endet das Training.</p>
+                  </div>
+
+                  <div id="training-mode-count" class="training-mode-field">
+                    <label for="training-count-input">Anzahl Aufgaben</label>
+                    <input type="number" id="training-count-input" min="1" max="500" value="20">
+                  </div>
+
+                  <div id="training-mode-time" class="training-mode-field">
+                    <label for="training-time-input">Dauer in Minuten</label>
+                    <input type="number" id="training-time-input" min="1" max="60" value="10">
+                  </div>
+
+                  <div id="training-mode-all" class="training-mode-field">
+                    <!-- kein Eingabefeld nötig -->
+                    <p style="margin: 0; padding: 10px 0; color: #555;">Alle ausgewählten Aufgaben werden endlos nach Intelligenz gemischt abgefragt.</p>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- D) Optionen -->
+              <div class="training-section">
+                <h3>Optionen</h3>
+
+                <label><input type="checkbox" id="training-only-hard"> Nur schwierige Aufgaben</label>
+                <div id="training-hard-options" style="display: none; margin-left: 2.1rem; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; margin-top: -0.5rem;">
+                   <label style="font-size: 0.95rem; margin-bottom: 0;"><input type="radio" name="hard-mode-type" value="errors" checked> Mindestens 1 Fehler</label>
+                   <label style="font-size: 0.95rem; margin-bottom: 0;"><input type="radio" name="hard-mode-type" value="balance"> Negative Fehlerbilanz (mehr Fehler als richtig)</label>
+                </div>
+                <label><input type="checkbox" id="training-suggest-words"> Multiple Choice aktivieren (aus wählbaren Vorschlägen)</label>
+                <label><input type="checkbox" id="training-parent-mode"> Eltern-Modus (Diktiermodus)</label>
+                <label><input type="checkbox" id="training-hide-stats"> Fokus-Modus (Feedback & Live-Statistik ausblenden)</label>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="margin-bottom: 0.2rem;"><input type="checkbox" id="training-with-repeats"> Wiederholungen aktivieren</label>
+                  <div style="font-size: 0.9rem; color: #666; margin-left: 2.1rem; margin-top: -0.2rem;">Falsch beantwortete Aufgaben werden am Ende des Trainings wiederholt.</div>
+                </div>
+
+                <p class="training-info">Die Reihenfolge der Aufgaben ist immer zufällig.</p>
+              </div>
+
+              <!-- Vorschau + Start -->
+              <div class="training-section training-footer">
+                <div id="training-preview" class="training-preview">
+                  Es werden 0 Aufgaben trainiert.
+                </div>
+                <button type="button" id="training-start-btn" class="training-start-btn">
+                  Training starten
+                </button>
+              </div>
+            </div>
+
+            <!-- TRAININGSMODUS (wird beim Start eingeblendet) -->
+            <div id="training-mode" class="training-mode-container panel-box" style="display:none; position: relative;">
+
+              <!-- Session-Info -->
+              <div id="session-info" style="position: absolute; top: 1.5rem; right: 2rem; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 10px; border-radius: 8px;">
+                <div id="session-stats" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; font-size: 0.95em;">
+                  <div id="session-timer-display" style="display: none; font-weight:bold; margin-bottom:4px; color: #d93025;">Zeit: <span id="session-timer-val">5</span>s</div>
+                  <div id="session-correct">Richtig 🟢 0</div>
+                  <div id="session-wrong">Falsch 🔴 0</div>
+                  <div id="session-total">Gesamt 📚 0</div>
+                </div>
+              </div>
+
+              <h2>Training</h2>
+
+              <div id="training-progress" class="training-progress">
+                <span id="training-progress-text">0 / 0</span>
+              </div>
+
+              <div id="training-task" class="training-word" style="font-size: 3rem; font-weight: bold; letter-spacing: 2px;">
+                3 x 4 = ?
+              </div>
+
+              <div class="training-input-area" id="training-input-group" style="margin-top: 2rem;">
+                <label for="training-answer">Ergebnis eingeben</label>
+                <input type="number" id="training-answer" autocomplete="off" style="font-size: 1.5rem; text-align: center; width: 150px; margin: 0 auto;">
+              </div>
+
+              <!-- NEW: Eltern Modus Bereich -->
+              <div id="training-parent-mode-group" style="display:none; text-align: center; margin-bottom: 1.5rem;">
+                
+                <div id="parent-info-area" style="margin-bottom: 1.5rem; padding: 1rem; background: #e9ecef; border-radius: 8px;">
+                  <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">Lösung: <strong id="parent-translation" style="color: #007bff;"></strong></div>
+                  <div id="parent-historic-variants" style="font-size: 1.2rem; color: #dc3545; display: none;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                  <button type="button" id="parent-btn-correct" style="background-color: #28a745; border-color: #28a745; width: 150px; font-size: 1.2rem;">Richtig</button>
+                  <button type="button" id="parent-btn-wrong" style="background-color: #dc3545; border-color: #dc3545; width: 150px; font-size: 1.2rem;">Falsch</button>
+                </div>
+                <!-- Feld für falsche Variante(n), standardmäßig unsichtbar -->
+                <div id="parent-wrong-input-area" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; flex-direction: column;">
+                  <label for="parent-wrong-answer" style="font-weight: bold; color: #dc3545;">Falsch geschriebene Variante eintragen:</label>
+                  <input type="number" id="parent-wrong-answer" autocomplete="off" style="max-width: 300px; border-color: #dc3545;">
+                  <div style="font-size: 0.85rem; color: #666;">(Optional. Speichert die Variante bei Enter)</div>
+                  <button type="button" id="parent-btn-next" style="margin-top: 0.5rem; background-color: #007bff; border-color: #007bff; width: 250px;">Weiter zur nächsten Aufgabe</button>
+                </div>
+              </div>
+
+              <!-- NEW: Multiple Choice Container -->
+              <div id="training-multiple-choice-container" class="training-multiple-choice" style="display:none;"></div>
+
+              <div id="training-feedback" class="training-feedback"></div>
+              
+              <div class="training-buttons">
+                <button type="button" id="training-check-btn">Prüfen</button>
+                <button type="button" id="training-skip-btn">Überspringen</button>
+                <button type="button" id="training-stop-btn" class="training-stop-btn" style="background-color: #6c757d; border-color: #6c757d;">Auswerten & Beenden</button>
+              </div>
+
+              <div id="training-summary-container" style="display:none; margin-top: 2rem;"></div>
+            </div>
+
+          </div> <!-- Ende trainer-main -->
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals oder Toasts hier -->
+    <div id="updateToast" class="update-toast">App wurde aktualisiert</div>
+
+    <script type="module">
+      import { loadMenu } from "./js/common/menu.js";
+      loadMenu();
+    </script>
+  </body>
+</html>
