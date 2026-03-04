@@ -3,6 +3,7 @@
 import { WortStorage } from "../worttrainer/worttrainer-storage.js";
 import { downloadBackup, restoreBackup } from "./indexedBackup.js";
 import { VokabelTrainerStorage } from "../vokabeltrainer/vokabeltrainer-storage.js";
+import { EinmaleinsStorage } from "../einmaleins/einmaleins-storage.js";
 import { AppStorage } from "../core/StorageService.js";
 
 // ------------------------------------------------------
@@ -41,6 +42,24 @@ function showStatus(msg, isError = false) {
 
 function showVtStatus(msg, isError = false) {
   const el = document.getElementById("vt-status");
+  if (!el) return;
+  const isErr = isError || msg.toLowerCase().includes("fehler");
+  el.textContent = msg;
+  if (isErr) {
+    el.classList.add("error");
+    el.classList.remove("success");
+  } else {
+    el.classList.add("success");
+    el.classList.remove("error");
+  }
+  el.style.display = "block";
+  const timeoutMs = isErr ? 8000 : 3500;
+  if (el.dataset.tId) clearTimeout(Number(el.dataset.tId));
+  el.dataset.tId = setTimeout(() => { el.style.display = "none"; }, timeoutMs);
+}
+
+function showEmStatus(msg, isError = false) {
+  const el = document.getElementById("em-status");
   if (!el) return;
   const isErr = isError || msg.toLowerCase().includes("fehler");
   el.textContent = msg;
@@ -261,6 +280,73 @@ document.addEventListener("DOMContentLoaded", () => {
         VokabelTrainerStorage._saveAndBackup();
         showVtStatus("Der Vokabeltrainer wurde komplett zurückgesetzt.");
         window.dispatchEvent(new Event('vokabeltrainer-updated'));
+      }
+    });
+  }
+
+  // ------------------------------------------------------
+  // Einmaleins-Trainer – Backup herunterladen
+  // ------------------------------------------------------
+  const emDownloadBtn = document.getElementById("em-downloadBackup");
+  if (emDownloadBtn) {
+    emDownloadBtn.addEventListener("click", async () => {
+      await EinmaleinsStorage.init();
+      EinmaleinsStorage.downloadBackup();
+      showEmStatus("Einmaleins-Backup wurde heruntergeladen.");
+    });
+  }
+
+  // ------------------------------------------------------
+  // Einmaleins-Trainer – Backup wiederherstellen
+  // ------------------------------------------------------
+  const emRestoreInput = document.getElementById("em-restoreFile");
+  const emRestoreButton = document.getElementById("em-restoreButton");
+  const emRestoreFileName = document.getElementById("em-restoreFileName");
+
+  if (emRestoreInput && emRestoreButton) {
+    emRestoreInput.onchange = () => {
+      const hasFile = emRestoreInput.files?.length > 0;
+      emRestoreButton.style.display = hasFile ? "block" : "none";
+      if (emRestoreFileName) {
+        emRestoreFileName.textContent = hasFile ? emRestoreInput.files[0].name : "Keine Datei ausgewählt";
+      }
+    };
+
+    emRestoreButton.onclick = async () => {
+      const file = emRestoreInput.files[0];
+      try {
+        await EinmaleinsStorage.init();
+        await EinmaleinsStorage.restoreBackup(file);
+        showEmStatus("Einmaleins-Backup wurde importiert.");
+        window.dispatchEvent(new Event('einmaleins-updated'));
+        
+        emRestoreInput.value = "";
+        emRestoreButton.style.display = "none";
+        if (emRestoreFileName) emRestoreFileName.textContent = "Keine Datei ausgewählt";
+      } catch (err) {
+        console.error("Backup Fehler:", err);
+        if (err.message === "wrong-format-worttrainer") {
+          showEmStatus("Fehler: Das ist ein Worttrainer-Backup!");
+        } else if (err.message === "wrong-format-vokabeltrainer") {
+          showEmStatus("Fehler: Das ist ein Vokabeltrainer-Backup!");
+        } else {
+          showEmStatus("Fehler: Falsches Format oder defekte Datei!");
+        }
+      }
+    };
+  }
+
+  // ------------------------------------------------------
+  // Einmaleins-Trainer – Statistik zurücksetzen
+  // ------------------------------------------------------
+  const emResetStatsBtn = document.getElementById("em-resetStatsBtn");
+  if (emResetStatsBtn) {
+    emResetStatsBtn.addEventListener("click", async () => {
+      if (confirm("Möchtest du wirklich alle Statistikwerte im Einmaleins-Trainer zurücksetzen?")) {
+        await EinmaleinsStorage.init();
+        EinmaleinsStorage.resetStats();
+        showEmStatus("Einmaleins-Statistik wurde zurückgesetzt.");
+        window.dispatchEvent(new Event('einmaleins-updated'));
       }
     });
   }

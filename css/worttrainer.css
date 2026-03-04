@@ -19,6 +19,7 @@
   width: 350px;
   background: white;
   padding: 1rem;
+  padding-bottom: 80px;
   border-radius: 12px;
   overflow-y: auto;
   height: 100%;

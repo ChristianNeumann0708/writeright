@@ -130,6 +130,36 @@
                 </div>
             </div>
 
+            <!-- EINMALEINS-TRAINER -->
+            <div class="settings-block einmaleins-settings">
+                <h2>Einmaleins-Trainer</h2>
+
+                <h4>Backup</h4>
+                <div class="buttons">
+                    <button id="em-downloadBackup" type="button">Backup herunterladen</button>
+                </div>
+
+                <h4>Wiederherstellen</h4>
+                <div class="file-upload-wrapper">
+                    <label for="em-restoreFile" class="file-upload-btn">📁 Datei auswählen</label>
+                    <span id="em-restoreFileName" class="file-name-display">Keine Datei ausgewählt</span>
+                </div>
+                <input type="file" id="em-restoreFile" style="display:none;" accept=".json">
+                <button id="em-restoreButton" style="display:none; margin-top: 10px;" type="button">Backup importieren</button>
+
+                <hr>
+
+                <div id="em-status" class="status-message" style="display:none;"></div>
+
+                <h4>Statistik zurücksetzen</h4>
+                <div class="inline-checkbox">
+                    <button id="em-resetStatsBtn" type="button">Statistik zurücksetzen</button>
+                </div>
+                <div class="settings-hint">
+                    Setzt für alle Einmaleins-Aufgaben die Werte für Richtig/Falsch und die Fehler-Historie zurück.
+                </div>
+            </div>
+
             <!-- APP RESET / DEINSTALLATION -->
             <div class="settings-block danger-settings" style="background: #fff5f5; border: 1px solid #ffcccc;">
                 <h2 style="color: #dc3545;">System & App-Reset</h2>

@@ -87,27 +87,23 @@
               </div>
 
               <!-- B) Reihen auswählen (Zahlenreihen 1-10) -->
-              <div class="list-dropdown">
-                <button type="button" id="list-dropdown-toggle" class="list-dropdown-toggle">
-                  ▼ Zahlenreihen auswählen ▼
-                </button>
-                <div id="list-dropdown-panel" class="list-dropdown-panel">
-                  <div id="training-list-selection">
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="1"> 1er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="2"> 2er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="3"> 3er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="4"> 4er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="5"> 5er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="6"> 6er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="7"> 7er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="8"> 8er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="9"> 9er Reihe</label>
-                    <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="10"> 10er Reihe</label>
-                  </div>
-                  <div class="training-list-actions">
-                    <button type="button" id="training-select-all-btn">Alle auswählen</button>
-                    <button type="button" id="training-select-none-btn">Keine auswählen</button>
-                  </div>
+              <div class="training-section">
+                <h3>Zahlenreihen auswählen</h3>
+                <div id="training-list-selection" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="1"> 1er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="2"> 2er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="3"> 3er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="4"> 4er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="5"> 5er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="6"> 6er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="7"> 7er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="8"> 8er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="9"> 9er Reihe</label>
+                  <label class="training-list-label"><input type="checkbox" class="training-list-checkbox" value="10"> 10er Reihe</label>
+                </div>
+                <div class="training-list-actions" style="margin-top: 10px;">
+                  <button type="button" id="training-select-all-btn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer;">Alle auswählen</button>
+                  <button type="button" id="training-select-none-btn" style="padding: 4px 10px; font-size: 0.9em; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer;">Keine</button>
                 </div>
               </div>
 
