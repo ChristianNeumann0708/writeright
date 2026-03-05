@@ -631,8 +631,9 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
       this.updateTrainingPreview();
     });
 
-    document.getElementById("training-time-input").addEventListener("input", () => {
+    document.getElementById("training-time-input").addEventListener("input", (event) => {
       this.trainingSettings.time = Number(event.target.value);
+      this.updateTrainingPreview();
     });
 
     document.getElementById("training-only-hard").addEventListener("change", (e) => {

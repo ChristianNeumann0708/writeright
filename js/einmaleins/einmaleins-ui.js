@@ -149,6 +149,9 @@ export const EinmaleinsUI = {
       el.addEventListener('change', () => this.updatePreview());
     });
     
+    document.getElementById("training-count-input")?.addEventListener('input', () => this.updatePreview());
+    document.getElementById("training-time-input")?.addEventListener('input', () => this.updatePreview());
+    
     document.getElementById("training-only-hard").addEventListener("change", (e) => {
       document.getElementById("training-hard-options").style.display = e.target.checked ? "flex" : "none";
       this.updatePreview();
@@ -635,6 +638,7 @@ export const EinmaleinsUI = {
         this.handleIncorrectAnswer(val);
         // Show correct answer and pause
         feedbackArea.textContent = `Falsch. Richtig ist: ${task.answer}`;
+        feedbackArea.style.color = "#dc3545";
         feedbackArea.className = "training-feedback error";
         feedbackArea.style.display = "block";
         
@@ -655,6 +659,7 @@ export const EinmaleinsUI = {
     this.updateSessionStats();
     
     feedbackArea.textContent = "Richtig!";
+    feedbackArea.style.color = "#28a745";
     feedbackArea.className = "training-feedback success";
     feedbackArea.style.display = "block";
   },
