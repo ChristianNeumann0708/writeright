@@ -57,6 +57,47 @@ export const EinmaleinsLogic = {
     return EinmaleinsStorage.getStats(reihe, factor);
   },
 
+  computeWeight(stats) {
+    let wrong = stats.wrong || 0;
+    let correct = stats.correct || 0;
+    
+    // Unbekannte Aufgaben (nie geübt): mittlere bis hohe Wichtigkeit
+    if (correct === 0 && wrong === 0) return 30;
+    
+    // Problemfälle: hohe Priorität je nach Fehler-Überschuss
+    if (wrong > correct) return 100 + (wrong - correct) * 10;
+    
+    // Noch in der Lernphase (< 3 mal richtig): leicht erhöhte Priorität
+    if (correct < 3) return 15;
+    
+    // Sitzt sehr sicher: kaum Priorität (nur noch für seltene Auffrischung)
+    return 1;
+  },
+
+  weightedSampleSequence(tasks) {
+    let pool = tasks.map(t => {
+       const stats = EinmaleinsStorage.getStats(t.reihe, t.factor)[t.taskType];
+       return { task: t, weight: this.computeWeight(stats) };
+    });
+    let result = [];
+    
+    while (pool.length > 0) {
+        let totalWeight = pool.reduce((sum, el) => sum + el.weight, 0);
+        let random = Math.random() * totalWeight;
+        let current = 0;
+        
+        for (let j = 0; j < pool.length; j++) {
+            current += pool[j].weight;
+            if (current >= random) {
+                result.push(pool[j].task);
+                pool.splice(j, 1);
+                break;
+            }
+        }
+    }
+    return result;
+  },
+
   // Generiert ein Training Set basierend auf den Settings
   generateTraining(settings) {
     let tasks = this.generateTasks(settings.reihen, settings.type);
@@ -78,42 +119,41 @@ export const EinmaleinsLogic = {
       return []; // Kein passendes Set möglich
     }
 
-    shuffleArray(tasks);
-
-    // 2. Modus anwenden
+    // 2. Modus anwenden und sortieren/mischen
     if (settings.mode === 'once') {
-        // Schon alles gewürfelt, zurückgeben
+        // Einmaliger Durchlauf: Einfach gut mischen, aber jedes exakt 1x!
+        shuffleArray(tasks);
         return tasks;
-    } else if (settings.mode === 'count') {
-        const count = settings.count;
-        let selected = [];
-        // Endlos wiederholen bis Count voll ist, falls wir weniger Basisaufgaben als Count haben
-        while(selected.length < count) {
-            let pool = [...tasks];
-            shuffleArray(pool);
-            // Smart mixing logic: weight the ones with more mistakes higher
-            pool.sort((a, b) => {
-                const sA = EinmaleinsStorage.getStats(a.reihe, a.factor)[a.taskType];
-                const sB = EinmaleinsStorage.getStats(b.reihe, b.factor)[b.taskType];
-                const diffA = sA.wrong - sA.correct;
-                const diffB = sB.wrong - sB.correct;
-                // Add some randomness
-                if (Math.random() > 0.3) {
-                   return diffB - diffA; // higher diff (worse) first
+    } else {
+        // count, time, all (Endlos): Smarte Sortierung (gewichtet mit Lotterie-Topf)
+        tasks = this.weightedSampleSequence(tasks);
+        
+        // Nach der smarten Auswahl noch einmal leicht durchmischen, damit die Schwersten
+        // nicht IMMER am Anfang als Block kommen, sondern etwas natürlicher verteilt sind.
+        shuffleArray(tasks);
+        
+        if (settings.mode === 'count') {
+            const count = settings.count;
+            let selected = [];
+            // Endlos nachfüllen bis Count voll ist
+            while(selected.length < count) {
+                for (let t of tasks) {
+                    if (selected.length < count) {
+                        selected.push({...t, instanceId: Math.random().toString(36).substring(7)});
+                    } else break;
                 }
-                return 0; // random
-            });
-            for (let t of pool) {
+                // Wenn wir noch nicht voll sind, die tasks für die nächste Runde neu mixen
                 if (selected.length < count) {
-                    selected.push({...t, instanceId: Math.random().toString(36).substring(7)});
-                } else break;
+                   tasks = this.weightedSampleSequence(tasks);
+                   shuffleArray(tasks);
+                }
             }
+            return selected;
+        } else if (settings.mode === 'time' || settings.mode === 'all') {
+            // Endlos (Zeit/All): Die UI regelt das Nachziehen von Aufgaben, 
+            // wir geben einfach die erste smarte Rutsche zurück.
+            return tasks;
         }
-        return selected;
-    } else if (settings.mode === 'time' || settings.mode === 'all') {
-        // Wir geben hier einfach die gemischte Liste zurück
-        // Die UI regelt das "endlose" nachziehen von Aufgaben
-        return tasks;
     }
     
     return tasks;

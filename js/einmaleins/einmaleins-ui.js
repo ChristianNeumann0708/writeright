@@ -172,7 +172,13 @@ export const EinmaleinsUI = {
     });
 
     if (startBtn) startBtn.addEventListener('click', () => this.startTraining());
-    if (stopBtn) stopBtn.addEventListener('click', () => this.stopTraining());
+    if (stopBtn) stopBtn.addEventListener('click', () => {
+        if (stopBtn.textContent === "Training beenden") {
+            this.closeTraining();
+        } else {
+            this.finishTraining("Training vorzeitig beendet.");
+        }
+    });
 
     if (checkBtn) {
       checkBtn.addEventListener("click", () => this.checkSelectedAnswer());
@@ -388,6 +394,7 @@ export const EinmaleinsUI = {
     this.training.stats = { correct: 0, wrong: 0, total: this.training.tasks.length };
     this.training.settings = settings;
     this.training.repeats = [];
+    this.training.sessionHistory = [];
     this.training.active = true;
 
     if (settings.hideStats) {
@@ -401,6 +408,10 @@ export const EinmaleinsUI = {
     summaryContainer.style.display = "none";
     feedbackArea.textContent = "";
 
+    stopBtn.textContent = "Auswerten & Beenden";
+    stopBtn.style.backgroundColor = "#6c757d";
+    stopBtn.style.borderColor = "#6c757d";
+
     window.isTrainingActive = true;
     
     if (settings.withTimer) {
@@ -413,21 +424,92 @@ export const EinmaleinsUI = {
     this.renderTask();
   },
 
-  stopTraining() {
+  finishTraining(msg = "Training beendet.") {
+    if (this.training.timerInterval) clearInterval(this.training.timerInterval);
+
+    sessionInfo.style.display = "none";
+    taskDisplay.textContent = msg;
+
+    inputGroup.style.display = "none";
+    multipleChoiceContainer.style.display = "none";
+    parentModeGroup.style.display = "none";
+    document.getElementById("training-check-btn").style.display = "none";
+    document.getElementById("training-skip-btn").style.display = "none";
+    feedbackArea.style.display = "none";
+
+    stopBtn.textContent = "Training beenden";
+    stopBtn.style.backgroundColor = "#28a745";
+    stopBtn.style.borderColor = "#28a745";
+
+    summaryContainer.style.display = "block";
+
+    const s = this.training.stats;
+    let html = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0;">Auswertung</h3>
+        <div style="display: flex; gap: 8px; font-size: 0.9em; flex-wrap: wrap;">
+          <span class="vocab-stat-badge stat-blue">📚 ${s.correct + s.wrong}</span>
+          <span class="vocab-stat-badge stat-green">✅ ${s.correct}</span>
+          <span class="vocab-stat-badge stat-red"><span style="font-size: 0.9em;">❌</span> ${s.wrong}</span>
+        </div>
+      </div>
+    `;
+
+    if (this.training.sessionHistory && this.training.sessionHistory.length > 0) {
+       html += `<ul class="vocab-list-inner" style="background:#fff; border:1px solid #eee; border-radius:8px; padding:0; max-height: 400px; overflow-y: auto;">`;
+       
+       this.training.sessionHistory.forEach(item => {
+          const t = item.task;
+          const icon = item.isCorrect ? "✅" : '<span style="font-size: 0.9em;">❌</span>';
+          const colorClass = item.isCorrect ? "stat-green" : "stat-red";
+          let rightSideText = item.isCorrect ? "Richtig" : `Falsch: ${item.answer || "-"}`;
+          
+          if (item.answer && item.answer.trim().length === 0) {
+              rightSideText = item.isCorrect ? "Richtig" : `Falsch (übersprungen)`;
+          }
+
+          const globalStats = EinmaleinsStorage.getStats(t.reihe, t.factor)[t.taskType];
+          
+          let variantsHtml = "";
+          if (globalStats.history && globalStats.history.length > 0) {
+             const uniqueErrors = [...new Set(globalStats.history)].join(", ");
+             variantsHtml = `<div style="font-size: 0.85em; color: #888; margin-top: 4px;">Typische Fehler: ${uniqueErrors}</div>`;
+          }
+
+          html += `
+            <li style="border-bottom: 1px solid #f0f0f0; padding: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+              <div style="flex: 1;">
+                <div style="font-weight: bold;">${t.question}</div>
+                <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 4px;">Lösung: ${t.answer}</div>
+                <div style="font-size: 0.8em; color: #666; display: flex; gap: 8px;">
+                   <span title="Gesamt Richtig" style="color: #28a745;">✅ ${globalStats.correct}</span> 
+                   <span title="Gesamt Falsch" style="color: #dc3545;">❌ ${globalStats.wrong}</span>
+                </div>
+                ${variantsHtml}
+              </div>
+              <div class="vocab-stat-badge ${colorClass}" style="flex-shrink: 0; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; align-self: center;">
+                 ${icon} ${rightSideText}
+              </div>
+            </li>
+          `;
+       });
+       html += `</ul>`;
+    } else {
+       html += `<p>Du hast keine Aufgaben bearbeitet.</p>`;
+    }
+
+    summaryContainer.innerHTML = html;
+  },
+
+  closeTraining() {
     this.training.active = false;
     window.isTrainingActive = false;
     
     if (this.training.timerInterval) clearInterval(this.training.timerInterval);
 
     trainingPanel.style.display = "none";
-    summaryContainer.style.display = "block";
+    summaryContainer.style.display = "none";
     settingsPanel.style.display = "block";
-
-    const s = this.training.stats;
-    summaryContainer.innerHTML = `
-      <h3>Auswertung</h3>
-      <p>Von ${s.correct + s.wrong} bearbeiteten Aufgaben waren ${s.correct} richtig und ${s.wrong} falsch.</p>
-    `;
 
     this.renderList(); // Update statistics visually
   },
@@ -449,7 +531,7 @@ export const EinmaleinsUI = {
          let newTasks = EinmaleinsLogic.generateTraining(this.training.settings);
          this.training.tasks = this.training.tasks.concat(newTasks);
       } else {
-         this.stopTraining();
+         this.finishTraining("Training abgeschlossen!");
          return;
       }
     }
@@ -568,6 +650,7 @@ export const EinmaleinsUI = {
     if (!task._isRepetition) {
        EinmaleinsStorage.recordAnswer(task.reihe, task.factor, task.taskType, true);
        this.training.stats.correct++;
+       this.training.sessionHistory.push({task: task, isCorrect: true});
     }
     this.updateSessionStats();
     
@@ -581,6 +664,7 @@ export const EinmaleinsUI = {
     if (!task._isRepetition) {
        EinmaleinsStorage.recordAnswer(task.reihe, task.factor, task.taskType, false, wrongVal);
        this.training.stats.wrong++;
+       this.training.sessionHistory.push({task: task, isCorrect: false, answer: wrongVal});
        if (this.training.settings.withRepeats) {
           this.training.repeats.push({...task, _isRepetition: true});
        }
