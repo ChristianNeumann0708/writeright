@@ -626,7 +626,7 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
   });
 });
 
-    document.getElementById("training-count-input").addEventListener("input", () => {
+    document.getElementById("training-count-input").addEventListener("input", (event) => {
       this.trainingSettings.count = Number(event.target.value);
       this.updateTrainingPreview();
     });

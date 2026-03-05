@@ -288,9 +288,7 @@ export const EinmaleinsUI = {
       allTasks.sort((a,b) => b.errs - a.errs);
     } else if (this.currentSort === 'balance-asc') {
       allTasks.sort((a,b) => b.diff - a.diff);
-    } else if (this.currentSort === 'diff-desc') {
-      allTasks.sort((a,b) => b.diff - a.diff);
-    } 
+    }
 
     totalCount.textContent = `${allTasks.length} Aufgaben gefunden`;
     
@@ -300,8 +298,8 @@ export const EinmaleinsUI = {
         const tasksOfReihe = allTasks.filter(t => t.reihe === r);
         if (tasksOfReihe.length === 0) continue;
 
-        html += `<div class="vocab-group">
-          <div class="vocab-group-header">${r}er Reihe</div>`;
+        html += `<div class="vocab-group" style="margin-bottom: 2rem;">
+          <div class="vocab-group-header" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 0.8rem; color: #1e88e5; border-bottom: 2px solid #e3effa; padding-bottom: 4px;">${r}er Reihe</div>`;
         
         const multTasks = tasksOfReihe.filter(t => t.taskType === 'mult');
         const divTasks = tasksOfReihe.filter(t => t.taskType === 'div');
@@ -336,12 +334,13 @@ export const EinmaleinsUI = {
     let errColor = t.errs > 0 ? '#dc3545' : '#28a745';
     if(t.errs === 0 && t.corr === 0) errColor = '#6c757d';
 
+    const cleanQuestion = t.question.replace(/\s*=\s*\?/, "");
+
     return `
       <div class="vocab-item" style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #eee;">
-        <span style="font-weight:bold; width:120px; display:inline-block;">${t.question}</span>
-        <span style="color:#007bff; font-weight:bold;">${t.answer}</span>
+        <span style="font-weight:bold; display:inline-block;">${cleanQuestion} = <span style="color:#007bff;">${t.answer}</span></span>
         <span style="color:${errColor}; font-size:0.9em;">
-          ${t.corr} R / ${t.errs} F
+          ✅ ${t.corr} &nbsp;&nbsp; <span style="font-size: 0.9em;">❌</span> ${t.errs}
         </span>
       </div>
     `;
