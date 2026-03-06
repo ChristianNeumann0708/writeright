@@ -409,9 +409,9 @@ export const VokabelLogic = {
         feedback.textContent = "";
       } else {
         let deins = answer ? answer : "— (übersprungen)";
-        feedback.innerHTML = `<div style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; color: #dc3545; letter-spacing: 1px;">FALSCH!</div>
-                              <div style="font-size: 1.1rem; margin-bottom: 0.8rem; background: #fff3f3; padding: 0.5rem; border-radius: 6px; display: inline-block;">Deine Eingabe: <strong style="color: #dc3545;">${deins}</strong></div>
-                              <div style="font-size: 1.3rem; margin-top: 0.5rem; padding: 0.5rem; background: #f0fdf4; border-radius: 6px; border-left: 4px solid #28a745;">Richtig wäre: <strong style="color: #28a745;">${correctText}</strong></div>`;
+        feedback.innerHTML = `<div style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; color: var(--wrong); letter-spacing: 1px;">FALSCH!</div>
+                              <div style="font-size: 1.1rem; margin-bottom: 0.8rem; background: #fff3f3; padding: 0.5rem; border-radius: 6px; display: inline-block;">Deine Eingabe: <strong style="color: var(--wrong);">${deins}</strong></div>
+                              <div style="font-size: 1.3rem; margin-top: 0.5rem; padding: 0.5rem; background: #f0fdf4; border-radius: 6px; border-left: 4px solid var(--correct);">Richtig wäre: <strong style="color: var(--correct);">${correctText}</strong></div>`;
         feedback.style.color = "#333"; 
       }
       let shouldMarkWrong = true;
@@ -514,8 +514,8 @@ export const VokabelLogic = {
     const stopBtn = document.getElementById("training-stop-btn");
     if (stopBtn) {
       stopBtn.textContent = "Training beenden";
-      stopBtn.style.backgroundColor = "#28a745"; // Grün
-      stopBtn.style.borderColor = "#28a745";
+      stopBtn.style.backgroundColor = "var(--correct)"; // Grün
+      stopBtn.style.borderColor = "var(--correct)";
     }
 
     document.getElementById("training-input-group").style.display = "none";
@@ -587,8 +587,8 @@ export const VokabelLogic = {
                 <div style="font-weight: bold;">${q}</div>
                 <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 4px;">${correctAns}</div>
                 <div style="font-size: 0.8em; color: #666; display: flex; gap: 8px;">
-                  <span title="Gesamt Richtig" style="color: #28a745;">✅ ${globalCorrect}</span> 
-                  <span title="Gesamt Falsch" style="color: #dc3545;">❌ ${globalWrong}</span>
+                  <span title="Gesamt Richtig" style="color: var(--correct);">✅ ${globalCorrect}</span> 
+                  <span title="Gesamt Falsch" style="color: var(--wrong);">❌ ${globalWrong}</span>
                 </div>
                 ${variantsHtml}
               </div>

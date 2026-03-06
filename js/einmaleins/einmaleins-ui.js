@@ -299,7 +299,7 @@ export const EinmaleinsUI = {
         if (tasksOfReihe.length === 0) continue;
 
         html += `<div class="vocab-group" style="margin-bottom: 2rem;">
-          <div class="vocab-group-header" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 0.8rem; color: #1e88e5; border-bottom: 2px solid #e3effa; padding-bottom: 4px;">${r}er Reihe</div>`;
+          <div class="vocab-group-header" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 0.8rem; color: var(--accent); border-bottom: 2px solid #e3effa; padding-bottom: 4px;">${r}er Reihe</div>`;
         
         const multTasks = tasksOfReihe.filter(t => t.taskType === 'mult');
         const divTasks = tasksOfReihe.filter(t => t.taskType === 'div');
@@ -331,7 +331,7 @@ export const EinmaleinsUI = {
 
   createTaskHTML(t) {
     let typeIcon = t.taskType === 'mult' ? '✖' : '➗';
-    let errColor = t.errs > 0 ? '#dc3545' : '#28a745';
+    let errColor = t.errs > 0 ? 'var(--wrong)' : 'var(--correct)';
     if(t.errs === 0 && t.corr === 0) errColor = '#6c757d';
 
     const cleanQuestion = t.question.replace(/\s*=\s*\?/, "");
@@ -441,8 +441,8 @@ export const EinmaleinsUI = {
     feedbackArea.style.display = "none";
 
     stopBtn.textContent = "Training beenden";
-    stopBtn.style.backgroundColor = "#28a745";
-    stopBtn.style.borderColor = "#28a745";
+    stopBtn.style.backgroundColor = "var(--correct)";
+    stopBtn.style.borderColor = "var(--correct)";
 
     summaryContainer.style.display = "block";
 
@@ -485,8 +485,8 @@ export const EinmaleinsUI = {
                 <div style="font-weight: bold;">${t.question}</div>
                 <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 4px;">Lösung: ${t.answer}</div>
                 <div style="font-size: 0.8em; color: #666; display: flex; gap: 8px;">
-                   <span title="Gesamt Richtig" style="color: #28a745;">✅ ${globalStats.correct}</span> 
-                   <span title="Gesamt Falsch" style="color: #dc3545;">❌ ${globalStats.wrong}</span>
+                   <span title="Gesamt Richtig" style="color: var(--correct);">✅ ${globalStats.correct}</span> 
+                   <span title="Gesamt Falsch" style="color: var(--wrong);">❌ ${globalStats.wrong}</span>
                 </div>
                 ${variantsHtml}
               </div>
@@ -613,7 +613,7 @@ export const EinmaleinsUI = {
       const stats = EinmaleinsStorage.getStats(task.reihe, task.factor)[task.taskType];
       if (stats.history && stats.history.length > 0) {
           parentHistoricVariants.style.display = "block";
-          parentHistoricVariants.innerHTML = 'Falsche Eingaben: <br>' + stats.history.map(h => `<span style="background:#fff; border:1px solid #dc3545; padding:2px 6px; border-radius:4px; font-size:0.9em; margin:2px; display:inline-block;">${h}</span>`).join(" ");
+          parentHistoricVariants.innerHTML = 'Falsche Eingaben: <br>' + stats.history.map(h => `<span style="background:#fff; border:1px solid var(--wrong); padding:2px 6px; border-radius:4px; font-size:0.9em; margin:2px; display:inline-block;">${h}</span>`).join(" ");
       } else {
           parentHistoricVariants.style.display = "none";
       }
@@ -638,7 +638,7 @@ export const EinmaleinsUI = {
         this.handleIncorrectAnswer(val);
         // Show correct answer and pause
         feedbackArea.textContent = `Falsch. Richtig ist: ${task.answer}`;
-        feedbackArea.style.color = "#dc3545";
+        feedbackArea.style.color = "var(--wrong)";
         feedbackArea.className = "training-feedback error";
         feedbackArea.style.display = "block";
         
@@ -659,7 +659,7 @@ export const EinmaleinsUI = {
     this.updateSessionStats();
     
     feedbackArea.textContent = "Richtig!";
-    feedbackArea.style.color = "#28a745";
+    feedbackArea.style.color = "var(--correct)";
     feedbackArea.className = "training-feedback success";
     feedbackArea.style.display = "block";
   },
