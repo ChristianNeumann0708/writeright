@@ -3,11 +3,14 @@
 :root {
   --bg: #e2ebf4;
   --text: #333;
-  --accent: #3498db;
-  --correct: #27ae60;
-  --wrong: #c0392b;
+  --accent: #1e88e5;
+  --accent-hover: #166fbe;
+  --correct: #28a745;
+  --wrong: #dc3545;
   --sidebar-bg: #34495e;
   --sidebar-text: #ecf0f1;
+  --border-light: #d0d7de;
+  --border-radius: 8px;
 }
 
 html, body {
@@ -152,4 +155,72 @@ button:disabled {
   visibility: visible;
   opacity: 1;
   bottom: 50px;
+}
+
+/* =========================================
+   Custom Select Dropdown Component
+   ========================================= */
+
+.custom-select-wrapper {
+  position: relative;
+  user-select: none;
+  width: 195px;
+}
+.custom-select-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+.custom-select-trigger:hover,
+.custom-select-wrapper.open .custom-select-trigger {
+  background-color: #f6f8fa;
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px rgba(30,136,229,0.1);
+}
+.custom-select-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+}
+.custom-select-wrapper.open .custom-select-arrow {
+  transform: rotate(180deg);
+}
+.custom-select-options {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  width: 100%;
+  z-index: 1000;
+  display: none;
+}
+.custom-select-wrapper.open .custom-select-options {
+  display: block;
+}
+.custom-select-options li {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: background-color 0.15s;
+}
+.custom-select-options li:hover,
+.custom-select-options li.selected {
+  background-color: #e6f0fa;
+  color: var(--accent);
 }

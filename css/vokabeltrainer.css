@@ -203,70 +203,6 @@
 .vocab-list-header h4 {
   margin: 0;
 }
-.custom-select-wrapper {
-  position: relative;
-  user-select: none;
-  width: 195px;
-}
-.custom-select-trigger {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid #d0d7de;
-  background-color: #ffffff;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #24292f;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  transition: all 0.2s ease;
-}
-.custom-select-trigger:hover,
-.custom-select-wrapper.open .custom-select-trigger {
-  background-color: #f6f8fa;
-  border-color: #0969da;
-  box-shadow: 0 2px 6px rgba(9,105,218,0.1);
-}
-.custom-select-arrow {
-  font-size: 0.8rem;
-  transition: transform 0.2s;
-}
-.custom-select-wrapper.open .custom-select-arrow {
-  transform: rotate(180deg);
-}
-.custom-select-options {
-  position: absolute;
-  top: calc(100% + 5px);
-  right: 0;
-  background: white;
-  border: 1px solid #d0d7de;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  list-style: none;
-  padding: 8px 0;
-  margin: 0;
-  width: 100%;
-  z-index: 1000;
-  display: none;
-}
-.custom-select-wrapper.open .custom-select-options {
-  display: block;
-}
-.custom-select-options li {
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #24292f;
-  transition: background-color 0.15s;
-}
-.custom-select-options li:hover,
-.custom-select-options li.selected {
-  background-color: #e6f0fa;
-  color: #0969da;
-}
-
 .vocab-list-inner {
   list-style: none;
   padding-left: 0;
@@ -513,7 +449,7 @@
 
 .training-stop-btn {
   margin-left: auto;
-  background: #c0392b;
+  background: var(--wrong);
   color: white;
 }
 
@@ -545,7 +481,7 @@
 
 .training-settings-container button:not(.file-upload-btn),
 .training-mode-container button:not(.file-upload-btn) {
-  background: #1e88e5;
+  background: var(--accent);
   color: white;
   padding: 0.7rem 1rem;
   border-radius: 6px;
@@ -558,7 +494,7 @@
 
 .training-settings-container button:hover,
 .training-mode-container button:hover {
-  background: #166fbe;
+  background: var(--accent-hover);
 }
 
 
@@ -671,7 +607,7 @@
 /* Toggle-Button */
 .list-dropdown-toggle {
   width: 100%;
-  background: #1e88e5;
+  background: var(--accent);
   color: white;
   padding: 0.7rem 1rem;
   border-radius: 6px;
@@ -732,8 +668,8 @@
   border: none;
   
   /* User Wunsch: Grün zur optischen Unterscheidung */
-  background: #28a745; 
-  color: white;
+  background-color: var(--correct); 
+  border-color: var(--correct); 
   
   cursor: pointer;
   transition: all 0.2s ease;

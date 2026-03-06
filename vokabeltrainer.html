@@ -335,17 +335,17 @@
                 <!-- NEW: Eltern Info (Übersetzung & Fehler) -->
                 <div id="parent-info-area" style="margin-bottom: 1.5rem; padding: 1rem; background: #e9ecef; border-radius: 8px;">
                   <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">Lösung: <strong id="parent-translation" style="color: #007bff;"></strong></div>
-                  <div id="parent-historic-variants" style="font-size: 1.2rem; color: #dc3545; display: none;"></div>
+                  <div id="parent-historic-variants" style="font-size: 1.2rem; color: var(--wrong); display: none;"></div>
                 </div>
 
                 <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-                  <button type="button" id="parent-btn-correct" style="background-color: #28a745; border-color: #28a745; width: 150px; font-size: 1.2rem;">Richtig</button>
-                  <button type="button" id="parent-btn-wrong" style="background-color: #dc3545; border-color: #dc3545; width: 150px; font-size: 1.2rem;">Falsch</button>
+                  <button type="button" id="parent-btn-correct" style="background-color: var(--correct); border-color: var(--correct); width: 150px; font-size: 1.2rem;">Richtig</button>
+                  <button type="button" id="parent-btn-wrong" style="background-color: var(--wrong); border-color: var(--wrong); width: 150px; font-size: 1.2rem;">Falsch</button>
                 </div>
                 <!-- Feld für falsche Variante(n), standardmäßig unsichtbar -->
                 <div id="parent-wrong-input-area" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; flex-direction: column;">
-                  <label for="parent-wrong-answer" style="font-weight: bold; color: #dc3545;">Falsch geschriebene Variante eintragen:</label>
-                  <input type="text" id="parent-wrong-answer" autocomplete="off" style="max-width: 300px; border-color: #dc3545;">
+                  <label for="parent-wrong-answer" style="font-weight: bold; color: var(--wrong);">Falsch geschriebene Variante eintragen:</label>
+                  <input type="text" id="parent-wrong-answer" autocomplete="off" style="max-width: 300px; border-color: var(--wrong);">
                   <div style="font-size: 0.85rem; color: #666;">(Optional. Speichert die Variante bei Enter)</div>
                   <button type="button" id="parent-btn-next" style="margin-top: 0.5rem; background-color: #007bff; border-color: #007bff; width: 200px;">Weiter zum nächsten Wort</button>
                 </div>
