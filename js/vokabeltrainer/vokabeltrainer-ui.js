@@ -849,15 +849,31 @@ document.querySelectorAll("input[name='training-mode']").forEach(r => {
           statsSpan.className = "vocab-item-stats";
           
           const getStatsHtml = (stats, label) => {
-             if (!stats) return `<div><span style="opacity: 0.6;">${label}</span> -</div>`;
+             const c = stats?.correct || 0;
+             const w = stats?.wrong || 0;
+             const bal = w - c;
+             const isBalance = this.currentSort === "balance-asc";
              
-             if (this.currentSort === "balance-asc") {
-               const bal = stats.wrong - stats.correct;
-               return `<div><span>${label}</span> ⚖️ ${bal > 0 ? '+'+bal : bal}</div>`;
+             if (!stats && !isBalance) {
+                return `<div style="display:flex; justify-content:flex-end; align-items:center; gap:0.5rem; opacity:0.6; margin-bottom: 2px;">
+                          <div style="width:55px; text-align:right; color:#666;">${label}</div>
+                          <div style="width:90px; text-align:center;">-</div>
+                        </div>`;
              }
 
-             if (stats.correct === 0 && stats.wrong === 0) return `<div style="opacity:0.4;"><span>${label}</span> ✅ 0 <span style="font-size: 0.9em;">❌</span> 0</div>`;
-             return `<div><span>${label}</span> ✅ ${stats.correct} <span style="font-size: 0.9em;">❌</span> ${stats.wrong}</div>`;
+             if (isBalance) {
+               return `<div style="display:flex; justify-content:flex-end; align-items:center; gap:0.5rem; margin-bottom: 2px;">
+                         <div style="width:55px; text-align:right; color:#666;">${label}</div>
+                         <div style="width:90px; text-align:right;">⚖️ ${bal > 0 ? '+'+bal : bal}</div>
+                       </div>`;
+             }
+
+             const op = (c === 0 && w === 0) ? 0.4 : 1;
+             return `<div style="opacity:${op}; display:flex; justify-content:flex-end; align-items:center; gap:0.5rem; margin-bottom: 2px;">
+                       <div style="width:55px; text-align:right; color:#666;">${label}</div>
+                       <div style="width:45px; display:flex; justify-content:space-between; align-items:center;"><span>✅</span> <span>${c}</span></div>
+                       <div style="width:40px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 0.9em;">❌</span> <span>${w}</span></div>
+                     </div>`;
           };
           
           statsSpan.innerHTML = `

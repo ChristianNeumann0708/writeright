@@ -337,11 +337,12 @@ export const EinmaleinsUI = {
     const cleanQuestion = t.question.replace(/\s*=\s*\?/, "");
 
     return `
-      <div class="vocab-item" style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #eee;">
+      <div class="vocab-item" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid #eee;">
         <span style="font-weight:bold; display:inline-block;">${cleanQuestion} = <span style="color:#007bff;">${t.answer}</span></span>
-        <span style="color:${errColor}; font-size:0.9em;">
-          ✅ ${t.corr} &nbsp;&nbsp; <span style="font-size: 0.9em;">❌</span> ${t.errs}
-        </span>
+        <div style="color:${errColor}; font-size:0.9em; display:flex; justify-content:flex-end; align-items:center; gap:0.5rem;">
+           <div style="width:45px; display:flex; justify-content:space-between; align-items:center;"><span>✅</span> <span>${t.corr}</span></div>
+           <div style="width:40px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 0.9em;">❌</span> <span>${t.errs}</span></div>
+        </div>
       </div>
     `;
   },
