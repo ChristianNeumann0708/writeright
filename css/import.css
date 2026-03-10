@@ -1,0 +1,72 @@
+/* =========================================
+   IMPORT-SEITE
+   ========================================= */
+
+.import-container {
+  max-width: 600px;
+  margin: 2rem 0 0 0;
+  padding: 0;
+}
+
+.import-container input[type="file"] {
+  padding: 1rem;
+  border: 2px dashed var(--accent);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  display: block;
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.import-container progress,
+.import-container .progress-bar {
+  width: 100%;
+  max-width: 100%;
+  margin: 1rem auto 0 auto;
+  display: block;
+}
+
+/* Sammelfehler-Eingabefeld */
+#sammelfehler-input {
+  width: 100%;
+  max-width: 100%;
+  height: 180px; /* deutlich grösser gemacht wie gewünscht */
+  padding: 12px;
+  font-size: 1rem;
+  margin-top: 10px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* Button unter dem Eingabefeld */
+#sammelfehler-btn {
+  display: inline-block; /* Korrigiert: nicht block, sondern inline-block / flex passend */
+  padding: 0.8rem 1.6rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: auto;
+}
+
+#sammelfehler-btn:hover {
+  background: var(--accent-hover);
+}
+
+.settings-block input[type="file"] {
+  margin-top: 18px;
+  margin-bottom: 20px;
+  display: block;
+  text-align: left;
+}
