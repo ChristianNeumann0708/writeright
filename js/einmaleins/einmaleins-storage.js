@@ -1,4 +1,5 @@
 import { AppStorage } from "../core/StorageService.js";
+import { downloadJSON, readJSONFile } from "../common/fileHelpers.js";
 
 const STORAGE_KEY = "einmaleins-data";
 
@@ -59,65 +60,38 @@ class EinmaleinsStorageClass {
   }
 
   downloadBackup() {
-    const json = JSON.stringify(this.data, null, 2);
-    const now = new Date();
-    const pad = n => String(n).padStart(2, "0");
-    const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-
-    const filename = `${stamp}_einmaleins-backup.json`;
-
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-
-    URL.revokeObjectURL(url);
+    downloadJSON(this.data, "einmaleins");
   }
 
   async restoreBackup(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    try {
+      const parsed = await readJSONFile(file);
 
-      reader.onload = async () => {
-        try {
-          const parsed = JSON.parse(reader.result);
+      if (parsed && typeof parsed === "object" && "lists" in parsed && "vokabeln" in parsed) {
+        throw new Error("wrong-format-vokabeltrainer");
+      }
 
-          if (parsed && typeof parsed === "object" && "lists" in parsed && "vokabeln" in parsed) {
-             reject(new Error("wrong-format-vokabeltrainer"));
-             return;
-          }
+      let isWorttrainer = false;
+      if (Array.isArray(parsed)) {
+        isWorttrainer = parsed.length === 0 || parsed.some(item => typeof item === "object" && item !== null && ("text" in item || "Text" in item || "Name" in item));
+      } else if (typeof parsed === "object" && parsed !== null) {
+        isWorttrainer = ("text" in parsed || "Text" in parsed || "Name" in parsed);
+      }
 
-          let isWorttrainer = false;
-          if (Array.isArray(parsed)) {
-             isWorttrainer = parsed.length === 0 || parsed.some(item => typeof item === "object" && item !== null && ("text" in item || "Text" in item || "Name" in item));
-          } else if (typeof parsed === "object" && parsed !== null) {
-             isWorttrainer = ("text" in parsed || "Text" in parsed || "Name" in parsed);
-          }
+      if (isWorttrainer) {
+        throw new Error("wrong-format-worttrainer");
+      }
 
-          if (isWorttrainer) {
-             reject(new Error("wrong-format-worttrainer"));
-             return;
-          }
+      if (!parsed || typeof parsed !== "object" || !("stats" in parsed)) {
+        throw new Error("invalid-format");
+      }
 
-          if (!parsed || typeof parsed !== "object" || !("stats" in parsed)) {
-             reject(new Error("invalid-format"));
-             return;
-          }
-
-          this.data = parsed;
-          this._save();
-          resolve(true);
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      reader.onerror = reject;
-      reader.readAsText(file);
-    });
+      this.data = parsed;
+      this._save();
+      return true;
+    } catch (e) {
+      throw e;
+    }
   }
 
   _save() {
