@@ -631,10 +631,10 @@ export const VokabelLogic = {
     if (timeEl) timeEl.textContent = `⏱ ${timeStr}`;
     
     const correctEl = document.getElementById("session-correct");
-    if (correctEl) correctEl.textContent = `Richtig ✅ ${this.sessionStats.correct}`;
+    if (correctEl) correctEl.textContent = `Richtig 🟢 ${this.sessionStats.correct}`;
     
     const wrongEl = document.getElementById("session-wrong");
-    if (wrongEl) wrongEl.innerHTML = `Falsch <span style="font-size: 0.9em;">❌</span> ${this.sessionStats.wrong}`;
+    if (wrongEl) wrongEl.innerHTML = `Falsch 🔴 ${this.sessionStats.wrong}`;
     
     const totalEl = document.getElementById("session-total");
     const total = this.sessionStats.correct + this.sessionStats.wrong;

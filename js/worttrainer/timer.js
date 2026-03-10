@@ -89,7 +89,7 @@ function updateTimerUI() {
   const mm = String(minutes).padStart(2, "0");
   const ss = String(seconds).padStart(2, "0");
 
-  el.textContent = `Zeit: ${mm}:${ss}`;
+  el.textContent = `⏱ ${mm}:${ss}`;
 }
 
 // ------------------------------------------------------
@@ -100,9 +100,9 @@ function updateSessionStatsUI() {
   const w = document.getElementById("session-wrong");
   const t = document.getElementById("session-total");
 
-  if (c) c.textContent = `Richtig: ${sessionCorrect}`;
-  if (w) w.textContent = `Falsch: ${sessionWrong}`;
-  if (t) t.textContent = `Gesamt: ${sessionTotal}`;
+  if (c) c.textContent = `Richtig 🟢 ${sessionCorrect}`;
+  if (w) w.textContent = `Falsch 🔴 ${sessionWrong}`;
+  if (t) t.textContent = `Gesamt 📚 ${sessionTotal}`;
 }
 
 // ------------------------------------------------------
