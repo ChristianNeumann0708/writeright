@@ -184,46 +184,4 @@
   font-size: 1rem;
 }
 
-/* =========================================
-   SESSION-INFO
-   ========================================= */
 
-#session-info {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 150px;
-  box-sizing: border-box;
-  padding: 12px;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 12px;
-  border: 1px solid rgba(225, 230, 235, 0.8);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  z-index: 999;
-}
-
-#session-timer {
-  width: 100%;
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-#session-stats {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-  text-align: right;
-}
-
-#session-stats > div {
-  width: 100%;
-}

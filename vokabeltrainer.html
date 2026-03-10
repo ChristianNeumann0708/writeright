@@ -306,9 +306,9 @@
               <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <h2 style="margin-top: 0;">Training</h2>
                 <!-- Session-Info (jetzt oben rechts inline) -->
-                <div id="session-info" style="display:none; position: static; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: auto; min-width: 130px; padding: 10px; border-radius: 8px; margin-bottom: 1rem;">
-                  <div id="session-timer" style="text-align: right; font-weight: bold; margin-bottom: 8px;">⏱ 00:00</div>
-                  <div id="session-stats" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; font-size: 0.95em;">
+                <div id="session-info" class="session-info-card inline" style="display:none;">
+                  <div id="session-timer" class="session-timer">⏱ 00:00</div>
+                  <div id="session-stats" class="session-stats">
                     <div id="session-correct">Richtig 🟢 0</div>
                     <div id="session-wrong">Falsch 🔴 0</div>
                     <div id="session-total">Gesamt 📚 0</div>
@@ -330,24 +330,24 @@
               </div>
 
               <!-- NEW: Eltern Modus Bereich -->
-              <div id="training-parent-mode-group" style="display:none; text-align: center; margin-bottom: 1.5rem;">
+              <div id="training-parent-mode-group" style="display:none;">
                 
                 <!-- NEW: Eltern Info (Übersetzung & Fehler) -->
-                <div id="parent-info-area" style="margin-bottom: 1.5rem; padding: 1rem; background: #e9ecef; border-radius: 8px;">
-                  <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">Lösung: <strong id="parent-translation" style="color: #007bff;"></strong></div>
-                  <div id="parent-historic-variants" style="font-size: 1.2rem; color: var(--wrong); display: none;"></div>
+                <div id="parent-info-area" class="parent-info-area">
+                  <div class="solution-title">Lösung: <strong id="parent-translation" class="solution-value"></strong></div>
+                  <div id="parent-historic-variants" class="parent-historic-variants"></div>
                 </div>
 
-                <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-                  <button type="button" id="parent-btn-correct" style="background-color: var(--correct); border-color: var(--correct); width: 150px; font-size: 1.2rem;">Richtig</button>
-                  <button type="button" id="parent-btn-wrong" style="background-color: var(--wrong); border-color: var(--wrong); width: 150px; font-size: 1.2rem;">Falsch</button>
+                <div class="parent-buttons-group">
+                  <button type="button" id="parent-btn-correct" class="parent-btn-correct">Richtig</button>
+                  <button type="button" id="parent-btn-wrong" class="parent-btn-wrong">Falsch</button>
                 </div>
                 <!-- Feld für falsche Variante(n), standardmäßig unsichtbar -->
-                <div id="parent-wrong-input-area" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; flex-direction: column;">
-                  <label for="parent-wrong-answer" style="font-weight: bold; color: var(--wrong);">Falsch geschriebene Variante eintragen:</label>
-                  <input type="text" id="parent-wrong-answer" autocomplete="off" style="max-width: 300px; border-color: var(--wrong);">
-                  <div style="font-size: 0.85rem; color: #666;">(Optional. Speichert die Variante bei Enter)</div>
-                  <button type="button" id="parent-btn-next" style="margin-top: 0.5rem; background-color: #007bff; border-color: #007bff; width: 200px;">Weiter zum nächsten Wort</button>
+                <div id="parent-wrong-input-area" class="parent-wrong-input-group">
+                  <label for="parent-wrong-answer">Falsch geschriebene Variante eintragen:</label>
+                  <input type="text" id="parent-wrong-answer" autocomplete="off">
+                  <div class="hint">(Optional. Speichert die Variante bei Enter)</div>
+                  <button type="button" id="parent-btn-next" class="btn" style="margin-top: 0.5rem; background-color: #007bff; border-color: #007bff; width: 250px;">Weiter zum nächsten Wort</button>
                 </div>
               </div>
 
