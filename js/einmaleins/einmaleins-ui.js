@@ -34,6 +34,7 @@ const summaryContainer = document.getElementById("training-summary-container");
 const sessionInfo = document.getElementById("session-info");
 const sessionTimerDisplay = document.getElementById("session-timer-display");
 const sessionTimerVal = document.getElementById("session-timer-val");
+const sessionTimerOverall = document.getElementById("session-timer");
 const sessionCorrect = document.getElementById("session-correct");
 const sessionWrong = document.getElementById("session-wrong");
 const sessionTotal = document.getElementById("session-total");
@@ -58,7 +59,9 @@ export const EinmaleinsUI = {
     stats: { correct: 0, wrong: 0, total: 0 },
     repeats: [],
     timerInterval: null,
-    timeLeft: 5
+    timeLeft: 5,
+    sessionTimerInterval: null,
+    elapsedSeconds: 0
   },
 
   init() {
@@ -423,12 +426,20 @@ export const EinmaleinsUI = {
       sessionTimerDisplay.style.display = "none";
     }
 
+    this.training.elapsedSeconds = 0;
+    if (this.training.sessionTimerInterval) clearInterval(this.training.sessionTimerInterval);
+    this.training.sessionTimerInterval = setInterval(() => {
+      this.training.elapsedSeconds++;
+      this.updateSessionStats();
+    }, 1000);
+
     this.updateSessionStats();
     this.renderTask();
   },
 
   finishTraining(msg = "Training beendet.") {
     if (this.training.timerInterval) clearInterval(this.training.timerInterval);
+    if (this.training.sessionTimerInterval) clearInterval(this.training.sessionTimerInterval);
 
     sessionInfo.style.display = "none";
     taskDisplay.textContent = msg;
@@ -451,6 +462,7 @@ export const EinmaleinsUI = {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0;">Auswertung</h3>
         <div style="display: flex; gap: 8px; font-size: 0.9em; flex-wrap: wrap;">
+          <span class="vocab-stat-badge" style="background: #f0f0f0; border: 1px solid #ddd; color: #333;">⏱ ${this.formatTime(this.training.elapsedSeconds)}</span>
           <span class="vocab-stat-badge stat-blue">📚 ${s.correct + s.wrong}</span>
           <span class="vocab-stat-badge stat-green">✅ ${s.correct}</span>
           <span class="vocab-stat-badge stat-red"><span style="font-size: 0.9em;">❌</span> ${s.wrong}</span>
@@ -509,6 +521,7 @@ export const EinmaleinsUI = {
     window.isTrainingActive = false;
     
     if (this.training.timerInterval) clearInterval(this.training.timerInterval);
+    if (this.training.sessionTimerInterval) clearInterval(this.training.sessionTimerInterval);
 
     trainingPanel.style.display = "none";
     summaryContainer.style.display = "none";
@@ -517,7 +530,16 @@ export const EinmaleinsUI = {
     this.renderList(); // Update statistics visually
   },
 
+  formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
+  },
+
   updateSessionStats() {
+    if (sessionTimerOverall) {
+      sessionTimerOverall.textContent = `⏱ ${this.formatTime(this.training.elapsedSeconds)}`;
+    }
     sessionCorrect.innerHTML = `Richtig 🟢 ${this.training.stats.correct}`;
     sessionWrong.innerHTML = `Falsch 🔴 ${this.training.stats.wrong}`;
     const done = this.training.stats.correct + this.training.stats.wrong;
