@@ -1137,6 +1137,9 @@ function saveVocab() {
 
   if (!result.success) {
     showStatus(`Vokabel existiert bereits in dieser Liste`);
+    enInput.value = "";
+    deInput.value = "";
+    enInput.focus();
     return;
   }
 
